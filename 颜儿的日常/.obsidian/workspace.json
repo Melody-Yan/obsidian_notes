@@ -1,0 +1,250 @@
+{
+  "main": {
+    "id": "f0e54e5dcb0a475c",
+    "type": "split",
+    "children": [
+      {
+        "id": "ed39683738980ccc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2169af49c4697d34",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {}
+            }
+          },
+          {
+            "id": "964667f23552011a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "测试专用/1.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ec5881d2574d88db",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "测试专用/新测试/11111111111111.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5a353c8a4f3a9381",
+    "type": "split",
+    "children": [
+      {
+        "id": "fb08aa6e132aaed9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ef01d5ec1b589285",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "d21950b484b62e1e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "3a51782d8e1e40df",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "628262475fc8c9f5",
+    "type": "split",
+    "children": [
+      {
+        "id": "dd3fafea56169283",
+        "type": "tabs",
+        "dimension": 35.09149623250808,
+        "children": [
+          {
+            "id": "5f1e61420090beb8",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "测试专用/新测试/11111111111111.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "9210a43d4c6e6a93",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          },
+          {
+            "id": "81cab4f08b7929dc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "测试专用/新测试/11111111111111.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b2f9db0e04c7fcdb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": false
+              }
+            }
+          },
+          {
+            "id": "ddfe2bb44f575895",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {}
+            }
+          },
+          {
+            "id": "8c632290d83d5fe9",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          },
+          {
+            "id": "5080969e2cc2a1fa",
+            "type": "leaf",
+            "state": {
+              "type": "online.larslockefeer.obsidian-plugin-todo",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "007ecc252bcc06a1",
+        "type": "tabs",
+        "dimension": 32.723358449946176,
+        "children": [
+          {
+            "id": "63813c46d9773e30",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "测试专用/新测试/11111111111111.md"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "3909327448da6b54",
+        "type": "tabs",
+        "dimension": 32.185145317545754,
+        "children": [
+          {
+            "id": "9d2944512e0f2737",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 317.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "canvas:新建白板": false,
+      "workspaces:管理工作区布局": false,
+      "random-note:开始漫游笔记": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "zk-prefixer:创建时间戳笔记": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "audio-recorder:开始/结束录音": false,
+      "publish:发布更改": false,
+      "obsidian-to-notion:Share to notion": false,
+      "obsidian-advanced-slides:Show Slide Preview": false,
+      "obsidian-weread-plugin:Weread": false,
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false
+    }
+  },
+  "active": "ef01d5ec1b589285",
+  "lastOpenFiles": [
+    "测试专用/1.md",
+    "测试专用/新测试/11111111111111.md",
+    "测试专用/新测试",
+    "Day Planners/Day Planner-20230221.md",
+    "Day Planners/Day Planner-20230222.md",
+    "Day Planners/Day Planner-20230220.md",
+    "读书/想法/夜莺与玫瑰----王尔德/第一章 快乐王子.md",
+    "测试专用/测试.md",
+    "测试专用/测试 1.md",
+    "测试专用/未命名.md",
+    "Screenshot_20221219_173156.png",
+    "测试专用/未命名 1.md"
+  ]
+}

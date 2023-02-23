@@ -1,0 +1,21 @@
+{
+  "attachmentFolderPath": "文件",
+  "showLineNumber": true,
+  "spellcheck": true,
+  "spellcheckLanguages": [
+    "zh-CN",
+    "en-US",
+    "en-GB"
+  ],
+  "newFileLocation": "root",
+  "pdfExportSettings": {
+    "includeName": true,
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  },
+  "promptDelete": false,
+  "showFrontmatter": true,
+  "trashOption": "local"
+}
