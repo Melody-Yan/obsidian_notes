@@ -11,8 +11,12 @@
             "id": "2169af49c4697d34",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "测试专用/新测试/222222.md",
+                "mode": "source",
+                "source": false
+              }
             }
           },
           {
@@ -39,8 +43,7 @@
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -107,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "测试专用/新测试/11111111111111.md",
+                "file": "测试专用/新测试/222222.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -132,7 +135,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "测试专用/新测试/11111111111111.md",
+                "file": "测试专用/新测试/222222.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -187,7 +190,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "测试专用/新测试/11111111111111.md"
+                "file": "测试专用/新测试/222222.md"
               }
             }
           }
@@ -232,8 +235,9 @@
       "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false
     }
   },
-  "active": "ef01d5ec1b589285",
+  "active": "2169af49c4697d34",
   "lastOpenFiles": [
+    "测试专用/新测试/222222.md",
     "测试专用/1.md",
     "测试专用/新测试/11111111111111.md",
     "测试专用/新测试",
