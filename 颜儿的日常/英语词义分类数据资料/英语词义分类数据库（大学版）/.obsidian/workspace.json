@@ -1,0 +1,170 @@
+{
+  "main": {
+    "id": "791c6eeefd5e139f",
+    "type": "split",
+    "children": [
+      {
+        "id": "6d728b5300d62aca",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8d250370e1f86f3b",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ce623567b2fed497",
+    "type": "split",
+    "children": [
+      {
+        "id": "adf5fd8e73842110",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cde4d52ad782da4b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "256232dff04d9253",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "每次",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 258.5
+  },
+  "right": {
+    "id": "11b2fb48c8fbe969",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7d2cda60b8345dc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "af2b2a13683cb30d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "45daa92b048b6b55",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "43fe0478a2b44e0f",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "command-palette:打开命令面板": false,
+      "markdown-importer:打开 Markdown 格式转换器": false,
+      "publish:发布更改": false,
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "obsidian-to-anki-plugin:Obsidian_to_Anki - Scan Vault": false,
+      "obsidian-tts:Text to Speech": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-projects:Open projects": false,
+      "obsidian-textgenerator-plugin:Generate Text!": false,
+      "obsidian-textgenerator-plugin:Text Generator: Templates Packages Manager": false
+    }
+  },
+  "active": "8d250370e1f86f3b",
+  "lastOpenFiles": [
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/07编者的性格.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/06编者的故事.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/03获取资料.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/02版权声明.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/01作品简介.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/04联系作者.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/05求助信息.md",
+    "英语词义分类数据库（大学版）/0本资料库的基本信息/08其它想说的话.md",
+    "英语词义分类数据库（大学版）/28秩序/01秩序 混乱.md",
+    "获取资料.md",
+    "英语词义分类数据库（大学版）/附件图片/病历图片.jpg",
+    "现在的自己.jpg",
+    "英语词义分类数据库（大学版）/附件图片/传单1.png",
+    "英语词义分类数据库（大学版）/附件图片/词典.jpg",
+    "英语词义分类数据库（大学版）/附件图片/词典2.png",
+    "英语词义分类数据库（大学版）/附件图片/词典1.png",
+    "英语词义分类数据库（大学版）/附件图片/键盘.jpg",
+    "英语词义分类数据库（大学版）/附件图片",
+    "IMG_20220513_152224.jpg",
+    "IMG_20191016_150356.jpg",
+    "英语词义分类数据库（大学版）/附件图片/刚出仓的自己.jpg",
+    "英语词义分类数据库（大学版）/34变与不变/02变动 转变.md",
+    "英语词义分类数据库（大学版）/34变与不变/01变化 变得.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/05设置语言.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/06设置背景颜色模式.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/07将默认打开模式改为预览模式.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/09目录模式和搜索模式的切换.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/11英文搜索.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/13后退至上一步.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/15卸载方法.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/14编辑模式和预览模式的切换.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/12同时显示多个面板.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/10中文搜索.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/08关系图操作.md",
+    "英语词义分类数据库（大学版）/01基础领域/13医疗/35疾病 不适.md",
+    "英语词义分类数据库（大学版）/01基础领域/01政治/14国民 公民.md",
+    "英语词义分类数据库（大学版）/01基础领域/01政治/05祖国 故乡.md"
+  ]
+}

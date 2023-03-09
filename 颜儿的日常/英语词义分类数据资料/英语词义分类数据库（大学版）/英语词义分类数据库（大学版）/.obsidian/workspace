@@ -1,0 +1,110 @@
+{
+  "main": {
+    "id": "1d71cb23069b3bb1",
+    "type": "split",
+    "children": [
+      {
+        "id": "cfbc9a3afe88685a",
+        "type": "leaf",
+        "active": true,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "0本资料库简介及查询方法/03版权声明.md",
+            "mode": "preview"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d0970254c8c8d36e",
+    "type": "split",
+    "children": [
+      {
+        "id": "89058de46ac004dc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "52eff10e1846f31b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "2b2da44b56af391a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "*like*",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 248
+  },
+  "right": {
+    "id": "f51eb912e7dd249a",
+    "type": "split",
+    "children": [
+      {
+        "id": "3f10e0cf6d9ab8be",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f59cf6c926d87d1a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "0本资料库简介及查询方法/03版权声明.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "6746d25e627864b5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "0本资料库简介及查询方法/03版权声明.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 262,
+    "collapsed": true
+  },
+  "lastOpenFiles": [
+    "0本资料库简介及查询方法/03版权声明.md",
+    "14态度性格/01喜欢 热爱 专心 沉溺 上瘾.md",
+    "14态度性格/03愿意 乐意 想要 自愿 志愿.md",
+    "14态度性格/10需要 需求 希望 渴望 羡慕.md",
+    "40道德品质/04责任 义务.md",
+    "30意志顺逆/02优劣.md",
+    "19程度/02重要 主要.md",
+    "18判断/04肯定 否定.md",
+    "18判断/01合理 荒谬.md",
+    "17界限/02准确 模糊.md"
+  ]
+}

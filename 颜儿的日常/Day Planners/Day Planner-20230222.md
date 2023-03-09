@@ -1,3 +1,3 @@
 ## Day Planner
 #todo
-- [ ] 万能下载
+- [x] 万能下载

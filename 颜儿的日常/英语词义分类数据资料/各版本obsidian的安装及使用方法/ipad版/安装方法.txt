@@ -1,0 +1,7 @@
+
+
+1 在Apple Store下载obsidian软件；
+
+2 在PC上下载iMzaing软件，将ipad连接到PC上，将在PC上接收到的文件夹解压，将解压后的文件夹用imazing导入到如下路径：文件→obsidian（即最终将本数据库的文件夹放到obsidian文件夹中）；
+
+3 用obsidian打开该文件夹即可。

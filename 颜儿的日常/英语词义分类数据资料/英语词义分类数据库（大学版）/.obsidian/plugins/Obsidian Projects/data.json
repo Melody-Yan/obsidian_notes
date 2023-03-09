@@ -1,0 +1,81 @@
+{
+  "projects": [
+    {
+      "name": "Demo project",
+      "id": "f3e1fc1f-5168-4364-9029-564a2528e9a2",
+      "path": "Projects - Demo Project",
+      "recursive": false,
+      "views": [
+        {
+          "name": "Table",
+          "id": "a77e16d1-0e4d-4b60-8b5b-98c433f45095",
+          "type": "table",
+          "config": {
+            "fieldConfig": {
+              "name": {
+                "width": 360
+              },
+              "path": {
+                "hide": true
+              }
+            }
+          }
+        },
+        {
+          "name": "Board",
+          "id": "13f8f42c-1fb5-4991-a3d6-eb87d4eb8bd1",
+          "type": "board",
+          "config": {
+            "groupByField": "status",
+            "priorityField": "weight"
+          }
+        },
+        {
+          "name": "Calendar",
+          "id": "219c330f-9c5a-4147-8379-2740b7911469",
+          "type": "calendar",
+          "config": {
+            "interval": "month",
+            "dateField": "due",
+            "checkField": "published"
+          }
+        }
+      ]
+    },
+    {
+      "id": "99a883fc-1b40-482a-90cd-c373880f5116",
+      "name": "Untitled project",
+      "path": "",
+      "recursive": false,
+      "defaultName": "",
+      "templates": [],
+      "views": [
+        {
+          "id": "66541eb5-7917-4012-adf3-4e6b8603941e",
+          "name": "Table",
+          "type": "table",
+          "config": {}
+        }
+      ]
+    },
+    {
+      "id": "163a60c0-acb8-428e-a8ad-7c4d90634876",
+      "name": "Untitled project 1",
+      "path": "",
+      "recursive": false,
+      "defaultName": "",
+      "templates": [],
+      "views": [
+        {
+          "id": "3d53a5fa-07cd-4831-be08-41aaef42ce7d",
+          "name": "Table",
+          "type": "table",
+          "config": {}
+        }
+      ]
+    }
+  ],
+  "version": 1,
+  "lastProjectId": "f3e1fc1f-5168-4364-9029-564a2528e9a2",
+  "lastViewId": "a77e16d1-0e4d-4b60-8b5b-98c433f45095"
+}

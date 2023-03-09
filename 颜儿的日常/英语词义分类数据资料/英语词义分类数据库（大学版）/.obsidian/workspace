@@ -1,0 +1,153 @@
+{
+  "main": {
+    "id": "791c6eeefd5e139f",
+    "type": "split",
+    "children": [
+      {
+        "id": "e973e3879959e8fc",
+        "type": "split",
+        "children": [
+          {
+            "id": "40bc053dfd15fb87",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "72fc9bdd78a1332b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "英语词义分类数据库（大学版）/00总目录/000总目录全览.md",
+                "mode": "preview",
+                "source": true
+              }
+            }
+          }
+        ],
+        "direction": "horizontal"
+      },
+      {
+        "id": "23c73efa6ed44409",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "英语词义分类数据库（大学版）/50达成意志/05目标 靶子.md",
+            "mode": "preview",
+            "source": true
+          }
+        }
+      },
+      {
+        "id": "a153e24dddba331f",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "英语词义分类数据库（大学版）/50达成意志/02工具 器具.md",
+            "mode": "preview",
+            "source": true
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ce623567b2fed497",
+    "type": "split",
+    "children": [
+      {
+        "id": "adf5fd8e73842110",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cde4d52ad782da4b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "256232dff04d9253",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "赔偿",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 343
+  },
+  "right": {
+    "id": "11b2fb48c8fbe969",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7d2cda60b8345dc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "af2b2a13683cb30d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "英语词义分类数据库（大学版）/50达成意志/05目标 靶子.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "45daa92b048b6b55",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "23c73efa6ed44409",
+  "lastOpenFiles": [
+    "英语词义分类数据库（大学版）/50达成意志/05目标 靶子.md",
+    "英语词义分类数据库（大学版）/00总目录/000总目录全览.md",
+    "英语词义分类数据库（大学版）/50达成意志/02工具 器具.md",
+    "英语词义分类数据库（大学版）/附件图片/03版权登记证书/版权登记证书.png",
+    "英语词义分类数据库（大学版）/附件图片/03版权登记证书/655661931006132224.png",
+    "655661931006132224.pdf",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/15卸载方法.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/14编辑模式和预览模式的切换.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/13后退至上一步.md",
+    "英语词义分类数据库（大学版）/0本资料库简介及安装与使用方法/12同时显示多个面板.md"
+  ]
+}

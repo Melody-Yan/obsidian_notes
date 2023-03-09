@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "ed39683738980ccc",
+        "id": "22c86ba0947eb1cc",
         "type": "tabs",
         "children": [
           {
-            "id": "964667f23552011a",
+            "id": "dd9cf4f15131436d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "测试专用/1.md",
+                "file": "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/01基础领域/01政治/00政治组目录.md",
                 "mode": "source",
                 "source": false
               }
@@ -78,7 +78,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 35.09149623250808,
+        "dimension": 36.54891304347826,
         "children": [
           {
             "id": "5f1e61420090beb8",
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "测试专用/1.md",
+                "file": "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/01基础领域/01政治/00政治组目录.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -98,20 +98,12 @@
             }
           },
           {
-            "id": "9210a43d4c6e6a93",
-            "type": "leaf",
-            "state": {
-              "type": "calendar",
-              "state": {}
-            }
-          },
-          {
             "id": "81cab4f08b7929dc",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "测试专用/1.md",
+                "file": "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/01基础领域/01政治/00政治组目录.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,6 +118,14 @@
                 "sortOrder": "frequency",
                 "useHierarchy": false
               }
+            }
+          },
+          {
+            "id": "0a285fe7eb34dd3b",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
             }
           },
           {
@@ -145,20 +145,44 @@
             }
           },
           {
-            "id": "5080969e2cc2a1fa",
+            "id": "1a039d47d078a787",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {}
+            }
+          },
+          {
+            "id": "3971fb28407589dd",
             "type": "leaf",
             "state": {
               "type": "online.larslockefeer.obsidian-plugin-todo",
               "state": {}
             }
+          },
+          {
+            "id": "d2636c113f6bbe08",
+            "type": "leaf",
+            "state": {
+              "type": "reminder-list",
+              "state": {}
+            }
+          },
+          {
+            "id": "5a8bcd161c17cf47",
+            "type": "leaf",
+            "state": {
+              "type": "QUICKSHARE_SIDE_VIEW",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       },
       {
         "id": "007ecc252bcc06a1",
         "type": "tabs",
-        "dimension": 32.723358449946176,
+        "dimension": 27.17391304347826,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -166,19 +190,19 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "测试专用/1.md"
+                "file": "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/01基础领域/01政治/00政治组目录.md"
               }
             }
           }
         ]
       },
       {
-        "id": "3909327448da6b54",
+        "id": "c74279d1ae9e8161",
         "type": "tabs",
-        "dimension": 32.185145317545754,
+        "dimension": 36.27717391304348,
         "children": [
           {
-            "id": "9d2944512e0f2737",
+            "id": "5ad01b446d0a664b",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -196,7 +220,6 @@
       "canvas:新建白板": false,
       "workspaces:管理工作区布局": false,
       "random-note:开始漫游笔记": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false,
       "zk-prefixer:创建时间戳笔记": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
@@ -206,26 +229,53 @@
       "audio-recorder:开始/结束录音": false,
       "publish:发布更改": false,
       "obsidian-to-notion:Share to notion": false,
-      "obsidian-advanced-slides:Show Slide Preview": false,
       "obsidian-weread-plugin:Weread": false,
-      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "obsidian-advanced-slides:Show Slide Preview": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "periodic-notes:Open this week": false
     }
   },
   "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
-    "测试专用/新测试/222222.md",
-    "未命名.canvas",
-    "测试专用/1.md",
-    "测试专用/新测试/11111111111111.md",
-    "测试专用/新测试",
-    "Day Planners/Day Planner-20230221.md",
-    "Day Planners/Day Planner-20230222.md",
-    "Day Planners/Day Planner-20230220.md",
-    "读书/想法/夜莺与玫瑰----王尔德/第一章 快乐王子.md",
-    "测试专用/测试.md",
     "测试专用/测试 1.md",
+    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/27位移/04进出.md",
+    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/23美丑/00美丑组目录.md",
+    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/23美丑/01美丽 丑陋.md",
+    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/0本资料库的基本信息/01作品简介.md",
+    "测试专用/测试.md",
+    "Day Planners/Day Planner-20230307.md",
     "测试专用/未命名.md",
+    "Day Planners/Day Planner-20230304.md",
+    "读书笔记/夜莺与玫瑰/快乐王子.md",
+    "读书笔记/夜莺与玫瑰/夜莺与玫瑰.md",
+    "Day Planners/Day Planner-20230228.md",
+    "读书笔记/只管去做/只管去做-邹小强.md",
+    "读书笔记/只管去做",
+    "读书笔记/不可思议校园[无限]/不可思议校园[无限]-条纹花瓶.md",
+    "读书笔记/不可思议校园[无限]",
+    "读书笔记/鼠疫/鼠疫-阿尔贝·加缪.md",
+    "读书笔记/鼠疫",
+    "读书笔记/夜莺与玫瑰/书评 No.1.md",
+    "Pasted image 20230224155352.png",
+    "Pasted image 20230224155423.png",
     "Screenshot_20221219_173156.png",
-    "测试专用/未命名 1.md"
+    "读书笔记/读者·原创版（2021年第1期）/读者·原创版（2021年第1期）-读者·原创版.md",
+    "读书笔记/夜莺与玫瑰/关于王尔德：唯美的爱与善.md",
+    "读书笔记/夜莺与玫瑰/散文诗.md",
+    "读书笔记/夜莺与玫瑰/石榴屋.md",
+    "读书笔记/夏天、烟火和我的尸体/夏天、烟火和我的尸体-乙一.md",
+    "未命名.md",
+    "Day Planners/Day Planner-20230222.md",
+    "读书笔记/读者·原创版（2021年第1期）",
+    "读书笔记/死亡万花筒/死亡万花筒-西子绪.md",
+    "读书笔记/死亡万花筒",
+    "读书笔记/放学后/放学后-东野圭吾.md",
+    "读书笔记/放学后",
+    "读书笔记/夏天、烟火和我的尸体",
+    "Day Planners/Day Planner-20230224.md",
+    "未命名",
+    "未命名.canvas",
+    "测试专用/新测试"
   ]
 }

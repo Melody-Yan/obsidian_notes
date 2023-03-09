@@ -46,5 +46,30 @@
     "maxNumberOfHistoryToKeep": 0
   },
   "showLogAboutPerformanceInConsole": false,
-  "selectionHistoryTree": {}
+  "selectionHistoryTree": {
+    "测试": {
+      "测试": {
+        "internalLink": {
+          "count": 1,
+          "lastUpdated": 1677218930214
+        }
+      }
+    },
+    "Ceshier": {
+      "Ceshier": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1677923780903
+        }
+      }
+    },
+    "Day Planner-20230228": {
+      "Day Planner-20230228": {
+        "internalLink": {
+          "count": 1,
+          "lastUpdated": 1677925219020
+        }
+      }
+    }
+  }
 }
