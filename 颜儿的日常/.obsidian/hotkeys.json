@@ -58,5 +58,19 @@
       ],
       "key": "6"
     }
-  ]
+  ],
+  "obsidian-advanced-slides:reload-advanced-slides-preview": [],
+  "obsidian-advanced-slides:open-advanced-slides-preview": [],
+  "easy-typing-obsidian:easy-typing-delete-blank-line": [],
+  "note-refactor-obsidian:app:extract-selection-first-line": [],
+  "obsidian-tidy-footnotes:tidy-footnotes": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "T"
+    }
+  ],
+  "workspace:undo-close-pane": []
 }

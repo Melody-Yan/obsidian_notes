@@ -1,0 +1,153 @@
+{
+  "main": {
+    "id": "1c425c382c4f04a8",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d7ae74bdf5bb313",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2eca6cd3ed5b0fc5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "334900ee78518ae2",
+    "type": "split",
+    "children": [
+      {
+        "id": "f8b29fa0b0b451b1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "faec805042e769b5",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8749b5ac837ce903",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "70ef5009857a958b",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "eb3de21e7390c00f",
+    "type": "split",
+    "children": [
+      {
+        "id": "830ebf9c7453af6c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fca487d8bfc6bcaa",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "f7241841ae754af0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "dddff27c13a0775e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "a264ea337425390f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "2eca6cd3ed5b0fc5",
+  "lastOpenFiles": [
+    "颜儿的日常/Pasted image 20230224155352.png"
+  ]
+}

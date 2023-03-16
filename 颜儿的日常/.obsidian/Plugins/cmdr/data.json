@@ -2,8 +2,28 @@
   "confirmDeletion": true,
   "showAddCommand": true,
   "debug": false,
-  "editorMenu": [],
-  "fileMenu": [],
+  "editorMenu": [
+    {
+      "id": "obsidian-to-notion:share-to-notion",
+      "icon": "share-2",
+      "name": "share to notion",
+      "mode": "any"
+    },
+    {
+      "id": "note-refactor-obsidian:app:split-note-by-heading-h1",
+      "icon": "arrow-left-right",
+      "name": "Note Refactor: Split note by headings - H1",
+      "mode": "any"
+    }
+  ],
+  "fileMenu": [
+    {
+      "id": "note-refactor-obsidian:app:split-note-by-heading-h1",
+      "icon": "arrow-left-right",
+      "name": "Note Refactor: Split note by headings - H1",
+      "mode": "any"
+    }
+  ],
   "leftRibbon": [],
   "rightRibbon": [],
   "titleBar": [],
