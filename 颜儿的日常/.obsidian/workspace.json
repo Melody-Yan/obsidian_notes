@@ -11,10 +11,8 @@
             "id": "bd4fb01657c421ee",
             "type": "leaf",
             "state": {
-              "type": "image",
-              "state": {
-                "file": "resource/Screenshot_20221219_173156.png"
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -84,7 +82,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "resource/Screenshot_20221219_173156.png",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +98,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "resource/Screenshot_20221219_173156.png",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -187,9 +183,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "resource/Screenshot_20221219_173156.png"
-              }
+              "state": {}
             }
           }
         ]
@@ -236,6 +230,9 @@
   },
   "active": "bd4fb01657c421ee",
   "lastOpenFiles": [
+    "英语词义分类数据资料/英语词义分类全解（完整版）.pdf",
+    "测试专用/1.md",
+    "resource/Screenshot_20221219_173156.png",
     "resource/Pasted image 20230318212555.png",
     "resource/Pasted image 20230224155352.png",
     "resource/中国奇谭.png",
@@ -247,10 +244,8 @@
     "测试专用/部署.md",
     "观影/向着明亮那方⭐⭐⭐/向着明亮那方.md",
     "Day Planners/Day Planner-20230319.md",
-    "测试专用/1.md",
     "suyaner.pages.dev/img",
     "suyaner.pages.dev",
-    "resource/Screenshot_20221219_173156.png",
     "resource/img",
     "resource/cedict_ts.u8",
     "resource/cedict_1_0_ts_utf-8_mdbg.txt.gz",
