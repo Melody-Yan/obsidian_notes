@@ -11,12 +11,9 @@
             "id": "bd4fb01657c421ee",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "测试专用/1.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "file": "resource/Screenshot_20221219_173156.png"
               }
             }
           }
@@ -87,7 +84,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "测试专用/1.md",
+                "file": "resource/Screenshot_20221219_173156.png",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +101,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "测试专用/1.md",
+                "file": "resource/Screenshot_20221219_173156.png",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -191,7 +188,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "测试专用/1.md"
+                "file": "resource/Screenshot_20221219_173156.png"
               }
             }
           }
@@ -239,13 +236,21 @@
   },
   "active": "bd4fb01657c421ee",
   "lastOpenFiles": [
-    "resource/向着明亮那方.png",
-    "resource/中国奇谭.png",
-    "resource/中国奇谭 2.png",
-    "resource/中国奇谭 1.png",
-    "resource/Screenshot_20221219_173156.png",
     "resource/Pasted image 20230318212555.png",
     "resource/Pasted image 20230224155352.png",
+    "resource/中国奇谭.png",
+    "resource/向着明亮那方.png",
+    "resource/中国奇谭 1.png",
+    "resource/中国奇谭 2.png",
+    "Day Planners/2023-03-17.md",
+    "观影/中国奇谭⭐⭐⭐⭐/中国奇谭.md",
+    "测试专用/部署.md",
+    "观影/向着明亮那方⭐⭐⭐/向着明亮那方.md",
+    "Day Planners/Day Planner-20230319.md",
+    "测试专用/1.md",
+    "suyaner.pages.dev/img",
+    "suyaner.pages.dev",
+    "resource/Screenshot_20221219_173156.png",
     "resource/img",
     "resource/cedict_ts.u8",
     "resource/cedict_1_0_ts_utf-8_mdbg.txt.gz",
@@ -256,24 +261,17 @@
     "测试专用/测试.md",
     "测试专用/测试 1.md",
     "测试专用/12.md",
-    "测试专用/1.md",
     "观影/国际华语辩论邀请赛/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
     "百宝箱/中国奇谭.png",
     "百宝箱/中国奇谭 2.png",
-    "百宝箱/中国奇谭 1.png",
     "Day Planners/Day Planner-20230318.md",
-    "Day Planners/2023-03-17.md",
-    "观影/向着明亮那方⭐⭐⭐/向着明亮那方.md",
     "Day Planners/Day Planner-20230317.md",
     "观影/国际华语辩论邀请赛/2020",
     "观影/国际华语辩论邀请赛",
     "观影/恋与制作人/恋与制作人.md",
-    "观影/中国奇谭⭐⭐⭐⭐/中国奇谭.md",
     "观影/中国奇谭⭐⭐⭐⭐/第二集鹅鹅鹅/第二集鹅鹅鹅.md",
-    "观影/恋与制作人",
     "观影/中国奇谭⭐⭐⭐⭐/第一集小妖怪的夏天/第一集小妖怪的夏天.md",
     "快速记录/QWE密码.md",
-    "快速记录",
     "Day Planners/Day Planner-20230316.md",
     "观影/中国奇谭⭐⭐⭐⭐/其他想说的.md",
     "观影/中国奇谭⭐⭐⭐⭐/第八集 玉兔/第八集   玉兔.md",
@@ -283,8 +281,6 @@
     "观影/中国奇谭⭐⭐⭐⭐/第五集 小满/第五集   小满.md",
     "观影/中国奇谭⭐⭐⭐⭐/第四集 乡村巴士带走了王孩儿和神仙/中国奇谭第四集《乡村巴士带走了王孩儿和神仙》深度解析.md",
     "读书笔记/夜莺与玫瑰/夜莺与玫瑰.md",
-    "读书笔记/夜莺与玫瑰/关于王尔德：唯美的爱与善.md",
-    "观影/中国奇谭/未命名.md",
     "未命名.canvas"
   ]
 }
