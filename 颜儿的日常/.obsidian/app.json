@@ -1,5 +1,5 @@
 {
-  "attachmentFolderPath": "文件",
+  "attachmentFolderPath": "百宝箱",
   "showLineNumber": true,
   "spellcheck": true,
   "spellcheckLanguages": [
@@ -18,5 +18,6 @@
   "promptDelete": false,
   "showFrontmatter": true,
   "trashOption": "local",
-  "defaultViewMode": "source"
+  "defaultViewMode": "source",
+  "showUnsupportedFiles": true
 }
