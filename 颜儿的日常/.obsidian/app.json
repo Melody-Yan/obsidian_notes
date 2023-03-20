@@ -19,5 +19,6 @@
   "showFrontmatter": true,
   "trashOption": "local",
   "defaultViewMode": "source",
-  "showUnsupportedFiles": true
+  "showUnsupportedFiles": false,
+  "alwaysUpdateLinks": true
 }

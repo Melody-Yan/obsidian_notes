@@ -1,8 +1,8 @@
 {
   "strategy": "chinese",
-  "matchStrategy": "prefix",
-  "maxNumberOfSuggestions": 5,
-  "maxNumberOfWordsAsPhrase": 3,
+  "matchStrategy": "partial",
+  "maxNumberOfSuggestions": 255,
+  "maxNumberOfWordsAsPhrase": 1,
   "minNumberOfCharactersTriggered": 0,
   "minNumberOfWordsTriggeredPhrase": 1,
   "complementAutomatically": true,
@@ -15,7 +15,7 @@
   "showIndexingStatus": true,
   "descriptionOnSuggestion": "Short",
   "selectSuggestionKeys": "Enter",
-  "additionalCycleThroughSuggestionsKeys": "None",
+  "additionalCycleThroughSuggestionsKeys": "Tab, Shift+Tab",
   "disableUpDownKeysForCycleThroughSuggestionsKeys": false,
   "openSourceFileKey": "None",
   "propagateEsc": false,
@@ -28,8 +28,8 @@
   "excludeCurrentVaultPathPrefixPatterns": "",
   "includeCurrentVaultOnlyFilesUnderCurrentDirectory": false,
   "enableCustomDictionaryComplement": true,
-  "customDictionaryPaths": "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt",
-  "columnDelimiter": "Tab",
+  "customDictionaryPaths": "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt\ndictionary.md\n",
+  "columnDelimiter": "Pipe",
   "customDictionaryWordRegexPattern": "",
   "delimiterToHideSuggestion": "",
   "delimiterToDivideSuggestionsForDisplayFromInsertion": "",
@@ -39,10 +39,10 @@
   "suggestInternalLinkWithAlias": true,
   "excludeInternalLinkPathPrefixPatterns": "",
   "enableFrontMatterComplement": true,
-  "frontMatterComplementMatchStrategy": "inherit",
+  "frontMatterComplementMatchStrategy": "partial",
   "insertCommaAfterFrontMatterCompletion": false,
   "intelligentSuggestionPrioritization": {
-    "maxDaysToKeepHistory": 30,
+    "maxDaysToKeepHistory": 0,
     "maxNumberOfHistoryToKeep": 0
   },
   "showLogAboutPerformanceInConsole": false,
@@ -196,6 +196,38 @@
         "currentFile": {
           "count": 1,
           "lastUpdated": 1678978639565
+        }
+      }
+    },
+    "37提交法案 通过法案": {
+      "37提交法案 通过法案": {
+        "internalLink": {
+          "count": 1,
+          "lastUpdated": 1679250135895
+        }
+      }
+    },
+    "图床": {
+      "https://resource-17v.pages.dev/": {
+        "customDictionary": {
+          "count": 4,
+          "lastUpdated": 1679251008816
+        }
+      }
+    },
+    "https://resource-17v.pages.dev/": {
+      "https://resource-17v.pages.dev/": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679250910025
+        }
+      }
+    },
+    "图": {
+      "https://resource-17v.pages.dev/": {
+        "customDictionary": {
+          "count": 2,
+          "lastUpdated": 1679303706996
         }
       }
     }
