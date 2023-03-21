@@ -1,6 +1,10 @@
 {
   "strategy": "chinese",
+  "cedictPath": "./cedict_ts.u8",
   "matchStrategy": "partial",
+  "fuzzyMatch": true,
+  "matchingWithoutEmoji": true,
+  "treatAccentDiacriticsAsAlphabeticCharacters": true,
   "maxNumberOfSuggestions": 255,
   "maxNumberOfWordsAsPhrase": 10,
   "minNumberOfCharactersTriggered": 1,
@@ -10,6 +14,11 @@
   "disableSuggestionsDuringImeOn": false,
   "insertAfterCompletion": false,
   "firstCharactersDisableSuggestions": ":/^",
+  "useCommonPrefixCompletionOfSuggestion": false,
+  "patternsToSuppressTrigger": [
+    "^~~~.*",
+    "^```.*"
+  ],
   "showMatchStrategy": true,
   "showComplementAutomatically": true,
   "showIndexingStatus": true,
@@ -38,6 +47,12 @@
   "enableInternalLinkComplement": true,
   "suggestInternalLinkWithAlias": true,
   "excludeInternalLinkPathPrefixPatterns": "",
+  "updateInternalLinksOnSave": true,
+  "insertAliasTransformedFromDisplayedInternalLink": {
+    "enabled": false,
+    "beforeRegExp": "",
+    "after": ""
+  },
   "enableFrontMatterComplement": true,
   "frontMatterComplementMatchStrategy": "partial",
   "insertCommaAfterFrontMatterCompletion": false,
@@ -45,6 +60,7 @@
     "maxDaysToKeepHistory": 0,
     "maxNumberOfHistoryToKeep": 0
   },
+  "disableOnMobile": false,
   "showLogAboutPerformanceInConsole": false,
   "selectionHistoryTree": {
     "测试": {
@@ -252,6 +268,30 @@
         "currentFile": {
           "count": 1,
           "lastUpdated": 1679322591466
+        }
+      }
+    },
+    "Aris": {
+      "Aris": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679385577104
+        }
+      }
+    },
+    "清华大学": {
+      "清华大学": {
+        "currentFile": {
+          "count": 2,
+          "lastUpdated": 1679397731169
+        }
+      }
+    },
+    "癌症": {
+      "癌症": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679399044436
         }
       }
     }
