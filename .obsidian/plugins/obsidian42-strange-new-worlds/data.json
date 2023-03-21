@@ -1,0 +1,20 @@
+{
+  "enableOnStartupDesktop": true,
+  "enableOnStartupMobile": true,
+  "minimumRefCountThreshold": 1,
+  "maxFileCountToDisplay": 100,
+  "displayIncomingFilesheader": true,
+  "displayInlineReferencesLivePreview": true,
+  "displayInlineReferencesMarkdown": true,
+  "displayEmbedReferencesInGutter": true,
+  "displayEmbedReferencesInGutterMobile": true,
+  "cacheUpdateInMilliseconds": 500,
+  "enableRenderingBlockIdInMarkdown": true,
+  "enableRenderingLinksInMarkdown": true,
+  "enableRenderingHeadersInMarkdown": true,
+  "enableRenderingEmbedsInMarkdown": true,
+  "enableRenderingBlockIdInLivePreview": true,
+  "enableRenderingLinksInLivePreview": true,
+  "enableRenderingHeadersInLivePreview": true,
+  "enableRenderingEmbedsInLivePreview": true
+}

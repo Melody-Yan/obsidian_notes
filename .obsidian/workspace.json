@@ -80,6 +80,27 @@
         "type": "tabs",
         "children": [
           {
+            "id": "a264ea337425390f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md"
+              }
+            }
+          },
+          {
+            "id": "dddff27c13a0775e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
             "id": "fca487d8bfc6bcaa",
             "type": "leaf",
             "state": {
@@ -109,45 +130,107 @@
             }
           },
           {
-            "id": "dddff27c13a0775e",
+            "id": "32c02576ca465788",
             "type": "leaf",
             "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true
-              }
+              "type": "reminder-list",
+              "state": {}
             }
           },
           {
-            "id": "a264ea337425390f",
+            "id": "2d5ad5ca6ce5f9c7",
             "type": "leaf",
             "state": {
-              "type": "outline",
-              "state": {
-                "file": "颜儿的日常/Day Planners/Day Planner-20230220.md"
-              }
+              "type": "QUICKSHARE_SIDE_VIEW",
+              "state": {}
+            }
+          },
+          {
+            "id": "c64daf9a4afd7d9c",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {}
+            }
+          },
+          {
+            "id": "ee98fc796df4ed00",
+            "type": "leaf",
+            "state": {
+              "type": "online.larslockefeer.obsidian-plugin-todo",
+              "state": {}
+            }
+          },
+          {
+            "id": "f8c4b263af932834",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          },
+          {
+            "id": "da96446b8d774be1",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          },
+          {
+            "id": "17a8826d4413368e",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 10
+      },
+      {
+        "id": "70c947bf173adabe",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bbf9e71e9183db22",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {}
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
+      "zk-prefixer:创建时间戳笔记": false,
+      "random-note:开始漫游笔记": false,
+      "audio-recorder:开始/结束录音": false,
+      "workspaces:管理工作区布局": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
-      "command-palette:打开命令面板": false
+      "command-palette:打开命令面板": false,
+      "obsidian-weread-plugin:Weread": false,
+      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
+      "obsidian-to-notion:Share to notion": false,
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "obsidian-advanced-slides:Show Slide Preview": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "periodic-notes:Open this week": false
     }
   },
   "active": "2eca6cd3ed5b0fc5",
   "lastOpenFiles": [
+    "Day Planners/Day Planner-20230321.md",
+    "Day Planners",
     "颜儿的日常/Pasted image 20230224155352.png"
   ]
 }

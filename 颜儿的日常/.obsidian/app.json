@@ -20,5 +20,6 @@
   "trashOption": "local",
   "defaultViewMode": "source",
   "showUnsupportedFiles": false,
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "vimMode": false
 }

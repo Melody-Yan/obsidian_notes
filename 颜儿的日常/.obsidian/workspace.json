@@ -4,15 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "254be4a2e16da42c",
+        "id": "4c999e7906988cad",
         "type": "tabs",
         "children": [
           {
-            "id": "080c7f6ba875e365",
+            "id": "b49ba81b3886d54d",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "快速记录/QWE密码.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ]
@@ -65,7 +70,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 263.5
+    "width": 245.5
   },
   "right": {
     "id": "628262475fc8c9f5",
@@ -74,7 +79,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 36.54891304347826,
+        "dimension": 34.76856835306781,
         "children": [
           {
             "id": "5f1e61420090beb8",
@@ -82,6 +87,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "快速记录/QWE密码.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -98,6 +104,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "快速记录/QWE密码.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -170,19 +177,22 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 3
       },
       {
         "id": "007ecc252bcc06a1",
         "type": "tabs",
-        "dimension": 27.17391304347826,
+        "dimension": 30.2475780409042,
         "children": [
           {
             "id": "63813c46d9773e30",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "快速记录/QWE密码.md"
+              }
             }
           }
         ]
@@ -190,7 +200,7 @@
       {
         "id": "c74279d1ae9e8161",
         "type": "tabs",
-        "dimension": 36.27717391304348,
+        "dimension": 34.983853606027985,
         "children": [
           {
             "id": "5ad01b446d0a664b",
@@ -208,49 +218,54 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "command-palette:打开命令面板": false,
       "canvas:新建白板": false,
-      "workspaces:管理工作区布局": false,
       "random-note:开始漫游笔记": false,
       "zk-prefixer:创建时间戳笔记": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "daily-notes:打开/创建今天的日记": false,
-      "templates:插入模板": false,
-      "command-palette:打开命令面板": false,
+      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "audio-recorder:开始/结束录音": false,
       "publish:发布更改": false,
       "obsidian-weread-plugin:Weread": false,
+      "templates:插入模板": false,
+      "workspaces:管理工作区布局": false,
       "obsidian-to-notion:Share to notion": false,
-      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
       "obsidian-advanced-slides:Show Slide Preview": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "periodic-notes:Open this week": false
     }
   },
-  "active": "ef01d5ec1b589285",
+  "active": "0a285fe7eb34dd3b",
   "lastOpenFiles": [
+    "测试专用/1111.md",
+    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人.md",
+    "测试专用/未命名.canvas",
+    "Read It Later/万事屋/关于恋与的一些知识.md",
+    "Day Planners/Day Planner-20230321.md",
+    "快速记录/QWE密码.md",
+    "Day Planners/Day Planner-20230228.md",
+    "Day Planners/Day Planner-20230304.md",
+    "Read It Later/Article.md",
+    "Read It Later/万事屋/评分.md",
     "Day Planners/Day Planner-20230320.md",
     "Day Planners/Day Planner-20230319.md",
-    "快速记录/QWE密码.md",
     "快速记录/一念永恒.md",
     "快速记录/民调局异闻录.md",
     "dictionary.md",
-    "测试专用/1111.md",
     "测试专用/1.md",
-    "观影/向着明亮那方⭐⭐⭐/向着明亮那方.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
     "resource/picgo.png",
-    "观影/恋与制作人/恋与制作人.md",
-    "观影/中国奇谭⭐⭐⭐⭐/中国奇谭.md",
-    "观影/中国奇谭⭐⭐⭐⭐/第四集 乡村巴士带走了王孩儿和神仙/第四集   乡村巴士带走了王孩儿和神仙.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/中国奇谭.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/第四集   乡村巴士带走了王孩儿和神仙.md",
     "resource/乡村巴士带走了王孩儿和神仙.png",
     "resource/许墨Aris.png",
     "resource/Pasted image 20230318212555.png",
     "resource/Screenshot_20221219_173156.png",
     "resource/Pasted image 20230320170427.png",
     "resource/Pasted image 20230320170613.png",
-    "Read It Later/Article.md",
-    "Read It Later/万事屋/看懂恋与制作人剧情需要什么（知识书籍） - 知乎.md",
     "Read It Later/万事屋/cloudflare.md",
     "Read It Later/ReadItLater.md",
     "测试专用/测试 1.md",
@@ -259,22 +274,17 @@
     "resource/向着明亮那方.png",
     "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/35基础运动/02行为 表现.md",
     "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/04空间方位/01空间/00空间组目录.md",
-    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/00总目录/000总目录全览.md",
-    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/00总目录/00根目录.md",
-    "英语词义分类数据资料/英语词义分类数据库（大学版）/英语词义分类数据库（大学版）/01基础领域/01政治/37提交法案 通过法案.md",
-    "Read It Later/万事屋/不用设置 ModHeader，访问 new bing 的浏览器插件 - 余汉波.md",
     "Read It Later/百宝箱/image.png",
     "Read It Later/百宝箱",
     "Read It Later/万事屋",
     "Read It Later",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/06第六季/11第十一案  芒城风云Ⅰ.md",
     "cedict_ts.u8",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/08第八季",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/06第六季",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/07第七季",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季",
+    "观影/明星大侦探★★★★★★★★★☆/06第六季",
+    "观影/明星大侦探★★★★★★★★★☆/07第七季",
     "观影/明星大侦探⭐⭐⭐⭐⭐/第六季06",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/05第五季",
-    "观影/明星大侦探⭐⭐⭐⭐⭐/04第四季",
+    "观影/明星大侦探★★★★★★★★★☆/05第五季",
+    "观影/明星大侦探★★★★★★★★★☆/04第四季",
     "resource/Pasted image 20230224155352.png",
     "未命名.canvas"
   ]

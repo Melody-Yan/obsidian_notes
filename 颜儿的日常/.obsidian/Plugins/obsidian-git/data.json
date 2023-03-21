@@ -1,6 +1,5 @@
 {
   "commitMessage": "vault backup: {{date}}",
-  "autoCommitMessage": "vault backup: {{date}}",
   "commitDateFormat": "YYYY-MM-DD HH:mm:ss",
   "autoSaveInterval": 0,
   "autoPushInterval": 0,
@@ -17,12 +16,14 @@
   "autoBackupAfterFileChange": false,
   "treeStructure": true,
   "refreshSourceControl": true,
-  "basePath": "Melody-Yan/obsidian_notes",
+  "basePath": "",
   "differentIntervalCommitAndPush": false,
   "changedFilesInStatusBar": true,
   "showedMobileNotice": true,
   "refreshSourceControlTimer": 1000,
   "showBranchStatusBar": true,
   "setLastSaveToLastCommit": false,
-  "gitDir": "Melody-Yan/main"
+  "submoduleRecurseCheckout": false,
+  "gitDir": "Melody-Yan/obsidian_notes",
+  "autoCommitMessage": "vault backup: {{date}}"
 }

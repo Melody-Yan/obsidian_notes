@@ -1,0 +1,6 @@
+{
+  "templateHeading": "none",
+  "deleteOnComplete": true,
+  "removeEmptyTodos": false,
+  "rolloverChildren": true
+}

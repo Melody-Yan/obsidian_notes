@@ -1,0 +1,7 @@
+{
+	"nodes":[
+		{"id":"ee16e9000a3067df","x":-125,"y":-30,"width":250,"height":60,"color":"4","type":"text","text":"测试"},
+		{"id":"f5b181b920392ebf","x":-40,"y":-370,"width":400,"height":400,"type":"file","file":"测试专用/1111.md"}
+	],
+	"edges":[]
+}
