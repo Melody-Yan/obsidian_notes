@@ -1,7 +1,7 @@
 {
   "mediaFragmentsEmbed": true,
   "timestampLink": true,
-  "extendedImageEmbedSyntax": false,
+  "extendedImageEmbedSyntax": true,
   "thumbnailPlaceholder": true,
   "useYoutubeControls": false,
   "interalBiliPlayback": true,
@@ -9,10 +9,10 @@
   "embedMaxHeight": "30vh",
   "embedMinWidth": "400px",
   "plyrControls": {
-    "restart": false,
-    "rewind": false,
+    "restart": true,
+    "rewind": true,
     "play": true,
-    "fast-forward": false,
+    "fast-forward": true,
     "progress": true,
     "current-time": true,
     "duration": true,

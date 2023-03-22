@@ -5,9 +5,9 @@
   "fuzzyMatch": true,
   "matchingWithoutEmoji": true,
   "treatAccentDiacriticsAsAlphabeticCharacters": true,
-  "maxNumberOfSuggestions": 255,
-  "maxNumberOfWordsAsPhrase": 10,
-  "minNumberOfCharactersTriggered": 1,
+  "maxNumberOfSuggestions": 35,
+  "maxNumberOfWordsAsPhrase": 8,
+  "minNumberOfCharactersTriggered": 2,
   "minNumberOfWordsTriggeredPhrase": 1,
   "complementAutomatically": true,
   "delayMilliSeconds": 0,
@@ -22,16 +22,16 @@
   "showMatchStrategy": true,
   "showComplementAutomatically": true,
   "showIndexingStatus": true,
-  "descriptionOnSuggestion": "Short",
+  "descriptionOnSuggestion": "Full",
   "selectSuggestionKeys": "Enter",
   "additionalCycleThroughSuggestionsKeys": "Tab, Shift+Tab",
   "disableUpDownKeysForCycleThroughSuggestionsKeys": false,
   "openSourceFileKey": "None",
   "propagateEsc": false,
   "enableCurrentFileComplement": true,
-  "currentFileMinNumberOfCharacters": 0,
+  "currentFileMinNumberOfCharacters": 1,
   "onlyComplementEnglishOnCurrentFileComplement": false,
-  "enableCurrentVaultComplement": false,
+  "enableCurrentVaultComplement": true,
   "currentVaultMinNumberOfCharacters": 0,
   "includeCurrentVaultPathPrefixPatterns": "",
   "excludeCurrentVaultPathPrefixPatterns": "",
@@ -282,8 +282,8 @@
     "清华大学": {
       "清华大学": {
         "currentFile": {
-          "count": 2,
-          "lastUpdated": 1679397731169
+          "count": 5,
+          "lastUpdated": 1679483473429
         }
       }
     },
@@ -292,6 +292,62 @@
         "currentFile": {
           "count": 1,
           "lastUpdated": 1679399044436
+        }
+      }
+    },
+    "河北": {
+      "河北": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679468337601
+        }
+      }
+    },
+    "不少": {
+      "不少": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1679479386186
+        }
+      }
+    },
+    "提升": {
+      "提升": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1679482270730
+        }
+      }
+    },
+    "厉害": {
+      "厉害": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679483368847
+        }
+      }
+    },
+    "一方": {
+      "一方": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679483520331
+        }
+      }
+    },
+    "地位": {
+      "地位": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679484553525
+        }
+      }
+    },
+    "区别": {
+      "区别": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679484613370
         }
       }
     }
