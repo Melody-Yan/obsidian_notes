@@ -1,5 +1,5 @@
 {
-  "attachmentFolderPath": "resource",
+  "attachmentFolderPath": "Read It Later/百宝箱/resource",
   "showLineNumber": true,
   "spellcheck": true,
   "spellcheckLanguages": [
@@ -21,5 +21,6 @@
   "defaultViewMode": "source",
   "showUnsupportedFiles": false,
   "alwaysUpdateLinks": true,
-  "vimMode": false
+  "vimMode": false,
+  "livePreview": true
 }

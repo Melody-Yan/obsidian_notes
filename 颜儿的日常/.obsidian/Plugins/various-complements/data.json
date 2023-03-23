@@ -37,13 +37,13 @@
   "excludeCurrentVaultPathPrefixPatterns": "",
   "includeCurrentVaultOnlyFilesUnderCurrentDirectory": false,
   "enableCustomDictionaryComplement": true,
-  "customDictionaryPaths": "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt\ndictionary.md\n",
+  "customDictionaryPaths": "dictionary.md\n",
   "columnDelimiter": "Pipe",
   "customDictionaryWordRegexPattern": "",
   "delimiterToHideSuggestion": "",
-  "delimiterToDivideSuggestionsForDisplayFromInsertion": "",
-  "caretLocationSymbolAfterComplement": "",
-  "displayedTextSuffix": " => ...",
+  "delimiterToDivideSuggestionsForDisplayFromInsertion": "+=",
+  "caretLocationSymbolAfterComplement": "=>",
+  "displayedTextSuffix": " $end$",
   "enableInternalLinkComplement": true,
   "suggestInternalLinkWithAlias": true,
   "excludeInternalLinkPathPrefixPatterns": "",
@@ -130,8 +130,8 @@
     "中国奇谭《鹅鹅鹅》，到底讲的是什么？是三观不正还是洞察人性？": {
       "中国奇谭《鹅鹅鹅》，到底讲的是什么？是三观不正还是洞察人性？": {
         "internalLink": {
-          "count": 1,
-          "lastUpdated": 1678800086302
+          "count": 2,
+          "lastUpdated": 1679564455680
         }
       }
     },
@@ -348,6 +348,70 @@
         "currentFile": {
           "count": 1,
           "lastUpdated": 1679484613370
+        }
+      }
+    },
+    "- [ ] =>代办": {
+      "- [ ] =>代办": {
+        "customDictionary": {
+          "count": 2,
+          "lastUpdated": 1679568197844
+        }
+      }
+    },
+    "- [ ] ==>代办": {
+      "- [ ] ==>代办": {
+        "customDictionary": {
+          "count": 2,
+          "lastUpdated": 1679568323678
+        }
+      }
+    },
+    "代办=>- [ ] ": {
+      "代办=>- [ ] ": {
+        "customDictionary": {
+          "count": 2,
+          "lastUpdated": 1679571114629
+        }
+      }
+    },
+    "代办==>- [ ] ": {
+      "代办==>- [ ] ": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679571211342
+        }
+      }
+    },
+    "待做=>- [ ] ": {
+      "待做=>- [ ] ": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679571357934
+        }
+      }
+    },
+    "待做": {
+      "待做": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679571456555
+        }
+      }
+    },
+    "todo": {
+      "todo": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679571600854
+        }
+      }
+    },
+    "shu": {
+      "shu": {
+        "customDictionary": {
+          "count": 1,
+          "lastUpdated": 1679571701301
         }
       }
     }

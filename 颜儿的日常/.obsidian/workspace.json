@@ -4,63 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "4c999e7906988cad",
+        "id": "2004bcf82820143c",
         "type": "tabs",
         "children": [
           {
-            "id": "4697750dab78a241",
+            "id": "490062a11b7578d0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "27c99ab0ba3e8741",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "摘录/作文纸条/信息茧房下的青年选择.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "fba0f5dbbe6ad345",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "e23aaab2f41f0cc0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "摘录/游戏/恋与制作人/恋与制作人.md",
+                "file": "dictionary.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -93,7 +53,7 @@
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
-                "extraContext": false,
+                "extraContext": true,
                 "sortOrder": "alphabetical"
               }
             }
@@ -119,7 +79,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 34.76856835306781,
+        "dimension": 33.472367049009385,
         "children": [
           {
             "id": "5f1e61420090beb8",
@@ -127,7 +87,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
+                "file": "dictionary.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,7 +104,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
+                "file": "dictionary.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -184,12 +144,45 @@
               "type": "advanced-tables-toolbar",
               "state": {}
             }
-          },
+          }
+        ],
+        "currentTab": 5
+      },
+      {
+        "id": "007ecc252bcc06a1",
+        "type": "tabs",
+        "dimension": 31.595411887382692,
+        "children": [
           {
-            "id": "1a039d47d078a787",
+            "id": "63813c46d9773e30",
             "type": "leaf",
             "state": {
-              "type": "git-view",
+              "type": "outline",
+              "state": {
+                "file": "dictionary.md"
+              }
+            }
+          },
+          {
+            "id": "5a8bcd161c17cf47",
+            "type": "leaf",
+            "state": {
+              "type": "QUICKSHARE_SIDE_VIEW",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "c74279d1ae9e8161",
+        "type": "tabs",
+        "dimension": 34.932221063607926,
+        "children": [
+          {
+            "id": "5ad01b446d0a664b",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
               "state": {}
             }
           },
@@ -206,47 +199,6 @@
             "type": "leaf",
             "state": {
               "type": "reminder-list",
-              "state": {}
-            }
-          },
-          {
-            "id": "5a8bcd161c17cf47",
-            "type": "leaf",
-            "state": {
-              "type": "QUICKSHARE_SIDE_VIEW",
-              "state": {}
-            }
-          }
-        ],
-        "currentTab": 4
-      },
-      {
-        "id": "007ecc252bcc06a1",
-        "type": "tabs",
-        "dimension": 30.2475780409042,
-        "children": [
-          {
-            "id": "63813c46d9773e30",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "id": "c74279d1ae9e8161",
-        "type": "tabs",
-        "dimension": 34.983853606027985,
-        "children": [
-          {
-            "id": "5ad01b446d0a664b",
-            "type": "leaf",
-            "state": {
-              "type": "todo",
               "state": {}
             }
           }
@@ -278,45 +230,45 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "fba0f5dbbe6ad345",
+  "active": "490062a11b7578d0",
   "lastOpenFiles": [
-    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
-    "摘录/作文纸条/信息茧房下的青年选择.md",
-    "摘录/作文纸条/如果生命的春天重到.md",
-    "摘录/作文纸条",
-    "Read It Later/万事屋/关于恋与的一些知识.md",
-    "学习/英国牛津大学新校长就职演讲（1）.md",
-    "快速记录/时间对称性破缺配音演员.md",
     "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
-    "Read It Later/万事屋/chatgpt 文本聊天秒变语音聊天工具，浏览器插件Voice Control for ChatGPT - 余汉波.md",
-    "Read It Later/百宝箱/image.png",
-    "摘录/游戏/恋与制作人/恋与制作人.md",
-    "读书笔记/那不勒斯四部曲/那不勒斯四部曲-埃莱娜·费兰特.md",
-    "读书笔记/那不勒斯四部曲",
-    "读书笔记/The Picture of Dorian Gray/The Picture of Dorian Gray-Oscar Wilde.md",
-    "读书笔记/The Picture of Dorian Gray",
-    "读书笔记/道林·格雷的画像/道林·格雷的画像-王尔德.md",
-    "读书笔记/道林·格雷的画像",
-    "读书笔记/神魂至尊/神魂至尊-八异.md",
-    "读书笔记/神魂至尊",
+    "快速记录/测试专用/1111.md",
+    "dictionary.md",
+    "快速记录/观影/一念永恒.md",
+    "快速记录/观影/民调局异闻录.md",
+    "快速记录/其他.md",
+    "快速记录/其他",
+    "快速记录/游戏",
+    "快速记录/观影",
+    "快速记录/书籍",
+    "摘录/作文纸条/文章/作文｜信息茧房下的青年选择.md",
+    "Read It Later/百宝箱/双向链接/作文.md",
+    "Read It Later/百宝箱/双向链接/练笔.md",
+    "摘录/作文纸条/短句素材/句子素材 ｜名著中那些经典又惊艳的哲思金句.md",
+    "Read It Later/百宝箱/双向链接/短句素材.md",
+    "Read It Later/百宝箱/Read it later",
+    "Read It Later/百宝箱/双向链接/范文.md",
+    "摘录/作文纸条/短句素材/短句素材｜如果生命的春天重到.md",
+    "摘录/作文纸条/文章",
+    "摘录/作文纸条/短句素材",
+    "Read It Later/百宝箱/双向链接/句子素材.md",
+    "摘录/作文纸条/句子素材",
+    "摘录/作文纸条/句子素材/句子素材｜盘点春日里的绝美风景.md",
+    "Read It Later/百宝箱/Read it later/ReadItLater.md",
     "读书笔记/天才向左，疯子向右（上）：躁郁症与伟大的艺术巨匠/天才向左，疯子向右（上）：躁郁症与伟大的艺术巨匠-凯·雷德菲尔德·杰米森.md",
-    "读书笔记/天才向左，疯子向右（上）：躁郁症与伟大的艺术巨匠",
-    "读书笔记/慈悲与玫瑰/慈悲与玫瑰-熊培云.md",
-    "读书笔记/慈悲与玫瑰",
-    "读书笔记/鳗鱼的旅行/鳗鱼的旅行-帕特里克·斯文松.md",
-    "读书笔记/鳗鱼的旅行",
-    "读书笔记/天才向左，疯子向右（下）：躁郁症与影响世界的人/天才向左，疯子向右（下）：躁郁症与影响世界的人-凯·雷德菲尔德·杰米森.md",
-    "读书笔记/天才向左，疯子向右（下）：躁郁症与影响世界的人",
-    "读书笔记/我还有一片风景要完成/我还有一片风景要完成-张晓风.md",
-    "读书笔记/我还有一片风景要完成",
-    "读书笔记/可可英语晨读/可可英语晨读-公众号.md",
-    "读书笔记/死魂灵/死魂灵-果戈理.md",
-    "读书笔记/黑客与画家（10万册纪念版）/黑客与画家（10万册纪念版）-保罗·格雷厄姆.md",
-    "测试专用/1.md",
-    "Day Planners/Day Planner-20230322.md",
-    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人.md",
     "Read It Later/万事屋/GitHub token.md",
     "Read It Later/万事屋/cloudflare.md",
+    "Read It Later/万事屋/评分.md",
+    "Read It Later/百宝箱/Read it later/Article.md",
+    "Read It Later/百宝箱/双向链接",
+    "Read It Later/万事屋/关于恋与的一些知识.md",
+    "快速记录/测试专用/测试 1.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
+    "摘录/作文纸条",
+    "学习/英国牛津大学新校长就职演讲（1）.md",
+    "Read It Later/百宝箱/image.png",
     "测试专用/未命名.canvas",
     "resource/picgo.png",
     "resource/乡村巴士带走了王孩儿和神仙.png",

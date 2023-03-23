@@ -29,7 +29,6 @@
   "obsidian-collapse-all-plugin",
   "obsidian-minimal-settings",
   "theme-picker",
-  "obsidian-git",
   "obsidian-advanced-slides",
   "table-editor-obsidian",
   "obsidian-annotator",
@@ -54,9 +53,9 @@
   "obsidian-tidy-footnotes",
   "obsius-publish",
   "obsidian-quickshare",
-  "media-extended",
-  "mx-bili-plugin",
   "obsidian42-brat",
   "obsidian-bartender",
-  "obsidian-read-it-later"
+  "obsidian-read-it-later",
+  "mx-bili-plugin",
+  "media-extended"
 ]
