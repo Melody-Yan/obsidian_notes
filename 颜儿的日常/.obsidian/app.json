@@ -22,5 +22,7 @@
   "showUnsupportedFiles": false,
   "alwaysUpdateLinks": true,
   "vimMode": false,
-  "livePreview": true
+  "livePreview": true,
+  "smartIndentList": true,
+  "readableLineLength": true
 }

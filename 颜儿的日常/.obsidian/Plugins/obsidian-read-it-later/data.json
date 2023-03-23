@@ -1,6 +1,6 @@
 {
   "inboxDir": "Read It Later/万事屋",
-  "assetsDir": "Read It Later/百宝箱",
+  "assetsDir": "Read It Later/百宝箱/resource",
   "openNewNote": false,
   "youtubeNoteTitle": "Youtube - %title%",
   "youtubeNote": "[[ReadItLater]] [[Youtube]]\n\n# [%videoTitle%](%videoURL%)\n\n%videoPlayer%",

@@ -34,7 +34,26 @@
   "rightRibbon": [],
   "titleBar": [],
   "statusBar": [],
-  "pageHeader": [],
+  "pageHeader": [
+    {
+      "id": "obsidian-hover-editor:open-new-popover",
+      "icon": "box-select",
+      "name": "Hover Editor: Open new Hover Editor",
+      "mode": "any"
+    },
+    {
+      "id": "media-extended:open-media-link",
+      "icon": "banknote",
+      "name": "Media Extended: Open Media from Link",
+      "mode": "any"
+    },
+    {
+      "id": "workspace:split-vertical",
+      "icon": "lucide-separator-vertical",
+      "name": "左右分屏",
+      "mode": "any"
+    }
+  ],
   "macros": [],
   "explorer": [],
   "hide": {
