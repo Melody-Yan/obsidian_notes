@@ -6,7 +6,7 @@
   "matchingWithoutEmoji": true,
   "treatAccentDiacriticsAsAlphabeticCharacters": true,
   "maxNumberOfSuggestions": 35,
-  "maxNumberOfWordsAsPhrase": 8,
+  "maxNumberOfWordsAsPhrase": 6,
   "minNumberOfCharactersTriggered": 2,
   "minNumberOfWordsTriggeredPhrase": 1,
   "complementAutomatically": true,

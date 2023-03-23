@@ -21,19 +21,46 @@
             }
           },
           {
+            "id": "27c99ab0ba3e8741",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "摘录/作文纸条/信息茧房下的青年选择.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "fba0f5dbbe6ad345",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
             "id": "e23aaab2f41f0cc0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "游戏/恋与制作人/恋与制作人.md",
+                "file": "摘录/游戏/恋与制作人/恋与制作人.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -100,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -117,7 +144,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -191,7 +218,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       },
       {
         "id": "007ecc252bcc06a1",
@@ -204,7 +231,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md"
+                "file": "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md"
               }
             }
           }
@@ -251,9 +278,19 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "4697750dab78a241",
+  "active": "fba0f5dbbe6ad345",
   "lastOpenFiles": [
-    "游戏/恋与制作人/恋与制作人.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
+    "摘录/作文纸条/信息茧房下的青年选择.md",
+    "摘录/作文纸条/如果生命的春天重到.md",
+    "摘录/作文纸条",
+    "Read It Later/万事屋/关于恋与的一些知识.md",
+    "学习/英国牛津大学新校长就职演讲（1）.md",
+    "快速记录/时间对称性破缺配音演员.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+    "Read It Later/万事屋/chatgpt 文本聊天秒变语音聊天工具，浏览器插件Voice Control for ChatGPT - 余汉波.md",
+    "Read It Later/百宝箱/image.png",
+    "摘录/游戏/恋与制作人/恋与制作人.md",
     "读书笔记/那不勒斯四部曲/那不勒斯四部曲-埃莱娜·费兰特.md",
     "读书笔记/那不勒斯四部曲",
     "读书笔记/The Picture of Dorian Gray/The Picture of Dorian Gray-Oscar Wilde.md",
@@ -273,23 +310,14 @@
     "读书笔记/我还有一片风景要完成/我还有一片风景要完成-张晓风.md",
     "读书笔记/我还有一片风景要完成",
     "读书笔记/可可英语晨读/可可英语晨读-公众号.md",
-    "读书笔记/可可英语晨读",
     "读书笔记/死魂灵/死魂灵-果戈理.md",
     "读书笔记/黑客与画家（10万册纪念版）/黑客与画家（10万册纪念版）-保罗·格雷厄姆.md",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
     "测试专用/1.md",
     "Day Planners/Day Planner-20230322.md",
     "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人.md",
     "Read It Later/万事屋/GitHub token.md",
     "Read It Later/万事屋/cloudflare.md",
-    "快速记录/QWE密码.md",
-    "测试专用/1111.md",
     "测试专用/未命名.canvas",
-    "Read It Later/万事屋/关于恋与的一些知识.md",
-    "Day Planners/Day Planner-20230321.md",
-    "Day Planners/Day Planner-20230228.md",
-    "Day Planners/Day Planner-20230304.md",
-    "Read It Later/Article.md",
     "resource/picgo.png",
     "resource/乡村巴士带走了王孩儿和神仙.png",
     "resource/许墨Aris.png",
@@ -298,7 +326,6 @@
     "resource/Pasted image 20230320170427.png",
     "resource/Pasted image 20230320170613.png",
     "resource/向着明亮那方.png",
-    "Read It Later/百宝箱/image.png",
     "resource/Pasted image 20230224155352.png",
     "未命名.canvas"
   ]
