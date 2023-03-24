@@ -52,6 +52,12 @@
       "icon": "lucide-separator-vertical",
       "name": "左右分屏",
       "mode": "any"
+    },
+    {
+      "id": "markdown-table-editor:markdown-table-editor-open-in-popover",
+      "icon": "align-end-horizontal",
+      "name": "Markdown Table Editor: Open Editor (with the hover editor pluging)",
+      "mode": "any"
     }
   ],
   "macros": [],
