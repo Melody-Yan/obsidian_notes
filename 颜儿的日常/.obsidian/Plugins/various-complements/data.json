@@ -63,6 +63,14 @@
   "disableOnMobile": false,
   "showLogAboutPerformanceInConsole": false,
   "selectionHistoryTree": {
+    "12": {
+      "12": {
+        "internalLink": {
+          "count": 1,
+          "lastUpdated": 1679677058369
+        }
+      }
+    },
     "20230322": {
       "20230322": {
         "currentVault": {
@@ -452,6 +460,14 @@
         "currentVault": {
           "count": 1,
           "lastUpdated": 1679591548914
+        }
+      }
+    },
+    "对待": {
+      "对待": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1679676748344
         }
       }
     }

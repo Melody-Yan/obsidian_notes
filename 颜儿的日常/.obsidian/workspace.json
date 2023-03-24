@@ -13,14 +13,28 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "读书笔记/只管去做/只管去做-邹小强.md",
+                "file": "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "e48f59fe1d9a8f0a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "快速记录/测试专用/12.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -49,7 +63,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "恋与制作人",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -98,7 +112,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "读书笔记/只管去做/只管去做-邹小强.md",
+                "file": "快速记录/测试专用/12.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +129,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "读书笔记/只管去做/只管去做-邹小强.md",
+                "file": "快速记录/测试专用/12.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +165,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "读书笔记/只管去做/只管去做-邹小强.md"
+                "file": "快速记录/测试专用/12.md"
               }
             }
           },
@@ -231,8 +245,25 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "31262ced7e7eca53",
+  "active": "e48f59fe1d9a8f0a",
   "lastOpenFiles": [
+    "快速记录/测试专用/1.md",
+    "摘录/游戏/🎬恋与制作人/区别对待.md",
+    "摘录/游戏/🎬恋与制作人/做自己.md",
+    "摘录/游戏/🎬恋与制作人/没有抵达的明天, 就是未来.md",
+    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
+    "Read It Later/百宝箱/双向链接/恋与制作人.md",
+    "Read It Later/百宝箱/双向链接/光与夜之恋.md",
+    "Read It Later/百宝箱/双向链接/花亦山心之月.md",
+    "Read It Later/百宝箱/双向链接/Beautyful Words.md",
+    "Read It Later/百宝箱/双向链接/MEMO.md",
+    "Read It Later/百宝箱/双向链接/未定事件簿.md",
+    "Read It Later/百宝箱/双向链接/练笔.md",
+    "Read It Later/百宝箱/双向链接/观影.md",
+    "Read It Later/百宝箱/双向链接/古言.md",
+    "Read It Later/百宝箱/双向链接/范文.md",
+    "Read It Later/百宝箱/双向链接/短句素材.md",
+    "读书笔记/只管去做/只管去做-邹小强.md",
     "读书笔记/夜莺与玫瑰/夜莺与玫瑰.md",
     "读书笔记/夏天、烟火和我的尸体/夏天、烟火和我的尸体-乙一.md",
     "读书笔记/我还有一片风景要完成/我还有一片风景要完成-张晓风.md",
@@ -242,29 +273,12 @@
     "读书笔记/死亡万花筒/死亡万花筒-西子绪.md",
     "读书笔记/死魂灵/死魂灵-果戈理.md",
     "读书笔记/鼠疫/鼠疫-阿尔贝·加缪.md",
-    "读书笔记/生死场：萧红小说精选集/生死场：萧红小说精选集.md",
-    "读书笔记/神魂至尊/神魂至尊-八异.md",
-    "读书笔记/杀死一只知更鸟（同名电影原著）/杀死一只知更鸟（同名电影原著）-哈珀·李.md",
-    "读书笔记/人间草木/人间草木-汪曾祺.md",
-    "读书笔记/平面国/平面国-埃德温·艾勃特.md",
-    "读书笔记/那不勒斯四部曲/那不勒斯四部曲-埃莱娜·费兰特.md",
-    "读书笔记/鳗鱼的旅行/鳗鱼的旅行-帕特里克·斯文松.md",
-    "读书笔记/可可英语晨读/可可英语晨读-公众号.md",
-    "读书笔记/橘子不是唯一的水果/橘子不是唯一的水果.md",
-    "读书笔记/红楼梦/红楼梦-曹雪芹著 无名氏续 程伟元 高鹗整理.md",
-    "读书笔记/黑客与画家（10万册纪念版）/黑客与画家（10万册纪念版）-保罗·格雷厄姆.md",
-    "读书笔记/放学后/放学后-东野圭吾.md",
-    "读书笔记/端午的鸭蛋：汪曾祺专集/端午的鸭蛋：汪曾祺专集-汪曾祺.md",
-    "读书笔记/读者·原创版（2021年第1期）/读者·原创版（2021年第1期）-读者·原创版.md",
-    "读书笔记/The Picture of Dorian Gray/The Picture of Dorian Gray-Oscar Wilde.md",
-    "读书笔记/道林·格雷的画像/道林·格雷的画像-王尔德.md",
-    "读书笔记/慈悲与玫瑰/慈悲与玫瑰-熊培云.md",
     "MEMO＆DAILY/MEMO",
     "MEMO＆DAILY/Daily",
     "MEMO＆DAILY/Daily/2023",
     "MEMO＆DAILY/Daily/2022",
     "观影/凡人修仙传",
-    "摘录/游戏/未定事件簿",
+    "摘录/游戏/⚖️未定事件簿",
     "My manuscript/随笔/2023",
     "My manuscript/随笔/2022",
     "MEMO＆DAILY/给李泽言/2023",
