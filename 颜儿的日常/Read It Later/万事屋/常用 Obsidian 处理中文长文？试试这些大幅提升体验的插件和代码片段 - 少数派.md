@@ -1,5 +1,5 @@
 [[ReadItLater]] [[Article]] #todo 
-- [x] 看这篇文章并整理插件
+- [x] ~~看这篇文章并整理插件~~
 
 # [常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派](https://sspai.com/post/69628)
 

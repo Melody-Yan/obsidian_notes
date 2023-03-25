@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案.md",
+                "file": "Day Planners/Day Planner-20230325.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -81,8 +81,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 254.5,
-    "collapsed": true
+    "width": 254.5
   },
   "right": {
     "id": "628262475fc8c9f5",
@@ -99,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案.md",
+                "file": "Day Planners/Day Planner-20230325.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案.md",
+                "file": "Day Planners/Day Planner-20230325.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -152,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案.md"
+                "file": "Day Planners/Day Planner-20230325.md"
               }
             }
           },
@@ -207,8 +206,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5,
-    "collapsed": true
+    "width": 308.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -233,8 +231,20 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "cd7363f7c4c3b0a9",
+  "active": "5ad01b446d0a664b",
   "lastOpenFiles": [
+    "dictionary.md",
+    "Day Planners/Day Planner-20230325.md",
+    "Day Planners/Day Planner-20230220.md",
+    "Day Planners/Day Planner-20230221.md",
+    "Day Planners/Day Planner-20230222.md",
+    "Day Planners/Day Planner-20230228.md",
+    "Day Planners/Day Planner-20230304.md",
+    "Day Planners/Day Planner-20230315.md",
+    "快速记录/其他/QWE密码.md",
+    "Day Planners/Day Planner-20230324.md",
+    "Read It Later/万事屋/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
     "快速记录/测试专用/测试.md",
     "Read It Later/百宝箱/resource/Recording 20230325171355.webm",
     "Read It Later/百宝箱/resource/Recording 20230325171323.webm",
@@ -253,26 +263,15 @@
     "Read It Later/百宝箱/resource/2c6586446de6f830c766bd6d12a01c95.png",
     "Read It Later/百宝箱/resource/1f0c02f26c58f217122d595e78ae3c9a.png",
     "Read It Later/百宝箱/resource/0d799c41c237ee2df28285e95b2fcd8b.png",
-    "Day Planners/Day Planner-20230325.md",
     "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.md",
     "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.svg",
     "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.md",
     "Excalidraw/Scripts/Downloaded/Text Arch.svg",
-    "Excalidraw/Scripts/Downloaded/Text Arch.md",
     "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.svg",
-    "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.md",
     "Excalidraw/Scripts/Downloaded/Select Elements of Type.svg",
-    "Excalidraw/Scripts/Downloaded/Select Elements of Type.md",
     "Excalidraw/Scripts/Downloaded/Repeat Elements.svg",
-    "Excalidraw/Scripts/Downloaded/Repeat Elements.md",
     "Excalidraw/Scripts/Downloaded/Palette loader.svg",
-    "Excalidraw/Scripts/Downloaded/Palette loader.md",
     "Excalidraw/Scripts/Downloaded/Organic Line.svg",
-    "Excalidraw/Scripts/Downloaded/Organic Line.md",
-    "Excalidraw/Scripts/Downloaded/Normalize Selected Arrows.md",
-    "Excalidraw/Scripts/Downloaded/Modify background color opacity.md",
-    "Excalidraw/Scripts/Downloaded/Mindmap format.md",
-    "Excalidraw/Scripts/Downloaded/Mindmap connector.md",
     "Excalidraw/Scripts/Downloaded",
     "Excalidraw/Scripts",
     "Excalidraw",

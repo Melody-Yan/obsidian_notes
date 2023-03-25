@@ -1,2 +1,2 @@
 ## Day Planner
-- [x] steam 壁纸 #todo
+- [x] ~~steam 壁纸~~ #todo
