@@ -7,8 +7,8 @@
   "treatAccentDiacriticsAsAlphabeticCharacters": true,
   "maxNumberOfSuggestions": 35,
   "maxNumberOfWordsAsPhrase": 6,
-  "minNumberOfCharactersTriggered": 2,
-  "minNumberOfWordsTriggeredPhrase": 2,
+  "minNumberOfCharactersTriggered": 1,
+  "minNumberOfWordsTriggeredPhrase": 1,
   "complementAutomatically": true,
   "delayMilliSeconds": 0,
   "disableSuggestionsDuringImeOn": false,
@@ -426,8 +426,8 @@
     "shu": {
       "shu": {
         "customDictionary": {
-          "count": 1,
-          "lastUpdated": 1679571701301
+          "count": 2,
+          "lastUpdated": 1679756767768
         }
       }
     },
@@ -492,6 +492,14 @@
         "currentVault": {
           "count": 1,
           "lastUpdated": 1679723888483
+        }
+      }
+    },
+    "你": {
+      "你": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1679758286087
         }
       }
     }

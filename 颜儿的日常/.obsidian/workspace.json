@@ -4,23 +4,37 @@
     "type": "split",
     "children": [
       {
-        "id": "8310084daab13b8c",
+        "id": "fac975261f7a968e",
         "type": "tabs",
         "children": [
           {
-            "id": "cd7363f7c4c3b0a9",
+            "id": "e1cc6f6794820fcf",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Day Planners/Day Planner-20230325.md",
+                "file": "密码｜账号/暗网账号.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ba3615f94e28029d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "MEMO＆DAILY/MEMO/Personal/蝴蝶.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -68,7 +82,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#文章",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -98,7 +112,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Day Planners/Day Planner-20230325.md",
+                "file": "MEMO＆DAILY/MEMO/Personal/蝴蝶.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +129,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Day Planners/Day Planner-20230325.md",
+                "file": "MEMO＆DAILY/MEMO/Personal/蝴蝶.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +165,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Day Planners/Day Planner-20230325.md"
+                "file": "MEMO＆DAILY/MEMO/Personal/蝴蝶.md"
               }
             }
           },
@@ -231,41 +245,45 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "5ad01b446d0a664b",
+  "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
-    "dictionary.md",
-    "Day Planners/Day Planner-20230325.md",
-    "Day Planners/Day Planner-20230220.md",
-    "Day Planners/Day Planner-20230221.md",
-    "Day Planners/Day Planner-20230222.md",
-    "Day Planners/Day Planner-20230228.md",
-    "Day Planners/Day Planner-20230304.md",
-    "Day Planners/Day Planner-20230315.md",
-    "快速记录/其他/QWE密码.md",
-    "Day Planners/Day Planner-20230324.md",
-    "Read It Later/万事屋/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
-    "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
-    "快速记录/测试专用/测试.md",
+    "MEMO＆DAILY/MEMO/Personal",
+    "MEMO＆DAILY/Daily/2022/20221227 0718.md",
+    "MEMO＆DAILY/Daily/2022/20221227  0542.md",
+    "MEMO＆DAILY/给李泽言/2022/20221224 0204.md",
+    "MEMO＆DAILY/给李泽言/2022/20221224 0135.md",
+    "MEMO＆DAILY/给李泽言/2022/20221222.md",
+    "MEMO＆DAILY/给李泽言/2022/20221218.md",
+    "MEMO＆DAILY/Daily/2023/妇女节.md",
+    "MEMO＆DAILY/给李泽言/2023/20230101.md",
+    "MEMO＆DAILY/Daily/2023/20230317.md",
+    "MEMO＆DAILY/Daily/2023/血氧73.md",
+    "MEMO＆DAILY/Daily/2023/又撑又饿.md",
+    "MEMO＆DAILY/给李泽言/2023/2023年3月25日23点29分.md",
+    "My manuscript/灵感/月亮｜孤独.md",
+    "My manuscript/随笔/2023/后半夜的月亮.md",
+    "My manuscript/随笔/2023/可他小心翼翼又理直气壮.md",
+    "My manuscript/随笔/2023/你又让我怎么回答.md",
+    "My manuscript/随笔/2023/我当然悲哀.md",
+    "My manuscript/随笔/2023/黑暗渐渐织上天空.md",
+    "摘录/游戏/🎬恋与制作人/红皇后假说.md",
+    "摘录/游戏/🎬恋与制作人/春天快要过去了.md",
+    "摘录/游戏/🎬恋与制作人/没有抵达的明天, 就是未来.md",
+    "MEMO＆DAILY/MEMO/Personal/蝴蝶.md",
+    "My manuscript/随笔/2023/城市的夜晚星星很少.md",
+    "MEMO＆DAILY/Daily/2022/20221017.md",
+    "My manuscript/灵感/父亲｜循环｜神婆｜BE.md",
+    "My manuscript/灵感",
+    "摘录/书信｜古言",
+    "摘录/其他摘录",
+    "摘录/文章",
     "Read It Later/百宝箱/resource/Recording 20230325171355.webm",
     "Read It Later/百宝箱/resource/Recording 20230325171323.webm",
-    "未命名看板.md",
-    "快速记录/测试专用/12.md",
-    "Excalidraw/Drawing 2023-03-25 17.06.52.excalidraw.md",
-    "快速记录/测试专用/1111.md",
-    "Excalidraw/Drawing 2023-03-25 17.05.43.excalidraw.md",
-    "Excalidraw/Drawing 2023-03-25 15.57.59.excalidraw.md",
-    "Excalidraw/Drawing 2023-03-25 17.06.08.excalidraw.md",
-    "Excalidraw/Drawing 2023-03-25 17.04.16.excalidraw.md",
-    "快速记录/测试专用/1.md",
-    "Excalidraw/Drawing 2023-03-25 17.03.04.excalidraw.md",
     "快速记录/测试专用/测试canvas.canvas",
-    "Excalidraw/Scripts/Downloaded/Add Link to New Page and Open.md",
     "Read It Later/百宝箱/resource/2c6586446de6f830c766bd6d12a01c95.png",
     "Read It Later/百宝箱/resource/1f0c02f26c58f217122d595e78ae3c9a.png",
     "Read It Later/百宝箱/resource/0d799c41c237ee2df28285e95b2fcd8b.png",
-    "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.md",
     "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.svg",
-    "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.md",
     "Excalidraw/Scripts/Downloaded/Text Arch.svg",
     "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.svg",
     "Excalidraw/Scripts/Downloaded/Select Elements of Type.svg",
@@ -276,10 +294,6 @@
     "Excalidraw/Scripts",
     "Excalidraw",
     "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
-    "Read It Later/百宝箱/resource/_【Week11-4】精读讲义 20230316 AI：Patent law ★★★☆☆.pdf",
-    "Read It Later/百宝箱/resource/_【Week7-4】精读讲义 20230216 chatgpt ★★★★☆.pdf",
-    "学习/外刊/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
-    "Read It Later/百宝箱/resource/_【Week11-4】练习答案&答疑集锦 20230316 AI：Patent law.pdf",
     "测试专用/未命名.canvas",
     "未命名.canvas"
   ]
