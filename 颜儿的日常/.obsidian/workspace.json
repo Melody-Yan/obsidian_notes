@@ -4,20 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "65ee45b3464f362e",
+        "id": "6fe5f8e3a7c04707",
         "type": "tabs",
         "children": [
           {
-            "id": "86c1d75c06550f23",
+            "id": "f091f66afd66a8df",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -98,7 +93,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +109,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,9 +143,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md"
-              }
+              "state": {}
             }
           },
           {
@@ -233,9 +224,20 @@
   },
   "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
+    "My manuscript/manuscript目录.md",
+    "My manuscript/长篇+成稿/未命名.canvas",
+    "My manuscript/随笔/2023/我当然悲哀.md",
+    "My manuscript/长篇+成稿/男人和他的星星.md",
+    "MEMO＆DAILY/MEMO/未命名.md",
+    "Day Planners/Day Planner-20230326.md",
+    "_notion-like-tables/table-id-FTiVlA.md",
+    "_notion-like-tables",
+    "My manuscript/灵感/舅舅｜住房｜醉酒｜呵斥.md",
+    "My manuscript/灵感/月亮｜孤独.md",
+    "My manuscript/灵感/父亲｜循环｜神婆｜BE.md",
+    "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
     "Read It Later/百宝箱/双向链接/MEMO.md",
     "My manuscript/长篇+成稿/爱和白斑.md",
-    "My manuscript/长篇+成稿/男人和他的星星.md",
     "My manuscript/长篇+成稿/一个人的团圆.md",
     "My manuscript/长篇+成稿/一座围城的边界外是另一座围城.md",
     "MEMO＆DAILY/Daily/2023/一个人的团圆.md",
@@ -249,16 +251,6 @@
     "摘录/游戏/⚖️未定事件簿/再天才的孩子.md",
     "摘录/游戏/🎬恋与制作人/做自己.md",
     "观影/凡人修仙传/用这恶人尸体烧成的火，却也如此美.md",
-    "摘录/游戏/🎬恋与制作人/区别对待.md",
-    "摘录/游戏/🎬恋与制作人/没有抵达的明天, 就是未来.md",
-    "摘录/其他摘录/没有不长草的花园..md",
-    "摘录/游戏/🌸花亦山心之月/凌宴如.md",
-    "摘录/游戏/🌙光与夜之恋/即使头脑清醒也很难保全自己.md",
-    "摘录/其他摘录/花会凋零.md",
-    "观影/镇魂街★★★★★★★★★☆/第一季★★★★★★★★★☆/各为其主,各执其责.md",
-    "摘录/游戏/🌙光与夜之恋/愤怒并非是没有价值的.md",
-    "摘录/作文纸条/短句素材/短句素材｜如果生命的春天重到.md",
-    "密码｜账号/暗网账号.md",
     "MEMO＆DAILY/MEMO/Personal",
     "My manuscript/灵感",
     "摘录/书信｜古言",
@@ -279,7 +271,6 @@
     "Excalidraw/Scripts/Downloaded/Organic Line.svg",
     "Excalidraw/Scripts/Downloaded",
     "Excalidraw/Scripts",
-    "Excalidraw",
     "测试专用/未命名.canvas",
     "未命名.canvas"
   ]
