@@ -64,6 +64,12 @@
       "icon": "lucide-git-fork",
       "name": "关系图谱: 打开局部关系图",
       "mode": "any"
+    },
+    {
+      "id": "graph:open-local",
+      "icon": "lucide-git-fork",
+      "name": "关系图谱: 打开局部关系图",
+      "mode": "any"
     }
   ],
   "macros": [],

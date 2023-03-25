@@ -8,7 +8,7 @@
   "maxNumberOfSuggestions": 35,
   "maxNumberOfWordsAsPhrase": 6,
   "minNumberOfCharactersTriggered": 2,
-  "minNumberOfWordsTriggeredPhrase": 1,
+  "minNumberOfWordsTriggeredPhrase": 2,
   "complementAutomatically": true,
   "delayMilliSeconds": 0,
   "disableSuggestionsDuringImeOn": false,
@@ -468,6 +468,30 @@
         "currentVault": {
           "count": 1,
           "lastUpdated": 1679676748344
+        }
+      }
+    },
+    "Todo": {
+      "Todo": {
+        "customDictionary": {
+          "count": 2,
+          "lastUpdated": 1679723768777
+        }
+      }
+    },
+    "脚本": {
+      "脚本": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1679723797143
+        }
+      }
+    },
+    "更新": {
+      "更新": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1679723888483
         }
       }
     }

@@ -8,12 +8,15 @@
         "type": "tabs",
         "children": [
           {
-            "id": "876c024274e1a05a",
+            "id": "eba54bb6ba5a5ee9",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf"
+                "file": "快速记录/测试专用/测试.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           }
@@ -41,21 +44,6 @@
             }
           },
           {
-            "id": "d21950b484b62e1e",
-            "type": "leaf",
-            "state": {
-              "type": "search",
-              "state": {
-                "query": "恋与制作人",
-                "matchingCase": false,
-                "explainSearch": false,
-                "collapseAll": false,
-                "extraContext": true,
-                "sortOrder": "alphabetical"
-              }
-            }
-          },
-          {
             "id": "3a51782d8e1e40df",
             "type": "leaf",
             "state": {
@@ -71,6 +59,21 @@
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "d21950b484b62e1e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": true,
+                "sortOrder": "alphabetical"
               }
             }
           }
@@ -95,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
+                "file": "快速记录/测试专用/测试.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -112,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
+                "file": "快速记录/测试专用/测试.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf"
+                "file": "快速记录/测试专用/测试.md"
               }
             }
           },
@@ -207,13 +210,13 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "graph:查看关系图谱": false,
       "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
       "command-palette:打开命令面板": false,
       "canvas:新建白板": false,
       "random-note:开始漫游笔记": false,
       "zk-prefixer:创建时间戳笔记": false,
       "switcher:打开快速切换": false,
-      "graph:查看关系图谱": false,
       "daily-notes:打开/创建今天的日记": false,
       "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "audio-recorder:开始/结束录音": false,
@@ -228,53 +231,54 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "876c024274e1a05a",
+  "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
-    "学习/外刊/_【Week7-4】精读讲义 20230216 chatgpt ★★★★☆.pdf.md",
-    "学习/外刊/_【Week7-4】练习答案 20230216  Chatgpt.md",
-    "学习/外刊/_【Week11-4】精读讲义 20230316 AI：Patent law ★★★☆☆.md",
-    "学习/外刊/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.md",
-    "Read It Later/百宝箱/resource/v2-5df30b596a4fcfa56c4ef2690ef266dc_b.jpg",
+    "快速记录/测试专用/测试canvas.canvas",
+    "Excalidraw/Drawing 2023-03-25 15.57.59.excalidraw.md",
+    "快速记录/测试专用/12.md",
+    "Excalidraw/Scripts/Downloaded/Add Link to New Page and Open.md",
+    "Read It Later/百宝箱/resource/2c6586446de6f830c766bd6d12a01c95.png",
+    "Read It Later/百宝箱/resource/1f0c02f26c58f217122d595e78ae3c9a.png",
     "Read It Later/百宝箱/resource/0d799c41c237ee2df28285e95b2fcd8b.png",
-    "学习/外刊/_【Week11-4】练习答案&答疑集锦 20230316 AI：Patent law.pdf.md",
+    "Day Planners/Day Planner-20230325.md",
+    "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.md",
+    "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.svg",
+    "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.md",
+    "Excalidraw/Scripts/Downloaded/Text Arch.svg",
+    "Excalidraw/Scripts/Downloaded/Text Arch.md",
+    "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.svg",
+    "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.md",
+    "Excalidraw/Scripts/Downloaded/Select Elements of Type.svg",
+    "Excalidraw/Scripts/Downloaded/Select Elements of Type.md",
+    "Excalidraw/Scripts/Downloaded/Repeat Elements.svg",
+    "Excalidraw/Scripts/Downloaded/Repeat Elements.md",
+    "Excalidraw/Scripts/Downloaded/Palette loader.svg",
+    "Excalidraw/Scripts/Downloaded/Palette loader.md",
+    "Excalidraw/Scripts/Downloaded/Organic Line.svg",
+    "Excalidraw/Scripts/Downloaded/Organic Line.md",
+    "Excalidraw/Scripts/Downloaded/Normalize Selected Arrows.md",
+    "Excalidraw/Scripts/Downloaded/Modify background color opacity.md",
+    "Excalidraw/Scripts/Downloaded/Mindmap format.md",
+    "Excalidraw/Scripts/Downloaded/Mindmap connector.md",
+    "Excalidraw/Scripts/Downloaded/Grid Selected Images.md",
+    "Excalidraw/Scripts/Downloaded/Fixed inner distance.md",
+    "Excalidraw/Scripts/Downloaded/Expand rectangles vertically.md",
+    "Excalidraw/Scripts/Downloaded/Expand rectangles vertically keep text centered.md",
+    "Excalidraw/Scripts/Downloaded/Expand rectangles horizontally.md",
+    "Excalidraw/Scripts/Downloaded/Expand rectangles horizontally keep text centered.md",
+    "Excalidraw/Scripts/Downloaded/Elbow connectors.md",
+    "Excalidraw/Scripts/Downloaded/Create new markdown file and embed into active drawing.md",
+    "Excalidraw/Scripts/Downloaded/Copy Selected Element Styles to Global.md",
+    "Excalidraw/Scripts/Downloaded",
+    "Excalidraw/Scripts",
+    "Excalidraw",
+    "Read It Later/百宝箱/resource/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
     "Read It Later/百宝箱/resource/_【Week11-4】精读讲义 20230316 AI：Patent law ★★★☆☆.pdf",
     "Read It Later/百宝箱/resource/_【Week7-4】精读讲义 20230216 chatgpt ★★★★☆.pdf",
-    "学习/外刊/_【Week7-2】练习答案 20230214 AI boom.md",
-    "摘录/游戏/🎬恋与制作人/没有抵达的明天, 就是未来.md",
     "学习/外刊/_【Week7-2】精读讲义 20230214 AI boom ★★★☆☆.pdf",
     "Read It Later/百宝箱/resource/_【Week11-4】练习答案&答疑集锦 20230316 AI：Patent law.pdf",
     "Read It Later/百宝箱/resource/_【Week7-4】练习答案 20230216  Chatgpt.pdf",
     "Read It Later/百宝箱/resource/_【Week7-2】练习答案 20230214 AI boom.pdf",
-    "学习/外刊/_【Week7-4】精读讲义 20230216 chatgpt ★★★★☆.pdf",
-    "学习/外刊/_【Week7-2】练习答案 20230214 AI boom.pdf",
-    "学习/外刊/_【Week7-4】练习答案 20230216  Chatgpt.pdf",
-    "学习/外刊/2.md",
-    "学习/外刊/_【Week11-4】练习答案&答疑集锦 20230316 AI：Patent law.pdf",
-    "读书笔记/天才向左，疯子向右（下）：躁郁症与影响世界的人/天才向左，疯子向右（下）：躁郁症与影响世界的人-凯·雷德菲尔德·杰米森.md",
-    "读书笔记/天才向左，疯子向右（上）：躁郁症与伟大的艺术巨匠/天才向左，疯子向右（上）：躁郁症与伟大的艺术巨匠-凯·雷德菲尔德·杰米森.md",
-    "快速记录/测试专用/12.md",
-    "快速记录/测试专用/1111.md",
-    "快速记录/测试专用/1.md",
-    "摘录/游戏/🎬恋与制作人/区别对待.md",
-    "摘录/游戏/🎬恋与制作人/做自己.md",
-    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
-    "Read It Later/百宝箱/双向链接/恋与制作人.md",
-    "Read It Later/百宝箱/双向链接/光与夜之恋.md",
-    "Read It Later/百宝箱/双向链接/花亦山心之月.md",
-    "Read It Later/百宝箱/双向链接/Beautyful Words.md",
-    "Read It Later/百宝箱/双向链接/MEMO.md",
-    "Read It Later/百宝箱/双向链接/未定事件簿.md",
-    "Read It Later/百宝箱/双向链接/练笔.md",
-    "Read It Later/百宝箱/双向链接/观影.md",
-    "Read It Later/百宝箱/双向链接/古言.md",
-    "Read It Later/百宝箱/resource/4192eca64721c3fbd9a2e191ad009c0b.gif",
-    "Read It Later/百宝箱/resource/c096ab1244a7d39369b9f7a8b58e9357.gif",
-    "Read It Later/百宝箱/resource/2c6586446de6f830c766bd6d12a01c95.png",
-    "Read It Later/百宝箱/resource/9472ac60b36158e5810087f24916cb07.gif",
-    "Read It Later/百宝箱/resource/dcba1e3cccf5ebbccea130c61e6a9f69.png",
-    "Read It Later/百宝箱/resource/630ee427aa98842d30de04035230730b.png",
-    "Read It Later/百宝箱/resource/dfd26cb3c044aba551c178dc2584759b.png",
-    "Read It Later/百宝箱/resource/c281dafa7be2c9e407b031ac19e4252b.png",
     "测试专用/未命名.canvas",
     "未命名.canvas"
   ]

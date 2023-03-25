@@ -62,5 +62,7 @@
   "obsidian-codemirror-options",
   "obsidian-copy-block-link",
   "markdown-table-editor",
-  "obsidian-drag-n-drop-plugin"
+  "obsidian-drag-n-drop-plugin",
+  "copy-url-in-preview",
+  "awesome-image"
 ]

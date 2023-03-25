@@ -1,0 +1,16 @@
+{
+	"nodes":[
+		{"type":"file","file":"快速记录/测试专用/测试.md","id":"dbcc9f9132bb1e36","x":-200,"y":-345,"width":160,"height":137},
+		{"type":"file","file":"快速记录/测试专用/测试 1.md","id":"5a563599d263ffad","x":0,"y":-345,"width":180,"height":137},
+		{"type":"text","text":"测试","id":"74ecb8451215c1c5","x":-412,"y":-59,"width":250,"height":60},
+		{"type":"text","text":"测试","id":"58e187838b6f2079","x":-50,"y":-480,"width":51,"height":50},
+		{"type":"file","file":"Excalidraw/Drawing 2023-03-25 15.57.59.excalidraw.md","id":"00e99ccb4a2d582a","x":-120,"y":-59,"width":269,"height":189}
+	],
+	"edges":[
+		{"id":"adb3fd10bbbe9fb2","fromNode":"dbcc9f9132bb1e36","fromSide":"top","toNode":"5a563599d263ffad","toSide":"top"},
+		{"id":"dae25801ac20487c","fromNode":"dbcc9f9132bb1e36","fromSide":"bottom","toNode":"00e99ccb4a2d582a","toSide":"bottom"},
+		{"id":"967c0ab621d49a4e","fromNode":"5a563599d263ffad","fromSide":"bottom","toNode":"74ecb8451215c1c5","toSide":"top"},
+		{"id":"37631df64139d83f","fromNode":"00e99ccb4a2d582a","fromSide":"right","toNode":"5a563599d263ffad","toSide":"right"},
+		{"id":"0018fdb15aaddfd4","fromNode":"dbcc9f9132bb1e36","fromSide":"left","toNode":"74ecb8451215c1c5","toSide":"top"}
+	]
+}
