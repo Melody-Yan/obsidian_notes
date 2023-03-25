@@ -1,5 +1,5 @@
 {
-  "confirmDeletion": true,
+  "confirmDeletion": false,
   "showAddCommand": true,
   "debug": false,
   "editorMenu": [
@@ -69,6 +69,18 @@
       "id": "graph:open-local",
       "icon": "lucide-git-fork",
       "name": "关系图谱: 打开局部关系图",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-excalidraw-plugin:excalidraw-autocreate-newtab",
+      "icon": "brush",
+      "name": "Excalidraw: 新建绘图 - 于新页签",
+      "mode": "any"
+    },
+    {
+      "id": "canvas:new-file",
+      "icon": "lucide-layout-dashboard",
+      "name": "白板: 新建白板",
       "mode": "any"
     }
   ],
