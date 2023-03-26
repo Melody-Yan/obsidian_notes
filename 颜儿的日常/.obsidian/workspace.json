@@ -8,25 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "c0ff83ad8d3fe2d7",
+            "id": "a855484f133a3607",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "ecd3d93207353a45",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Read It Later/万事屋/DeskPins  将窗口钉在面前.md",
+                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -81,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "cloudf",
+                "query": "不夜城",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -111,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
+                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -128,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
+                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -164,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md"
+                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md"
               }
             }
           },
@@ -244,13 +231,24 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "ef01d5ec1b589285",
+  "active": "a855484f133a3607",
   "lastOpenFiles": [
+    "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
+    "MEMO＆DAILY/Daily/2023/我的狗狗.md",
+    "My manuscript/灵感/我的狗狗.md",
+    "My manuscript/随笔/2022/无药可救所以祈求神明.md",
+    "摘录/书信｜古言/独一份浪漫.md",
+    "摘录/书信｜古言/书信表达思念.md",
+    "MEMO＆DAILY/Daily/2021/可它至死都没能见我一面.md",
+    "MEMO＆DAILY/Daily/2022/20221017.md",
+    "MEMO＆DAILY/Daily/2021.md",
+    "MEMO＆DAILY/Daily/2021",
+    "密码｜账号/暗网交易信息.md",
+    "MEMO＆DAILY/MEMO/其他/cloudflare.md",
     "快速记录/1.md",
     "Read It Later/万事屋/已归档/ai动漫人物真人化教程 - AI绘画每日一帖.md",
     "Read It Later/万事屋/【AI绘画实操教程】动漫角色如何真人化？ stable diffusion we - 哔哩哔哩.md",
     "Read It Later/万事屋/已归档/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
-    "MEMO＆DAILY/MEMO/其他/cloudflare.md",
     "dictionary.md",
     "MEMO＆DAILY/MEMO/其他/GitHub token.md",
     "摘录/文章/关于“FESTINA LENTE”（“慢慢地赶”）的文学描述整理.md",
@@ -272,27 +270,16 @@
     "Read It Later/百宝箱/resource/v2-9437c8523f46579f42508937ce5c35b5_b.jpg",
     "快速记录/绘画.md",
     "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
-    "_notion-like-tables/table-id-FTiVlA.md",
-    "快速记录/测试专用/李泽言.md",
-    "快速记录/NovelAI.md",
-    "https%3A/www.artbreeder.com.md",
     "https%3A",
     "Read It Later/百宝箱/resource/v2-6b17f90d8ae6548c068768b3500f1342_r.jpg",
-    "Read It Later/万事屋/从0开始部署本地AI绘画(6000字长文).md",
-    "My manuscript/manuscript目录.md",
     "My manuscript/长篇+成稿/未命名.canvas",
-    "My manuscript/随笔/2023/我当然悲哀.md",
-    "My manuscript/长篇+成稿/男人和他的星星.md",
-    "MEMO＆DAILY/MEMO/未命名.md",
     "_notion-like-tables",
-    "My manuscript/灵感/舅舅｜住房｜醉酒｜呵斥.md",
     "MEMO＆DAILY/MEMO/Personal",
     "My manuscript/灵感",
     "摘录/书信｜古言",
     "摘录/其他摘录",
     "摘录/文章",
     "Read It Later/百宝箱/resource/Recording 20230325171355.webm",
-    "Read It Later/百宝箱/resource/Recording 20230325171323.webm",
     "快速记录/测试专用/测试canvas.canvas",
     "测试专用/未命名.canvas",
     "未命名.canvas"
