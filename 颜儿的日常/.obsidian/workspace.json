@@ -8,11 +8,16 @@
         "type": "tabs",
         "children": [
           {
-            "id": "f091f66afd66a8df",
+            "id": "8b7a8ca5fc8fd5ae",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
             }
           }
         ]
@@ -93,6 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -109,6 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -143,7 +150,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md"
+              }
             }
           },
           {
@@ -222,8 +231,29 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "ef01d5ec1b589285",
+  "active": "8b7a8ca5fc8fd5ae",
   "lastOpenFiles": [
+    "快速记录/测试专用/李泽言.md",
+    "快速记录/绘画.md",
+    "Read It Later/万事屋/ai动漫人物真人化教程 - AI绘画每日一帖.md",
+    "Read It Later/万事屋/开启Obsidian的悬浮模式，大大提升Ob使用体验.md",
+    "Read It Later/万事屋/【AI绘画实操教程】动漫角色如何真人化？ stable diffusion we - 哔哩哔哩.md",
+    "Read It Later/万事屋/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
+    "快速记录/NovelAI.md",
+    "https%3A/www.artbreeder.com.md",
+    "https%3A",
+    "Read It Later/百宝箱/resource/v2-6b17f90d8ae6548c068768b3500f1342_r.jpg",
+    "Read It Later/百宝箱/resource/v2-b1575284824c37c5ed430467f784a40a_r.jpg",
+    "Read It Later/百宝箱/resource/v2-d22ca65432a91819d4402f45fe2e15e9_r.jpg",
+    "Read It Later/百宝箱/resource/v2-b044ef840a42ffd02d13ddc0828fe2d8_r.jpg",
+    "Read It Later/百宝箱/resource/v2-a5a990bb0faef6d4b897ed8b8fda10f7_r.jpg",
+    "Read It Later/百宝箱/resource/v2-e8e8bd381ac5947616b7bf0375c8a873_r.jpg",
+    "Read It Later/百宝箱/resource/v2-7b70f6d9598ff8fc1d2191dc2faf5457_r.jpg",
+    "Read It Later/百宝箱/resource/v2-3bcded7ac385b7dedccf9660810c8a1f_r.jpg",
+    "Read It Later/百宝箱/resource/v2-255d54504a3a39b412f88d0340aafc57_r.jpg",
+    "Read It Later/百宝箱/resource/v2-1bf4fa4654c34031f9e8570755fca8f0_r.jpg",
+    "Read It Later/万事屋/从0开始部署本地AI绘画(6000字长文).md",
+    "快速记录/1.md",
     "My manuscript/manuscript目录.md",
     "My manuscript/长篇+成稿/未命名.canvas",
     "My manuscript/随笔/2023/我当然悲哀.md",
@@ -242,15 +272,6 @@
     "My manuscript/长篇+成稿/一座围城的边界外是另一座围城.md",
     "MEMO＆DAILY/Daily/2023/一个人的团圆.md",
     "摘录/其他摘录/死后.md",
-    "Read It Later/百宝箱/双向链接/句子素材.md",
-    "观影/明星大侦探★★★★★★★★★☆/08第八季/01第一案 落日惊魂Ⅰ.md",
-    "Read It Later/百宝箱/双向链接/短句素材.md",
-    "观影/明星大侦探★★★★★★★★★☆/06第六季/12第十二案  芒城风云Ⅱ.md",
-    "观影/明星大侦探★★★★★★★★★☆/06第六季/11第十一案  芒城风云Ⅰ.md",
-    "观影/明星大侦探★★★★★★★★★☆/08第八季/06第六案  芒城风云再起.md",
-    "摘录/游戏/⚖️未定事件簿/再天才的孩子.md",
-    "摘录/游戏/🎬恋与制作人/做自己.md",
-    "观影/凡人修仙传/用这恶人尸体烧成的火，却也如此美.md",
     "MEMO＆DAILY/MEMO/Personal",
     "My manuscript/灵感",
     "摘录/书信｜古言",
@@ -259,18 +280,7 @@
     "Read It Later/百宝箱/resource/Recording 20230325171355.webm",
     "Read It Later/百宝箱/resource/Recording 20230325171323.webm",
     "快速记录/测试专用/测试canvas.canvas",
-    "Read It Later/百宝箱/resource/2c6586446de6f830c766bd6d12a01c95.png",
-    "Read It Later/百宝箱/resource/1f0c02f26c58f217122d595e78ae3c9a.png",
-    "Read It Later/百宝箱/resource/0d799c41c237ee2df28285e95b2fcd8b.png",
-    "Excalidraw/Scripts/Downloaded/Text to Sticky Notes.svg",
-    "Excalidraw/Scripts/Downloaded/Text Arch.svg",
-    "Excalidraw/Scripts/Downloaded/Set Stroke Width of Selected Elements.svg",
-    "Excalidraw/Scripts/Downloaded/Select Elements of Type.svg",
-    "Excalidraw/Scripts/Downloaded/Repeat Elements.svg",
-    "Excalidraw/Scripts/Downloaded/Palette loader.svg",
-    "Excalidraw/Scripts/Downloaded/Organic Line.svg",
     "Excalidraw/Scripts/Downloaded",
-    "Excalidraw/Scripts",
     "测试专用/未命名.canvas",
     "未命名.canvas"
   ]
