@@ -4,16 +4,29 @@
     "type": "split",
     "children": [
       {
-        "id": "6fe5f8e3a7c04707",
+        "id": "3bc2fda2ebbd8e93",
         "type": "tabs",
         "children": [
           {
-            "id": "8b7a8ca5fc8fd5ae",
+            "id": "c0ff83ad8d3fe2d7",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
+                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ecd3d93207353a45",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Read It Later/万事屋/DeskPins  将窗口钉在面前.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -68,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "cloudf",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -98,7 +111,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
+                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +128,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
+                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +164,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md"
+                "file": "MEMO＆DAILY/MEMO/其他/cloudflare.md"
               }
             }
           },
@@ -231,47 +244,48 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "8b7a8ca5fc8fd5ae",
+  "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
-    "快速记录/测试专用/李泽言.md",
-    "快速记录/绘画.md",
-    "Read It Later/万事屋/ai动漫人物真人化教程 - AI绘画每日一帖.md",
-    "Read It Later/万事屋/开启Obsidian的悬浮模式，大大提升Ob使用体验.md",
+    "快速记录/1.md",
+    "Read It Later/万事屋/已归档/ai动漫人物真人化教程 - AI绘画每日一帖.md",
     "Read It Later/万事屋/【AI绘画实操教程】动漫角色如何真人化？ stable diffusion we - 哔哩哔哩.md",
-    "Read It Later/万事屋/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
+    "Read It Later/万事屋/已归档/常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段 - 少数派.md",
+    "MEMO＆DAILY/MEMO/其他/cloudflare.md",
+    "dictionary.md",
+    "MEMO＆DAILY/MEMO/其他/GitHub token.md",
+    "摘录/文章/关于“FESTINA LENTE”（“慢慢地赶”）的文学描述整理.md",
+    "摘录/文章/飘舞在国王路口的红丝带.md",
+    "Read It Later/万事屋/已归档/关于恋与的一些知识.md",
+    "Read It Later/万事屋/已归档/开启Obsidian的悬浮模式，大大提升Ob使用体验.md",
+    "Read It Later/万事屋/评分.md",
+    "Day Planners/Day Planner-20230326.md",
+    "Read It Later/万事屋/已归档",
+    "Read It Later/万事屋/DeskPins  将窗口钉在面前.md",
+    "Read It Later/百宝箱/resource/v2-bce570eb4c6a63865dfce849ad5aa31d_b.jpg",
+    "Read It Later/百宝箱/resource/v2-029fefe1bf10ec9f4da0b36a542082c4_b.png",
+    "Read It Later/百宝箱/resource/v2-b338b8e4767d9d85319f07e420aa936a_b.jpg",
+    "Read It Later/百宝箱/resource/v2-583abe66bb243c463a0951befdef5425_b.png",
+    "Read It Later/百宝箱/resource/v2-488617d2b38a5e841204087578d56cb1_r.jpg",
+    "Read It Later/百宝箱/resource/v2-90c11bca3811efca032ffbf736b165fb_b.png",
+    "Read It Later/百宝箱/resource/v2-c65ab5916b333cb479fe5a7f20414e0b_b.png",
+    "Read It Later/百宝箱/resource/v2-9817996971d7467ca082b3001d84c5f7_b.png",
+    "Read It Later/百宝箱/resource/v2-9437c8523f46579f42508937ce5c35b5_b.jpg",
+    "快速记录/绘画.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
+    "_notion-like-tables/table-id-FTiVlA.md",
+    "快速记录/测试专用/李泽言.md",
     "快速记录/NovelAI.md",
     "https%3A/www.artbreeder.com.md",
     "https%3A",
     "Read It Later/百宝箱/resource/v2-6b17f90d8ae6548c068768b3500f1342_r.jpg",
-    "Read It Later/百宝箱/resource/v2-b1575284824c37c5ed430467f784a40a_r.jpg",
-    "Read It Later/百宝箱/resource/v2-d22ca65432a91819d4402f45fe2e15e9_r.jpg",
-    "Read It Later/百宝箱/resource/v2-b044ef840a42ffd02d13ddc0828fe2d8_r.jpg",
-    "Read It Later/百宝箱/resource/v2-a5a990bb0faef6d4b897ed8b8fda10f7_r.jpg",
-    "Read It Later/百宝箱/resource/v2-e8e8bd381ac5947616b7bf0375c8a873_r.jpg",
-    "Read It Later/百宝箱/resource/v2-7b70f6d9598ff8fc1d2191dc2faf5457_r.jpg",
-    "Read It Later/百宝箱/resource/v2-3bcded7ac385b7dedccf9660810c8a1f_r.jpg",
-    "Read It Later/百宝箱/resource/v2-255d54504a3a39b412f88d0340aafc57_r.jpg",
-    "Read It Later/百宝箱/resource/v2-1bf4fa4654c34031f9e8570755fca8f0_r.jpg",
     "Read It Later/万事屋/从0开始部署本地AI绘画(6000字长文).md",
-    "快速记录/1.md",
     "My manuscript/manuscript目录.md",
     "My manuscript/长篇+成稿/未命名.canvas",
     "My manuscript/随笔/2023/我当然悲哀.md",
     "My manuscript/长篇+成稿/男人和他的星星.md",
     "MEMO＆DAILY/MEMO/未命名.md",
-    "Day Planners/Day Planner-20230326.md",
-    "_notion-like-tables/table-id-FTiVlA.md",
     "_notion-like-tables",
     "My manuscript/灵感/舅舅｜住房｜醉酒｜呵斥.md",
-    "My manuscript/灵感/月亮｜孤独.md",
-    "My manuscript/灵感/父亲｜循环｜神婆｜BE.md",
-    "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
-    "Read It Later/百宝箱/双向链接/MEMO.md",
-    "My manuscript/长篇+成稿/爱和白斑.md",
-    "My manuscript/长篇+成稿/一个人的团圆.md",
-    "My manuscript/长篇+成稿/一座围城的边界外是另一座围城.md",
-    "MEMO＆DAILY/Daily/2023/一个人的团圆.md",
-    "摘录/其他摘录/死后.md",
     "MEMO＆DAILY/MEMO/Personal",
     "My manuscript/灵感",
     "摘录/书信｜古言",
@@ -280,7 +294,6 @@
     "Read It Later/百宝箱/resource/Recording 20230325171355.webm",
     "Read It Later/百宝箱/resource/Recording 20230325171323.webm",
     "快速记录/测试专用/测试canvas.canvas",
-    "Excalidraw/Scripts/Downloaded",
     "测试专用/未命名.canvas",
     "未命名.canvas"
   ]
