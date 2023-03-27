@@ -19,8 +19,22 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "d7fdc644fa2b418a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "快速记录/绘画.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -98,7 +112,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md",
+                "file": "快速记录/绘画.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +129,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md",
+                "file": "快速记录/绘画.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +165,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/我的狗狗.md"
+                "file": "快速记录/绘画.md"
               }
             }
           },
@@ -231,10 +245,11 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "a855484f133a3607",
+  "active": "d7fdc644fa2b418a",
   "lastOpenFiles": [
-    "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
+    "摘录/其他摘录/一旦冒出火星, 就已经难以熄灭.md",
     "MEMO＆DAILY/Daily/2023/我的狗狗.md",
+    "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
     "My manuscript/灵感/我的狗狗.md",
     "My manuscript/随笔/2022/无药可救所以祈求神明.md",
     "摘录/书信｜古言/独一份浪漫.md",
@@ -269,7 +284,6 @@
     "Read It Later/百宝箱/resource/v2-9817996971d7467ca082b3001d84c5f7_b.png",
     "Read It Later/百宝箱/resource/v2-9437c8523f46579f42508937ce5c35b5_b.jpg",
     "快速记录/绘画.md",
-    "观影/明星大侦探★★★★★★★★★☆/08第八季/09第九案   木偶复仇记Ⅲ.md",
     "https%3A",
     "Read It Later/百宝箱/resource/v2-6b17f90d8ae6548c068768b3500f1342_r.jpg",
     "My manuscript/长篇+成稿/未命名.canvas",
