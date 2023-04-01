@@ -614,6 +614,22 @@
           "lastUpdated": 1680284341256
         }
       }
+    },
+    "学校": {
+      "学校": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1680342777632
+        }
+      }
+    },
+    "文件": {
+      "文件": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1680342927428
+        }
+      }
     }
   }
 }
