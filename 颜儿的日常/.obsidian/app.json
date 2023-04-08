@@ -24,5 +24,7 @@
   "vimMode": false,
   "livePreview": true,
   "smartIndentList": true,
-  "readableLineLength": true
+  "readableLineLength": true,
+  "useTab": true,
+  "autoPairBrackets": true
 }

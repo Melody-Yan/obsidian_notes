@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/10第十案  蓝色大海的传说.md",
+                "file": "观影/明星大侦探★★★★★★★★★☆/06第六季/01第一案 夜半酒店Ⅰ.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -90,7 +90,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 33.472367049009385,
+        "dimension": 34.583333333333336,
         "children": [
           {
             "id": "5f1e61420090beb8",
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/10第十案  蓝色大海的传说.md",
+                "file": "观影/明星大侦探★★★★★★★★★☆/06第六季/01第一案 夜半酒店Ⅰ.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,18 +115,10 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/10第十案  蓝色大海的传说.md",
+                "file": "观影/明星大侦探★★★★★★★★★☆/06第六季/01第一案 夜半酒店Ⅰ.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
-            }
-          },
-          {
-            "id": "0a285fe7eb34dd3b",
-            "type": "leaf",
-            "state": {
-              "type": "calendar",
-              "state": {}
             }
           },
           {
@@ -136,14 +128,22 @@
               "type": "advanced-tables-toolbar",
               "state": {}
             }
+          },
+          {
+            "id": "d20243282689f9c6",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       },
       {
-        "id": "007ecc252bcc06a1",
+        "id": "eb8df96c63e62749",
         "type": "tabs",
-        "dimension": 31.595411887382692,
+        "dimension": 33.229166666666664,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -151,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/08第八季/10第十案  蓝色大海的传说.md"
+                "file": "观影/明星大侦探★★★★★★★★★☆/06第六季/01第一案 夜半酒店Ⅰ.md"
               }
             }
           },
@@ -174,12 +174,12 @@
         ]
       },
       {
-        "id": "c74279d1ae9e8161",
+        "id": "007ecc252bcc06a1",
         "type": "tabs",
-        "dimension": 34.932221063607926,
+        "dimension": 32.1875,
         "children": [
           {
-            "id": "5ad01b446d0a664b",
+            "id": "b403bc74b6124abc",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -187,7 +187,7 @@
             }
           },
           {
-            "id": "3971fb28407589dd",
+            "id": "2871a421efd414ba",
             "type": "leaf",
             "state": {
               "type": "online.larslockefeer.obsidian-plugin-todo",
@@ -195,7 +195,7 @@
             }
           },
           {
-            "id": "d2636c113f6bbe08",
+            "id": "6b15a49e2db5098b",
             "type": "leaf",
             "state": {
               "type": "reminder-list",
@@ -211,57 +211,58 @@
   "left-ribbon": {
     "hiddenItems": {
       "graph:查看关系图谱": false,
-      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
       "command-palette:打开命令面板": false,
       "canvas:新建白板": false,
       "random-note:开始漫游笔记": false,
       "zk-prefixer:创建时间戳笔记": false,
       "switcher:打开快速切换": false,
       "daily-notes:打开/创建今天的日记": false,
-      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "audio-recorder:开始/结束录音": false,
       "publish:发布更改": false,
-      "obsidian-weread-plugin:Weread": false,
       "templates:插入模板": false,
       "workspaces:管理工作区布局": false,
-      "obsidian-to-notion:Share to notion": false,
+      "obsidian-weread-plugin:Weread": false,
+      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "obsidian-advanced-slides:Show Slide Preview": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
       "markdown-table-editor:Open Markdown Table Editor": false,
+      "obsidian-to-notion:Share to notion": false,
       "periodic-notes:Open this week": false
     }
   },
   "active": "4181e20732a0a9f7",
   "lastOpenFiles": [
+    "观影/明星大侦探★★★★★★★★★☆/03第三季/02第二案  暗黑童话.md",
+    "观影/明星大侦探★★★★★★★★★☆/03第三季/01第一案  酒店惊魂.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/06第六案  芒城风云再起.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/05第五案   往日回响.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/01第一案 落日惊魂Ⅰ.md",
+    "快速记录/测试专用/测试 1.md",
+    "快速记录/1.md",
+    "Day Planners/Day Planner-20230403.md",
+    "Day Planners/绘画.md",
+    "Read It Later/万事屋/obsidian 被忽略的，自带的强大画布 canvas，实现视觉笔记 - 余汉波.md",
+    "Read It Later/万事屋/DeskPins  将窗口钉在面前.md",
+    "Read It Later/百宝箱/resource/image.png",
+    "Read It Later/万事屋/从0开始部署本地AI绘画(6000字长文).md",
+    "dictionary.md",
+    "Day Planners/Day Planner-20230401.md",
+    "Day Planners/Day Planner-20230326.md",
+    "Day Planners/Day Planner-20230325.md",
+    "Day Planners/Day Planner-20230329.md",
+    "Day Planners/Day Planner-20230402.md",
+    "Day Planners/Day Planner-20230220.md",
+    "Read It Later/万事屋/评分.md",
+    "MEMO＆DAILY/MEMO/观影/一念永恒.md",
+    "Read It Later/万事屋/已归档/【AI绘画实操教程】动漫角色如何真人化？ stable diffusion we - 哔哩哔哩.md",
+    "观影/明星大侦探★★★★★★★★★☆/08第八季/10第十案  蓝色大海的传说.md",
     "MEMO＆DAILY/Daily/2023/2023年4月1日01点00分.md",
     "MEMO＆DAILY/给李泽言/2023年4月1日01点27分.md",
     "读书笔记/日日杂记/日日杂记.md",
     "Read It Later/百宝箱/resource/Recording 20230329195615.webm",
     "Read It Later/百宝箱/resource/Recording 20230329195408.webm",
-    "Day Planners/Day Planner-20230326.md",
-    "Day Planners/Day Planner-20230324.md",
-    "Day Planners/Day Planner-20230325.md",
-    "Day Planners/Day Planner-20230329.md",
-    "Day Planners/Day Planner-20230328.md",
-    "Day Planners/Day Planner-20230327.md",
-    "MEMO＆DAILY/Daily/2023/我的狗狗.md",
-    "Excalidraw/Drawing 2023-03-28 01.13.44.excalidraw.md",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/乘风破浪的姐姐,强化了｜削弱了性别刻板印.md",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
-    "快速记录/测试专用/李泽言.md",
     "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/未命名",
-    "Day Planners/绘画.md",
-    "快速记录/1.md",
-    "学习/midjounry.md",
-    "MEMO＆DAILY/MEMO/书籍/三月记录.md",
-    "摘录/其他摘录/一旦冒出火星, 就已经难以熄灭.md",
-    "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
-    "My manuscript/灵感/我的狗狗.md",
-    "My manuscript/随笔/2022/无药可救所以祈求神明.md",
-    "摘录/书信｜古言/独一份浪漫.md",
-    "摘录/书信｜古言/书信表达思念.md",
-    "MEMO＆DAILY/Daily/2021/可它至死都没能见我一面.md",
-    "MEMO＆DAILY/Daily/2022/20221017.md",
     "MEMO＆DAILY/Daily/2021",
     "Read It Later/万事屋/已归档",
     "Read It Later/百宝箱/resource/v2-bce570eb4c6a63865dfce849ad5aa31d_b.jpg",
@@ -274,7 +275,6 @@
     "Read It Later/百宝箱/resource/v2-9817996971d7467ca082b3001d84c5f7_b.png",
     "Read It Later/百宝箱/resource/v2-9437c8523f46579f42508937ce5c35b5_b.jpg",
     "https%3A",
-    "Read It Later/百宝箱/resource/v2-6b17f90d8ae6548c068768b3500f1342_r.jpg",
     "My manuscript/长篇+成稿/未命名.canvas",
     "_notion-like-tables",
     "MEMO＆DAILY/MEMO/Personal",

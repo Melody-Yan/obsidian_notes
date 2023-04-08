@@ -2,7 +2,9 @@
 #todo
 - [ ] AutoHotKey
 - [ ] DeskPins [[DeskPins  将窗口钉在面前]]
-- [ ] 太老了，很久不更新了，用 altsnap 吧，除了置顶能干的更多。单纯置顶的还有两款 Window TopMost Control (控制) 和 Window On Top
+
+
+- [ ]  altsnap 。单纯置顶的还有两款 Window TopMost Control (控制) 和 Window On Top
 2022-01-21
 ​
 Desire 
