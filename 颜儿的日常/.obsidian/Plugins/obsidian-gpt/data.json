@@ -1,0 +1,74 @@
+{
+  "activeModel": "cohere",
+  "models": {
+    "chatgpt": {
+      "settings": {
+        "modelType": "gpt-3.5-turbo",
+        "systemMessage": "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.",
+        "maxTokens": 200,
+        "temperature": 1,
+        "topP": 1,
+        "presencePenalty": 0,
+        "frequencyPenalty": 0,
+        "stop": []
+      }
+    },
+    "gpt3": {
+      "apiKey": "",
+      "settings": {
+        "modelType": "text-davinci-003",
+        "maxTokens": 16,
+        "temperature": 1,
+        "topP": 1,
+        "presencePenalty": 0,
+        "frequencyPenalty": 0,
+        "stop": []
+      }
+    },
+    "ai21": {
+      "apiKey": "",
+      "settings": {
+        "modelType": "j1-jumbo",
+        "maxTokens": 16,
+        "temperature": 1,
+        "topP": 1,
+        "stop": []
+      }
+    },
+    "cohere": {
+      "apiKey": "GxrOlQXzzlXTBDTk70bC5fjvtsy7TMcEeiDXDwKD",
+      "settings": {
+        "modelType": "xlarge",
+        "maxTokens": 2000,
+        "temperature": 1,
+        "p": 1,
+        "k": 0,
+        "presencePenalty": 0,
+        "frequencyPenalty": 0,
+        "stopSequences": []
+      }
+    }
+  },
+  "tagCompletions": true,
+  "tagCompletionsHandlerTags": {
+    "openingTag": "<Completion>",
+    "closingTag": "</Completion>"
+  },
+  "tagPrompts": true,
+  "tagPromptsHandlerTags": {
+    "openingTag": "<Prompt>",
+    "closingTag": "</Prompt>"
+  },
+  "tagChatPrompts": true,
+  "tagChatPromptsHandlerTags": {
+    "openingTag": "<ChatPrompt>",
+    "closingTag": "</ChatPrompt>"
+  },
+  "tagChatCompletions": true,
+  "tagChatCompletionsHandlerTags": {
+    "openingTag": "<ChatCompletion>",
+    "closingTag": "</ChatCompletion>"
+  },
+  "insertToken": "[insert]",
+  "chatSeparator": "---"
+}

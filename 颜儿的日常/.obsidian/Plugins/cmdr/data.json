@@ -82,6 +82,18 @@
       "icon": "lucide-layout-dashboard",
       "name": "白板: 新建白板",
       "mode": "any"
+    },
+    {
+      "id": "obsidian-gpt:chat-completion",
+      "icon": "bot",
+      "name": "GPT: Chat Completion",
+      "mode": "any"
+    },
+    {
+      "id": "bookmarks:bookmark-current-view",
+      "icon": "lucide-bookmark-plus",
+      "name": "Bookmarks: Bookmark...",
+      "mode": "any"
     }
   ],
   "macros": [],
