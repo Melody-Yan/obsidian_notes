@@ -3,10 +3,11 @@
   "cedictPath": "./cedict_ts.u8",
   "matchStrategy": "partial",
   "fuzzyMatch": true,
+  "minFuzzyMatchScore": 0.5,
   "matchingWithoutEmoji": true,
   "treatAccentDiacriticsAsAlphabeticCharacters": true,
-  "maxNumberOfSuggestions": 35,
-  "maxNumberOfWordsAsPhrase": 6,
+  "maxNumberOfSuggestions": 14,
+  "maxNumberOfWordsAsPhrase": 10,
   "minNumberOfCharactersTriggered": 1,
   "minNumberOfWordsTriggeredPhrase": 1,
   "complementAutomatically": true,
@@ -53,10 +54,12 @@
     "beforeRegExp": "",
     "after": ""
   },
+  "frontMatterKeyForExclusionInternalLink": "",
   "enableFrontMatterComplement": true,
   "frontMatterComplementMatchStrategy": "partial",
   "insertCommaAfterFrontMatterCompletion": false,
   "intelligentSuggestionPrioritization": {
+    "historyFilePath": "",
     "maxDaysToKeepHistory": 0,
     "maxNumberOfHistoryToKeep": 0
   },
@@ -426,8 +429,8 @@
     "todo": {
       "todo": {
         "customDictionary": {
-          "count": 9,
-          "lastUpdated": 1679808860851
+          "count": 10,
+          "lastUpdated": 1684332987509
         }
       }
     },
@@ -532,6 +535,10 @@
         "currentFile": {
           "count": 1,
           "lastUpdated": 1679834538973
+        },
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1684334536259
         }
       }
     },
@@ -688,6 +695,78 @@
         "currentVault": {
           "count": 1,
           "lastUpdated": 1681489957768
+        }
+      }
+    },
+    "只言片语": {
+      "只言片语": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1683829954246
+        }
+      }
+    },
+    "柳永": {
+      "柳永": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1683830147052
+        }
+      }
+    },
+    "宜": {
+      "宜": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1683830591930
+        }
+      }
+    },
+    "出生": {
+      "出生": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1683830983990
+        }
+      }
+    },
+    "女": {
+      "女": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1683833798892
+        }
+      }
+    },
+    "痴情": {
+      "痴情": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1684074466876
+        }
+      }
+    },
+    "落第": {
+      "落第": {
+        "currentVault": {
+          "count": 2,
+          "lastUpdated": 1684076448496
+        }
+      }
+    },
+    "名利": {
+      "名利": {
+        "currentFile": {
+          "count": 1,
+          "lastUpdated": 1684075530965
+        }
+      }
+    },
+    "#todo": {
+      "#todo": {
+        "currentVault": {
+          "count": 1,
+          "lastUpdated": 1684332994752
         }
       }
     }

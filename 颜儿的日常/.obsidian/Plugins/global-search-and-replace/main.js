@@ -23542,7 +23542,7 @@ var import_react = __toESM(require_react());
 
 // src/react-components/PromptInstructions.tsx
 var React = __toESM(require_react());
-var PromptInstructions = () => /* @__PURE__ */ React.createElement("div", { className: "prompt-instructions" }, /* @__PURE__ */ React.createElement("div", { className: "prompt-instruction" }, /* @__PURE__ */ React.createElement("span", { className: "prompt-instruction-command" }, "\u2191\u2193"), /* @__PURE__ */ React.createElement("span", null, "to navigate")), /* @__PURE__ */ React.createElement("div", { className: "prompt-instruction" }, /* @__PURE__ */ React.createElement("span", { className: "prompt-instruction-command" }, "\u21B5"), /* @__PURE__ */ React.createElement("span", null, "to replace")));
+var PromptInstructions = () => /* @__PURE__ */ React.createElement("div", { className: "prompt-instructions" }, /* @__PURE__ */ React.createElement("div", { className: "prompt-instruction" }, /* @__PURE__ */ React.createElement("span", { className: "prompt-instruction-command" }, "\u2191\u2193"), /* @__PURE__ */ React.createElement("span", null, "to navigate")), /* @__PURE__ */ React.createElement("div", { className: "prompt-instruction" }, /* @__PURE__ */ React.createElement("span", { className: "prompt-instruction-command" }, "\u21B5"), /* @__PURE__ */ React.createElement("span", null, "to replace")), /* @__PURE__ */ React.createElement("div", { className: "prompt-instruction" }, /* @__PURE__ */ React.createElement("span", { className: "prompt-instruction-command" }, "\u2318\u21B5"), /* @__PURE__ */ React.createElement("span", null, "to open")));
 
 // src/react-components/SearchInput.tsx
 var React2 = __toESM(require_react());
@@ -23650,10 +23650,257 @@ var EventBridge = class {
     __publicField(this, "onArrowUp");
     __publicField(this, "onArrowDown");
     __publicField(this, "onEnter");
+    __publicField(this, "onCommandEnter");
   }
 };
 var eventBridge = new EventBridge();
 var event_bridge_default = eventBridge;
+
+// src/util/utils.ts
+function isBlank(str) {
+  return !str || /^\s*$/.test(str);
+}
+function findLastIndex(array, predicate) {
+  let l = array.length;
+  while (l--) {
+    if (predicate(array[l], l, array))
+      return l;
+  }
+  return -1;
+}
+
+// src/react-components/ResultsNumberSummary.tsx
+var React6 = __toESM(require_react());
+function ResultsNumberSummary({
+  numberOfResults,
+  numberOfFilesWithMatches
+}) {
+  return /* @__PURE__ */ React6.createElement("div", { className: "snr-result-summary" }, numberOfResults, " matches found in ", numberOfFilesWithMatches, " files");
+}
+
+// src/react-components/SearchAndReplace.tsx
+var import_obsidian = require("obsidian");
+var NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER = 20;
+function SearchAndReplace({
+  fileOperator
+}) {
+  const [searchText, setSearchText] = (0, import_react.useState)("");
+  const [replaceText, setReplaceText] = (0, import_react.useState)("");
+  const [selectedIndex, setSelectedIndex] = (0, import_react.useState)(0);
+  const [searchResults, setSearchResults] = (0, import_react.useState)([]);
+  const [numberOfResultsToDisplay, setNumberOfResultsToDisplay] = (0, import_react.useState)(
+    NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
+  );
+  const [numberOfFilesWithMatches, setNumberOfFilesWithMatches] = (0, import_react.useState)(0);
+  const handleArrowUp = (0, import_react.useCallback)(() => {
+    setSelectedIndex((i) => {
+      let newIndex;
+      if (i === 0) {
+        newIndex = i;
+      } else {
+        newIndex = i - 1;
+      }
+      scrollIntoView(newIndex);
+      return newIndex;
+    });
+  }, []);
+  const handleArrowDown = (0, import_react.useCallback)(() => {
+    setSelectedIndex((i) => {
+      let newIndex;
+      if (i === searchResults.length - 1) {
+        newIndex = i;
+      } else {
+        newIndex = i + 1;
+      }
+      scrollIntoView(newIndex);
+      return newIndex;
+    });
+  }, [searchResults]);
+  const handleCommandEnter = (0, import_react.useCallback)(async () => {
+    await fileOperator.open(searchResults[selectedIndex]);
+  }, [fileOperator, searchResults, selectedIndex]);
+  const handleEnterOrClick = (0, import_react.useCallback)(async () => {
+    if (searchResults.length === 0)
+      return;
+    const replaceOperationResult = await fileOperator.replace(
+      searchResults[selectedIndex],
+      replaceText,
+      searchText
+    );
+    if (!replaceOperationResult) {
+      setSearchResults((previousResults) => {
+        return previousResults.filter((r, i) => i !== selectedIndex);
+      });
+    } else {
+      setSearchResults((previousResults) => {
+        const hasSameFilePathAndLineNumber = (r) => {
+          const samePath = r.filePath === replaceOperationResult.filePath;
+          const sameLineNumber = r.lineNumber === replaceOperationResult.lineNumber;
+          return samePath && sameLineNumber;
+        };
+        const firstIndexOfSamePathAndLineNumber = previousResults.findIndex(hasSameFilePathAndLineNumber);
+        const lastIndexOfSamePathAndLineNumber = findLastIndex(
+          previousResults,
+          hasSameFilePathAndLineNumber
+        );
+        if (selectedIndex > searchResults.length - 2) {
+          setSelectedIndex((s) => s - 1);
+        }
+        return [
+          ...previousResults.slice(
+            0,
+            firstIndexOfSamePathAndLineNumber
+          ),
+          ...replaceOperationResult.lineSearchResults,
+          ...previousResults.slice(
+            lastIndexOfSamePathAndLineNumber + 1
+          )
+        ];
+      });
+    }
+  }, [selectedIndex, searchResults, replaceText, searchText, fileOperator]);
+  (0, import_react.useEffect)(() => {
+    event_bridge_default.onArrowUp = handleArrowUp;
+    event_bridge_default.onArrowDown = handleArrowDown;
+    event_bridge_default.onEnter = handleEnterOrClick;
+    event_bridge_default.onCommandEnter = handleCommandEnter;
+  }, [handleArrowUp, handleArrowDown, handleEnterOrClick, handleCommandEnter]);
+  const handleReplaceInputChanged = (event) => {
+    setReplaceText(event.target.value);
+  };
+  const handleSearchInputChanged = async (event) => {
+    const query = event.target.value;
+    setSearchText(query);
+    if (isBlank(query)) {
+      setSearchResults([]);
+      setNumberOfFilesWithMatches(0);
+      return;
+    }
+    debouncedSearch(query);
+  };
+  const debouncedSearch = (0, import_react.useCallback)(
+    (0, import_obsidian.debounce)(
+      async (query) => {
+        const { searchResults: searchResults2, numberOfFilesWithMatches: numberOfFilesWithMatches2 } = await fileOperator.search(query);
+        setNumberOfFilesWithMatches(numberOfFilesWithMatches2);
+        setSearchResults(searchResults2);
+        setSelectedIndex(0);
+        scrollIntoView(0);
+        setNumberOfResultsToDisplay(
+          NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
+        );
+      },
+      500,
+      false
+    ),
+    []
+  );
+  const scrollThresholdExceededHandler = (0, import_react.useCallback)(
+    () => setNumberOfResultsToDisplay(
+      (n) => n + NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
+    ),
+    []
+  );
+  const selectedIndexChangedHandler = (0, import_react.useCallback)((i) => {
+    setSelectedIndex(i);
+    scrollIntoView(i);
+  }, []);
+  return /* @__PURE__ */ React7.createElement(React7.Fragment, null, /* @__PURE__ */ React7.createElement(
+    SearchInput,
+    {
+      value: searchText,
+      onChange: handleSearchInputChanged
+    }
+  ), /* @__PURE__ */ React7.createElement(
+    ReplaceInput,
+    {
+      value: replaceText,
+      onChange: handleReplaceInputChanged
+    }
+  ), /* @__PURE__ */ React7.createElement(
+    SearchResultsContainer,
+    {
+      selectedIndex,
+      selectedIndexChangedHandler,
+      numberOfResultsToDisplay,
+      searchResults,
+      scrollThresholdExceededHandler,
+      searchResultChosenHandler: handleEnterOrClick
+    }
+  ), /* @__PURE__ */ React7.createElement(
+    ResultsNumberSummary,
+    {
+      numberOfResults: searchResults.length,
+      numberOfFilesWithMatches
+    }
+  ), /* @__PURE__ */ React7.createElement(PromptInstructions, null));
+}
+function scrollIntoView(selectedIndex) {
+  const searchResultElement = document.querySelector(
+    `[data-search-result-index="${selectedIndex}"]`
+  );
+  searchResultElement == null ? void 0 : searchResultElement.scrollIntoView({ behavior: "auto", block: "nearest" });
+}
+
+// src/obsidian-components/search-and-replace-modal.tsx
+var SearchAndReplaceModal = class extends import_obsidian2.Modal {
+  constructor(app, fileOperator) {
+    super(app);
+    __publicField(this, "root");
+    __publicField(this, "fileOperator");
+    this.prepareModalEl();
+    this.initReactRoot();
+    this.registerEventListeners();
+    this.fileOperator = fileOperator;
+  }
+  initReactRoot() {
+    this.root = (0, import_client.createRoot)(this.modalEl);
+  }
+  prepareModalEl() {
+    this.modalEl.replaceChildren();
+    this.modalEl.addClass("prompt");
+    this.modalEl.removeClass("modal");
+  }
+  registerEventListeners() {
+    this.scope.register([], "ArrowUp", (e, ctx) => {
+      var _a, _b;
+      e.preventDefault();
+      (_b = (_a = event_bridge_default).onArrowUp) == null ? void 0 : _b.call(_a, e, ctx);
+    });
+    this.scope.register([], "ArrowDown", (e, ctx) => {
+      var _a, _b;
+      e.preventDefault();
+      (_b = (_a = event_bridge_default).onArrowDown) == null ? void 0 : _b.call(_a, e, ctx);
+    });
+    this.scope.register([], "Enter", (e, ctx) => {
+      var _a, _b;
+      e.preventDefault();
+      if (e.repeat)
+        return;
+      (_b = (_a = event_bridge_default).onEnter) == null ? void 0 : _b.call(_a, e, ctx);
+    });
+    this.scope.register(["Meta"], "Enter", (e, ctx) => {
+      var _a, _b;
+      e.preventDefault();
+      if (e.repeat)
+        return;
+      (_b = (_a = event_bridge_default).onCommandEnter) == null ? void 0 : _b.call(_a, e, ctx);
+      this.close();
+    });
+  }
+  onOpen() {
+    if (!this.root)
+      return;
+    this.root.render(
+      /* @__PURE__ */ React8.createElement(React8.StrictMode, null, /* @__PURE__ */ React8.createElement(SearchAndReplace, { fileOperator: this.fileOperator }))
+    );
+  }
+  onClose() {
+    if (!this.root)
+      return;
+    this.root.unmount();
+  }
+};
 
 // src/domain/search-result.ts
 var SearchResult = class {
@@ -23685,23 +23932,10 @@ var SearchResult = class {
   }
 };
 
-// src/util/utils.ts
-function isBlank(str) {
-  return !str || /^\s*$/.test(str);
-}
-function findLastIndex(array, predicate) {
-  let l = array.length;
-  while (l--) {
-    if (predicate(array[l], l, array))
-      return l;
-  }
-  return -1;
-}
-
 // src/domain/file-operator.ts
 var NEW_LINE_REGEX = /\r?\n|\r|\n/g;
 var FileOperator = class {
-  constructor() {
+  constructor(app) {
     __publicField(this, "app");
     this.app = app;
   }
@@ -23801,227 +24035,30 @@ var FileOperator = class {
       lineNumber: searchResult.lineNumber
     };
   }
+  async open(searchResult) {
+    if (searchResult.filePath) {
+      await this.app.workspace.openLinkText(searchResult.filePath, "");
+      const activeEditor = this.app.workspace.activeEditor;
+      const editingTheCorrectFile = (activeEditor == null ? void 0 : activeEditor.file) === searchResult.file;
+      if (!editingTheCorrectFile)
+        return;
+      const editor = activeEditor == null ? void 0 : activeEditor.editor;
+      if (!editor)
+        return;
+      editor.setSelection(
+        {
+          line: searchResult.lineNumber - 1,
+          ch: searchResult.matchStartIndex
+        },
+        {
+          line: searchResult.lineNumber - 1,
+          ch: searchResult.matchEndIndex + 1
+        }
+      );
+    }
+  }
   escapeRegexString(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-};
-var fileOperator = new FileOperator();
-var file_operator_default = fileOperator;
-
-// src/react-components/ResultsNumberSummary.tsx
-var React6 = __toESM(require_react());
-function ResultsNumberSummary({
-  numberOfResults,
-  numberOfFilesWithMatches
-}) {
-  return /* @__PURE__ */ React6.createElement("div", { className: "snr-result-summary" }, numberOfResults, " matches found in ", numberOfFilesWithMatches, " files");
-}
-
-// src/react-components/SearchAndReplace.tsx
-var import_obsidian = require("obsidian");
-var NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER = 20;
-function SearchAndReplace() {
-  const [searchText, setSearchText] = (0, import_react.useState)("");
-  const [replaceText, setReplaceText] = (0, import_react.useState)("");
-  const [selectedIndex, setSelectedIndex] = (0, import_react.useState)(0);
-  const [searchResults, setSearchResults] = (0, import_react.useState)([]);
-  const [numberOfResultsToDisplay, setNumberOfResultsToDisplay] = (0, import_react.useState)(
-    NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
-  );
-  const [numberOfFilesWithMatches, setNumberOfFilesWithMatches] = (0, import_react.useState)(0);
-  const handleArrowUp = (0, import_react.useCallback)(() => {
-    setSelectedIndex((i) => {
-      let newIndex;
-      if (i === 0) {
-        newIndex = i;
-      } else {
-        newIndex = i - 1;
-      }
-      scrollIntoView(newIndex);
-      return newIndex;
-    });
-  }, []);
-  const handleArrowDown = (0, import_react.useCallback)(() => {
-    setSelectedIndex((i) => {
-      let newIndex;
-      if (i === searchResults.length - 1) {
-        newIndex = i;
-      } else {
-        newIndex = i + 1;
-      }
-      scrollIntoView(newIndex);
-      return newIndex;
-    });
-  }, [searchResults]);
-  const handleEnterOrClick = (0, import_react.useCallback)(async () => {
-    if (searchResults.length === 0)
-      return;
-    const replaceOperationResult = await file_operator_default.replace(
-      searchResults[selectedIndex],
-      replaceText,
-      searchText
-    );
-    if (!replaceOperationResult) {
-      setSearchResults((previousResults) => {
-        return previousResults.filter((r, i) => i !== selectedIndex);
-      });
-    } else {
-      setSearchResults((previousResults) => {
-        const hasSameFilePathAndLineNumber = (r) => {
-          const samePath = r.filePath === replaceOperationResult.filePath;
-          const sameLineNumber = r.lineNumber === replaceOperationResult.lineNumber;
-          return samePath && sameLineNumber;
-        };
-        const firstIndexOfSamePathAndLineNumber = previousResults.findIndex(hasSameFilePathAndLineNumber);
-        const lastIndexOfSamePathAndLineNumber = findLastIndex(
-          previousResults,
-          hasSameFilePathAndLineNumber
-        );
-        if (selectedIndex > searchResults.length - 2) {
-          setSelectedIndex((s) => s - 1);
-        }
-        return [
-          ...previousResults.slice(
-            0,
-            firstIndexOfSamePathAndLineNumber
-          ),
-          ...replaceOperationResult.lineSearchResults,
-          ...previousResults.slice(
-            lastIndexOfSamePathAndLineNumber + 1
-          )
-        ];
-      });
-    }
-  }, [selectedIndex, searchResults, replaceText, searchText]);
-  (0, import_react.useEffect)(() => {
-    event_bridge_default.onArrowUp = handleArrowUp;
-    event_bridge_default.onArrowDown = handleArrowDown;
-    event_bridge_default.onEnter = handleEnterOrClick;
-  }, [handleArrowUp, handleArrowDown, handleEnterOrClick]);
-  const handleReplaceInputChanged = (event) => {
-    setReplaceText(event.target.value);
-  };
-  const handleSearchInputChanged = async (event) => {
-    const query = event.target.value;
-    setSearchText(query);
-    if (isBlank(query)) {
-      setSearchResults([]);
-      setNumberOfFilesWithMatches(0);
-      return;
-    }
-    debouncedSearch(query);
-  };
-  const debouncedSearch = (0, import_react.useCallback)(
-    (0, import_obsidian.debounce)(
-      async (query) => {
-        const { searchResults: searchResults2, numberOfFilesWithMatches: numberOfFilesWithMatches2 } = await file_operator_default.search(query);
-        setNumberOfFilesWithMatches(numberOfFilesWithMatches2);
-        setSearchResults(searchResults2);
-        setSelectedIndex(0);
-        scrollIntoView(0);
-        setNumberOfResultsToDisplay(
-          NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
-        );
-      },
-      500,
-      false
-    ),
-    []
-  );
-  const scrollThresholdExceededHandler = (0, import_react.useCallback)(
-    () => setNumberOfResultsToDisplay(
-      (n) => n + NUMBER_OF_RESULTS_TO_DISPLAY_PER_RENDER
-    ),
-    []
-  );
-  const selectedIndexChangedHandler = (0, import_react.useCallback)((i) => {
-    setSelectedIndex(i);
-    scrollIntoView(i);
-  }, []);
-  return /* @__PURE__ */ React7.createElement(React7.Fragment, null, /* @__PURE__ */ React7.createElement(
-    SearchInput,
-    {
-      value: searchText,
-      onChange: handleSearchInputChanged
-    }
-  ), /* @__PURE__ */ React7.createElement(
-    ReplaceInput,
-    {
-      value: replaceText,
-      onChange: handleReplaceInputChanged
-    }
-  ), /* @__PURE__ */ React7.createElement(
-    SearchResultsContainer,
-    {
-      selectedIndex,
-      selectedIndexChangedHandler,
-      numberOfResultsToDisplay,
-      searchResults,
-      scrollThresholdExceededHandler,
-      searchResultChosenHandler: handleEnterOrClick
-    }
-  ), /* @__PURE__ */ React7.createElement(
-    ResultsNumberSummary,
-    {
-      numberOfResults: searchResults.length,
-      numberOfFilesWithMatches
-    }
-  ), /* @__PURE__ */ React7.createElement(PromptInstructions, null));
-}
-function scrollIntoView(selectedIndex) {
-  const searchResultElement = document.querySelector(
-    `[data-search-result-index="${selectedIndex}"]`
-  );
-  searchResultElement == null ? void 0 : searchResultElement.scrollIntoView({ behavior: "auto", block: "nearest" });
-}
-
-// src/obsidian-components/search-and-replace-modal.tsx
-var SearchAndReplaceModal = class extends import_obsidian2.Modal {
-  constructor(app2) {
-    super(app2);
-    __publicField(this, "root");
-    this.prepareModalEl();
-    this.initReactRoot();
-    this.registerEventListeners();
-  }
-  initReactRoot() {
-    this.root = (0, import_client.createRoot)(this.modalEl);
-  }
-  prepareModalEl() {
-    this.modalEl.replaceChildren();
-    this.modalEl.addClass("prompt");
-    this.modalEl.removeClass("modal");
-  }
-  registerEventListeners() {
-    this.scope.register([], "ArrowUp", (e, ctx) => {
-      var _a, _b;
-      e.preventDefault();
-      (_b = (_a = event_bridge_default).onArrowUp) == null ? void 0 : _b.call(_a, e, ctx);
-    });
-    this.scope.register([], "ArrowDown", (e, ctx) => {
-      var _a, _b;
-      e.preventDefault();
-      (_b = (_a = event_bridge_default).onArrowDown) == null ? void 0 : _b.call(_a, e, ctx);
-    });
-    this.scope.register([], "Enter", (e, ctx) => {
-      var _a, _b;
-      e.preventDefault();
-      if (e.repeat)
-        return;
-      (_b = (_a = event_bridge_default).onEnter) == null ? void 0 : _b.call(_a, e, ctx);
-    });
-  }
-  onOpen() {
-    if (!this.root)
-      return;
-    this.root.render(
-      /* @__PURE__ */ React8.createElement(React8.StrictMode, null, /* @__PURE__ */ React8.createElement(SearchAndReplace, null))
-    );
-  }
-  onClose() {
-    if (!this.root)
-      return;
-    this.root.unmount();
   }
 };
 
@@ -24030,9 +24067,11 @@ var DEFAULT_SETTINGS = {
   replaceAllEnabled: false
 };
 var SearchAndReplacePlugin = class extends import_obsidian3.Plugin {
-  constructor() {
-    super(...arguments);
+  constructor(app, manifest) {
+    super(app, manifest);
     __publicField(this, "settings");
+    __publicField(this, "fileOperator");
+    this.fileOperator = new FileOperator(app);
   }
   async onload() {
     await this.loadSettings();
@@ -24040,10 +24079,10 @@ var SearchAndReplacePlugin = class extends import_obsidian3.Plugin {
   }
   thisAddPluginCommand() {
     this.addCommand({
-      id: "snr-search-and-replace",
+      id: "search-and-replace",
       name: "Search and Replace in all files",
       callback: () => {
-        new SearchAndReplaceModal(this.app).open();
+        new SearchAndReplaceModal(this.app, this.fileOperator).open();
       }
     });
   }

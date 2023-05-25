@@ -101,7 +101,7 @@ var HelpFunctions = class {
         var results0 = yield dv.query(content);
         let a = results0.value.values;
         let b = a.filter((x) => typeof x[1] !== "undefined" && x[1] !== null);
-        b.forEach((x) => x[1] = (0, import_obsidian.moment)(x[1].toString()).format("YYYY"));
+        b.forEach((x) => x[1] = (0, import_obsidian.moment)(x[1].toString(), "Y").format("Y"));
         b = b.filter((x) => x[1] != "Invalid date");
         b.forEach((x) => x[0] = x[0].path.match(/([^\/]+(?=\.)).md/)[1]);
         b.forEach((x) => x[2] == null ? x[2] = x[0] : 1);
@@ -130,7 +130,7 @@ var HelpFunctions = class {
         var results0 = yield dv.query(content);
         let a = results0.value.values;
         let b = a.filter((x) => typeof x[1] !== "undefined" && x[1] !== null);
-        b = b.filter((x) => !(typeof x[1] == "number" && x[1] >= 0 && x[1] <= 9999));
+        b = b.filter((x) => !(typeof x[1] == "number"));
         b.forEach((x) => x[1] = (0, import_obsidian.moment)(x[1].toString()).format("YYYY-MM"));
         b = b.filter((x) => x[1] != "Invalid date");
         b.forEach((x) => x[0] = x[0].path.match(/([^\/]+(?=\.)).md/)[1]);
@@ -147,7 +147,7 @@ var HelpFunctions = class {
         }
         let yearMonthGroup = [];
         for (let j = 0; j < monthGroup.length; j++) {
-          let item = monthGroup[j].yearMonth.substring(0, 4);
+          let item = monthGroup[j].yearMonth.split("-")[0];
           const ind = yearMonthGroup.findIndex((e) => e.year === item);
           if (ind > -1) {
             yearMonthGroup[ind].months.push(monthGroup[j]);

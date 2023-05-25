@@ -464,12 +464,54 @@ body:not(.align-title-left) .markdown-preview-section.markdown-preview-section h
   font-size: var(--h2-size);
 }
 
-body:not(.no-image-alttext-caption) .image-embed[alt]:not([alt$=".png"], [alt$=".jpg"], [alt$=".jpeg"], [alt$=".tiff"])::after {
+/* @settings
+
+name: Typomagical Images
+id: typomagical-images
+settings:
+	-
+		id: ss-image-caption
+		title: Image captions
+		description: Show captions underneath images using ![filename.jpg|caption]. Does not work for ![](url.jpg).
+		type: class-toggle
+	-
+		id: ss-zoom-off
+		title: Disable image zoom
+		description: Disable click+hold to zoom on images
+		type: class-toggle
+*/
+.ss-image-caption .image-embed[alt]:not([alt$=".png"], [alt$=".jpg"], [alt$=".jpeg"], [alt$=".tiff"])::after,
+body:not(.no-image-alttext-caption) .published-container .image-embed[alt]:not([alt$=".png"], [alt$=".jpg"], [alt$=".jpeg"], [alt$=".tiff"])::after {
   display: block;
   content: attr(alt);
   color: var(--text-muted);
   margin-bottom: 1em;
   text-align: center;
+}
+
+body:not(.ss-zoom-off) .view-content .image-embed:not(.canvas-node-content):active,
+body:not(.ss-zoom-off) .view-content .markdown-preview-view img[referrerpolicy=no-referrer]:active {
+  aspect-ratio: unset;
+  background-color: var(--background-primary);
+  cursor: zoom-out;
+  display: block;
+  z-index: 200;
+  position: fixed;
+  max-height: calc(100% + 1px);
+  max-width: 100%;
+  height: calc(100% + 1px);
+  width: 100%;
+  object-fit: contain;
+  margin: -0.5px auto 0 !important;
+  text-align: center;
+  padding: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+body:not(.ss-zoom-off) .view-content div:not(.canvas-node-content) img {
+  max-width: 100%;
+  cursor: zoom-in;
 }
 
 /*
@@ -526,6 +568,26 @@ a,
   font-family: var(--font-links);
   font-variant-ligatures: none;
 }
+a:hover,
+.cm-url:hover,
+.cm-hmd-internal-link:hover,
+.cm-s-obsidian span.cm-hmd-internal-link:hover,
+.cm-link:hover,
+.markdown-rendered .internal-link:hover,
+.markdown-preview-view .internal-link:hover {
+  filter: brightness(1.15);
+}
+
+.theme-light a:hover,
+.theme-light .cm-url:hover,
+.theme-light .cm-hmd-internal-link:hover,
+.theme-light .cm-s-obsidian span.cm-hmd-internal-link:hover,
+.theme-light .cm-link:hover,
+.theme-light .markdown-rendered .internal-link:hover,
+.theme-light .markdown-preview-view .internal-link:hover {
+  filter: saturate(30%);
+  filter: brightness(0.6);
+}
 
 .markdown-rendered .internal-link:hover {
   text-decoration: underline;
@@ -564,10 +626,15 @@ body.ss-links-sans {
   font-family: var(--font-monospace);
 }
 
+.markdown-rendered .external-link,
 .is-live-preview .external-link {
-  position: relative;
-  top: -4px;
   background-position-y: 0;
+}
+
+.ss-hide-external-link-icon .markdown-rendered .external-link,
+.ss-hide-external-link-icon .is-live-preview .external-link {
+  background-image: none;
+  padding-right: 0;
 }
 
 /* Lists START */
@@ -714,9 +781,11 @@ body {
 }
 
 .callout-quote-style [data-callout=quote].callout.callout {
+  background-color: transparent;
   border: none;
   display: flex;
   flex-direction: column-reverse;
+  padding: 0;
 }
 .callout-quote-style [data-callout=quote].callout.callout .callout-icon {
   display: none;
@@ -748,10 +817,11 @@ body {
 .callout-quote-style [data-callout=quote] .callout-title.callout-title::before {
   content: "―";
 }
-.callout-quote-style [data-callout=quote] .callout-title.callout-title:hover {
+.callout-quote-style [data-callout=quote].is-collapsible .callout-title:hover {
   cursor: pointer;
 }
 .callout-quote-style [data-callout=quote] .callout-fold {
+  margin-top: 0;
   transform: scale(0.75);
 }
 .callout-quote-style [data-callout=quote] .callout-fold svg {
@@ -759,15 +829,27 @@ body {
 }
 
 sup.footnote-ref {
-  position: relative;
-  bottom: 0.2em;
-  padding-left: 0.1em;
+  line-height: 1;
 }
 
 .footnote-link {
   text-decoration: none;
   font-weight: 500;
   letter-spacing: 0.05em;
+}
+.footnote-link:hover {
+  text-decoration: none;
+}
+
+.footnote-backref {
+  margin-left: 0.5em;
+}
+
+.circled-ol .footnotes ol {
+  padding-inline-start: 18px;
+}
+.circled-ol .footnotes ol li::before {
+  margin-left: -1.3rem;
 }
 
 body.theme-light .modal-bg {
@@ -1023,7 +1105,7 @@ ul.dataview-ul {
 body {
   --font-default: "Spectral", -apple-system, BlinkMacSystemFont, "Segoe UI",
   	"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", serif;
-  --font-text: var(--font-default);
+  --font-text-theme: var(--font-default);
   --link-unresolved-color: #d5aecf;
   --link-unresolved-opacity: 1;
   --link-external-decoration: none;
@@ -1032,12 +1114,12 @@ body {
   --tag-color-hover: #f7d865;
   --code-normal: #62d770;
   --link-decoration: none;
+  --modal-height: 75vh;
   --line-height-body: 1.45;
 }
 
 .theme-light {
   --code-normal: #4db95a;
-  --link-color-hover: #8177eb;
   --link-external-color: #2f9bb7;
   --link-external-color-hover: rgb(72, 191, 224);
   --tag-color: var(--text-normal);
@@ -1047,8 +1129,7 @@ body {
 }
 
 .theme-dark {
-  --link-color: hsl(248, 75%, 79%);
-  --link-color-hover: #8177eb;
+  --accent-l: 79%;
   --link-external-color: #7fcae6;
   --link-external-color-hover: #89ebe5;
 }
@@ -1239,6 +1320,10 @@ settings:
 			-
 				label: Justified
 				value: align-justified
+	-
+		id: ss-hide-external-link-icon
+		title: Hide external link icons
+		type: class-toggle
 	*/
 /* Change inline mhchem equations font to better blend with the text */
 .mathjax-font-typomagical mjx-container mjx-math mjx-texatom {
@@ -1308,7 +1393,7 @@ settings:
 		description: The next setting will work when this is on
 		type: class-toggle
 	-
-		id: background-color
+		id: ss-background-color
 		title: Background color
 		description: Overwrite background color with one of your choice
 		type: variable-color
@@ -1316,8 +1401,12 @@ settings:
 		format: hex
 		default: '#000000'
 	*/
+.background-color-enable {
+  --ss-background-color: #000000 ;
+}
+
 .background-color-enable.background-color-enable.background-color-enable {
-  --background-primary: var(--background-color) ;
+  --background-primary: var(--ss-background-color) ;
 }
 
 .markdown-source-view.mod-cm6 .cm-gutters {
@@ -1364,9 +1453,7 @@ body.vileplume {
   --inline-code: var(--frost1);
   --code-block: var(--frost1);
   --vim-cursor: var(--orange);
-  --text-selection: var(
-  	--red53
-  );
+  --text-selection: var(--red53);
   /* Annoying - affects both Edit and Preview, but Preview has translucency */
 }
 

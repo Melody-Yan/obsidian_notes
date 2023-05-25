@@ -8,90 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "26fe6902b3931e98",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "0512a7f2adbf1041",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "MEMO＆DAILY/给李泽言/2023/焦虑再贩.md",
-                "mode": "preview",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "20f98d522795d395",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "观影/守护解放西★★★★★★★★★☆/第二季/人不能总活在过去.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "02f9156d76c5ce42",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "读书笔记/日日杂记/日日杂记.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "9c33af5157ea4b4e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "快速记录/其它/尤利西斯导读.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "8201e97006ff2bc0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "MEMO＆DAILY/Daily/2023/2023年5月1日.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
             "id": "895a82a114ee0b34",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MEMO＆DAILY/Daily/2023/2023年5月1日22点12分.md",
+                "file": "观影/百炼飞升录/流水不争先.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -99,25 +21,22 @@
             }
           },
           {
-            "id": "9227a9b4994e2ca4",
+            "id": "b7c9ba65af2d9c8e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "release-notes",
               "state": {
-                "file": "My manuscript/随笔/2022/和妈妈的对话.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "currentVersion": "1.3.3"
               }
             }
           },
           {
-            "id": "9cee7f6f0539cbcf",
+            "id": "8c56b2d78833f345",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "摘录/书信｜古言/书信问候语.md",
+                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -125,7 +44,7 @@
             }
           }
         ],
-        "currentTab": 8
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -174,7 +93,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "解放西",
+                "query": "救救我",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -210,7 +129,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 254.5
+    "width": 265.5
   },
   "right": {
     "id": "628262475fc8c9f5",
@@ -219,7 +138,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 34.583333333333336,
+        "dimension": 33.541666666666664,
         "children": [
           {
             "id": "5f1e61420090beb8",
@@ -227,7 +146,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "摘录/书信｜古言/书信问候语.md",
+                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -244,7 +163,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "摘录/书信｜古言/书信问候语.md",
+                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -275,12 +194,12 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       },
       {
         "id": "eb8df96c63e62749",
         "type": "tabs",
-        "dimension": 33.229166666666664,
+        "dimension": 34.270833333333336,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -288,7 +207,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "摘录/书信｜古言/书信问候语.md"
+                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md"
               }
             }
           },
@@ -343,7 +262,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5
+    "width": 308.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -359,64 +279,66 @@
       "templates:插入模板": false,
       "workspaces:管理工作区布局": false,
       "obsidian-weread-plugin:Weread": false,
-      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "obsidian-advanced-slides:Show Slide Preview": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
       "markdown-table-editor:Open Markdown Table Editor": false,
       "obsidian-to-notion:Share to notion": false,
       "chronology:Open Chronology": false,
+      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "notion-like-tables:Create Notion-Like table": false,
+      "obsidian42-brat:BRAT": false,
+      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
       "periodic-notes:Open this week": false
     }
   },
-  "active": "ef01d5ec1b589285",
+  "active": "8c56b2d78833f345",
   "lastOpenFiles": [
+    "攻略/代号鸢/羁绊.md",
+    "观影/破事精英/第二季/意义是生活的结果, 而不是生活的目标.md",
+    "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
+    "My manuscript/信件/来自小阿青/朋友｜夏日.md",
+    "dictionary.md",
+    "My manuscript/信件/来自我/爱，生活，生命和自由 回复.md",
+    "My manuscript/信件/来自我/第一封信件.md",
+    "My manuscript/信件/来自我/花开了.md",
+    "My manuscript/信件/来自Chris氵甚/爱，生活，生命 和 自由.md",
+    "My manuscript/信件/来自小阿青",
+    "My manuscript/信件/来自Chris氵甚",
+    "Excalidraw/Drawing 2023-05-25 16.49.53.excalidraw.md",
+    "My manuscript/Newsletters",
+    "My manuscript/信件/来自我",
+    "My manuscript/信件",
+    "Excalidraw/Drawing 2023-03-25 15.57.59.excalidraw.md",
+    "Excalidraw/Drawing 2023-03-25 17.06.52.excalidraw.md",
+    "Excalidraw/Drawing 2023-03-28 01.13.44.excalidraw.md",
+    "Read It Later/百宝箱/resource/Pasted Image 20230525165112_707.png",
+    "Read It Later/百宝箱/resource/Pasted Image 20230525165112_697.png",
+    "Read It Later/百宝箱/resource/Pasted image 20230525164841.png",
+    "Read It Later/百宝箱/resource/Pasted image 20230525164759.png",
+    "攻略/代号鸢",
+    "攻略",
+    "摘录/书信｜古言/书信问候语.md",
+    "观影/百炼飞升录/流水不争先.md",
+    "观影/百炼飞升录",
     "摘录/书信｜古言/书信表达思念.md",
-    "MEMO＆DAILY/Daily/2023/2023年3月26日22点46分.md",
-    "My manuscript/随笔/2022/20221022 0441.md",
-    "快速记录/测试专用/gpt插件/2.md",
-    "快速记录/测试专用/gpt插件/gpt插件.md",
-    "快速记录/测试专用/gpt插件",
-    "MEMO＆DAILY/Daily/2023/昨日受伤.md",
-    "MEMO＆DAILY/Daily/2023/2023年5月1日22点12分.md",
-    "MEMO＆DAILY/Daily/2023/2023年5月1日.md",
-    "快速记录/其它/尤利西斯导读.md",
-    "快速记录/未命名.md",
-    "快速记录/其它",
-    "读书笔记/日日杂记/日日杂记.md",
-    "摘录/其他摘录/母亲的不幸是要加倍的.md",
-    "摘录/其他摘录/死后.md",
-    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/小兔的问题   导演兰茜雅.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/萤火虫女孩   导演李念泽.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/小火车   导演赵易.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/哼将军和哈将军   导演刘高翔.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/外婆的蓝色铁皮柜轮椅   导演刘毛宁.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/翼娃子的星期天   导演陈晨.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/想说的话｜评分.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
-    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/中国奇谭第四集《乡村巴士带走了王孩儿和神仙》深度解析.md",
-    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/第四集   乡村巴士带走了王孩儿和神仙.md",
-    "观影/镇魂街★★★★★★★★★☆/第一季★★★★★★★★★☆/第一季.md",
-    "观影/明星大侦探★★★★★★★★★☆/08第八季/00先导片.md",
-    "观影/守护解放西★★★★★★★★★☆/第一季",
-    "观影/守护解放西★★★★★★★★★☆/第二季",
-    "观影/守护解放西★★★★★★★★★☆/第三季",
-    "观影/守护解放西★★★★★★★★★☆/第四季",
-    "观影/守护解放西★★★★★★★★★☆",
+    "摘录/书信｜古言/独一份浪漫.md",
+    "My manuscript/随笔/2023/后半夜的月亮.md",
+    "My manuscript/随笔/2023/可他小心翼翼又理直气壮.md",
+    "My manuscript/随笔/2023/你又让我怎么回答.md",
+    "My manuscript/随笔/2023/我当然悲哀.md",
+    "My manuscript/随笔/2022/和妈妈的对话.md",
+    "My manuscript/随笔/2022/姥姥与愧疚.md",
+    "My manuscript/随笔/2022/消失的冬季.md",
+    "My manuscript/随笔/2022/星星.md",
+    "My manuscript/随笔/2023/20230116 续.md",
+    "观影/破事精英/第二季",
+    "观影/破事精英",
     "Read It Later/百宝箱/resource/image.png",
-    "Read It Later/百宝箱/resource/Recording 20230329195615.webm",
-    "Read It Later/百宝箱/resource/Recording 20230329195408.webm",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/未命名",
     "Read It Later/百宝箱/resource/v2-bce570eb4c6a63865dfce849ad5aa31d_b.jpg",
     "Read It Later/百宝箱/resource/v2-029fefe1bf10ec9f4da0b36a542082c4_b.png",
     "Read It Later/百宝箱/resource/v2-b338b8e4767d9d85319f07e420aa936a_b.jpg",
     "Read It Later/百宝箱/resource/v2-583abe66bb243c463a0951befdef5425_b.png",
     "Read It Later/百宝箱/resource/v2-488617d2b38a5e841204087578d56cb1_r.jpg",
-    "Read It Later/百宝箱/resource/v2-90c11bca3811efca032ffbf736b165fb_b.png",
-    "Read It Later/百宝箱/resource/v2-c65ab5916b333cb479fe5a7f20414e0b_b.png",
-    "Read It Later/百宝箱/resource/v2-9817996971d7467ca082b3001d84c5f7_b.png",
-    "Read It Later/百宝箱/resource/v2-9437c8523f46579f42508937ce5c35b5_b.jpg",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",
     "测试专用/未命名.canvas",

@@ -19249,6 +19249,7 @@ function constructLoginCookieSettingsUI(containerEl, parentContainerEl, manager)
       const user = yield manager.plugin.userComponent.loginCookie(manager.getCookieTemp());
       if (!user || !user.id) {
         log.notice(i18nHelper.getMessage("100137"));
+        return;
       }
       constructDoubanTokenSettingsUI(parentContainerEl, manager);
     }));
@@ -20867,19 +20868,22 @@ var UserComponent = class {
     }
     let name = dataHtml(dataHtml("head > title").get(0)).text().trim();
     let userUrl = dataHtml(elements.get(0)).attr("href");
-    let idPattern = /(\d){5,10}/g;
-    let idP = idPattern.exec(userUrl);
-    let id = idP ? idP[0] : "";
+    if (!name && !userUrl) {
+      return new User();
+    }
+    let id = "";
+    if (userUrl && userUrl.indexOf("people/") > 0) {
+      id = userUrl.substring(userUrl.lastIndexOf("people/") + 7, userUrl.lastIndexOf("/"));
+    }
     if (!id) {
       return new User();
     }
-    const result = {
+    return {
       id,
       name,
       url: userUrl,
       login: true
     };
-    return result;
   }
 };
 
