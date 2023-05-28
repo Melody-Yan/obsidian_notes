@@ -13,38 +13,14 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/百炼飞升录/流水不争先.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "b7c9ba65af2d9c8e",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.3.3"
-              }
-            }
-          },
-          {
-            "id": "8c56b2d78833f345",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
+                "file": "My manuscript/信件/来自小阿青/朋友｜夏日.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -146,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
+                "file": "My manuscript/信件/来自小阿青/朋友｜夏日.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -163,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
+                "file": "My manuscript/信件/来自小阿青/朋友｜夏日.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -207,7 +183,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md"
+                "file": "My manuscript/信件/来自小阿青/朋友｜夏日.md"
               }
             }
           },
@@ -262,8 +238,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 308.5,
-    "collapsed": true
+    "width": 308.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -291,54 +266,54 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "8c56b2d78833f345",
+  "active": "895a82a114ee0b34",
   "lastOpenFiles": [
-    "攻略/代号鸢/羁绊.md",
-    "观影/破事精英/第二季/意义是生活的结果, 而不是生活的目标.md",
-    "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
-    "My manuscript/信件/来自小阿青/朋友｜夏日.md",
-    "dictionary.md",
+    "My manuscript/信件/来自我/花开了.md",
+    "My manuscript/信件/来自小阿青/无限威能.md",
+    "My manuscript/信件/来自我/无限威能回复.md",
+    "My manuscript/信件/来自我/性格,雷雨.md",
+    "My manuscript/信件/来自Chris氵甚/爱，生活，生命 和 自由.md",
+    "My manuscript/信件/来自Chris氵甚/时空穿越.md",
     "My manuscript/信件/来自我/爱，生活，生命和自由 回复.md",
     "My manuscript/信件/来自我/第一封信件.md",
-    "My manuscript/信件/来自我/花开了.md",
-    "My manuscript/信件/来自Chris氵甚/爱，生活，生命 和 自由.md",
+    "My manuscript/信件/来自虞城/大学生活.md",
+    "My manuscript/信件/来自虞城/相似性格.md",
+    "My manuscript/灵感/夜晚.md",
+    "My manuscript/信件/来自OwJa",
+    "My manuscript/信件/来自虞城",
+    "Excalidraw/Drawing 2023-05-25 16.49.53.excalidraw.md",
+    "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.svg",
+    "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.md",
+    "My manuscript/世界观架构/世界地图.md",
+    "My manuscript/世界观架构/海洋03.md",
+    "My manuscript/世界观架构/上界划分.md",
+    "My manuscript/世界观架构/岛屿.md",
+    "My manuscript/世界观架构/海洋02.md",
+    "My manuscript/世界观架构/未命名",
+    "My manuscript/世界观架构/海洋.md",
+    "My manuscript/世界观架构/五界.md",
+    "My manuscript/世界观架构/星球星座.md",
+    "WuCai/2023/05/wucai-漆中之黑 豆瓣-H8327DM.md",
+    "My manuscript/世界观架构",
+    "![starwalk.md",
+    "My manuscript/Newsletters/苏小姐的知识碎片02   意义是生活的结果, 而不是生活的目标.md",
+    "WuCai/2023/05",
+    "WuCai/2023",
+    "WuCai",
+    "My manuscript/Newsletters/03.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/第四集   乡村巴士带走了王孩儿和神仙.md",
     "My manuscript/信件/来自小阿青",
     "My manuscript/信件/来自Chris氵甚",
-    "Excalidraw/Drawing 2023-05-25 16.49.53.excalidraw.md",
     "My manuscript/Newsletters",
-    "My manuscript/信件/来自我",
-    "My manuscript/信件",
-    "Excalidraw/Drawing 2023-03-25 15.57.59.excalidraw.md",
-    "Excalidraw/Drawing 2023-03-25 17.06.52.excalidraw.md",
-    "Excalidraw/Drawing 2023-03-28 01.13.44.excalidraw.md",
     "Read It Later/百宝箱/resource/Pasted Image 20230525165112_707.png",
     "Read It Later/百宝箱/resource/Pasted Image 20230525165112_697.png",
     "Read It Later/百宝箱/resource/Pasted image 20230525164841.png",
     "Read It Later/百宝箱/resource/Pasted image 20230525164759.png",
-    "攻略/代号鸢",
-    "攻略",
-    "摘录/书信｜古言/书信问候语.md",
-    "观影/百炼飞升录/流水不争先.md",
-    "观影/百炼飞升录",
-    "摘录/书信｜古言/书信表达思念.md",
-    "摘录/书信｜古言/独一份浪漫.md",
-    "My manuscript/随笔/2023/后半夜的月亮.md",
-    "My manuscript/随笔/2023/可他小心翼翼又理直气壮.md",
-    "My manuscript/随笔/2023/你又让我怎么回答.md",
-    "My manuscript/随笔/2023/我当然悲哀.md",
-    "My manuscript/随笔/2022/和妈妈的对话.md",
-    "My manuscript/随笔/2022/姥姥与愧疚.md",
-    "My manuscript/随笔/2022/消失的冬季.md",
-    "My manuscript/随笔/2022/星星.md",
-    "My manuscript/随笔/2023/20230116 续.md",
-    "观影/破事精英/第二季",
-    "观影/破事精英",
     "Read It Later/百宝箱/resource/image.png",
     "Read It Later/百宝箱/resource/v2-bce570eb4c6a63865dfce849ad5aa31d_b.jpg",
     "Read It Later/百宝箱/resource/v2-029fefe1bf10ec9f4da0b36a542082c4_b.png",
     "Read It Later/百宝箱/resource/v2-b338b8e4767d9d85319f07e420aa936a_b.jpg",
     "Read It Later/百宝箱/resource/v2-583abe66bb243c463a0951befdef5425_b.png",
-    "Read It Later/百宝箱/resource/v2-488617d2b38a5e841204087578d56cb1_r.jpg",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",
     "测试专用/未命名.canvas",

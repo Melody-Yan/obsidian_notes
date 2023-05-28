@@ -1,0 +1,28 @@
+{
+  "token": "eyJhcHBJZCI6MjAsImFwcEtleSI6Iml2cmdsZzQwOGloOGMwbGV2enozNXkiLCJhcHBTZWNyZXQiOiJqZGxBU1JWTG9pMHFPVkVqIiwiZXgiOiIifQ==.23a0f0d92ba3c7f1d7c3a2c2ec5bd729",
+  "wuCaiDir": "WuCai",
+  "frequency": "0",
+  "triggerOnLoad": true,
+  "isSyncing": false,
+  "lastSyncFailed": false,
+  "refreshNotes": false,
+  "notesToRefresh": [],
+  "reimportShowConfirmation": true,
+  "lastCursor": "eyJsYXN0SGlnaGxpZ2h0UEtJRCI6NjA1NDA3LCJja1BLSUQiOjAsImNrTklEIjowLCJja1hOSUQiOjAsImNrVCI6MTY4NTI3MzMxOX0=",
+  "dataVersion": 0,
+  "notePaths": {
+    "H8327DM": "WuCai/2023/05/wucai-漆中之黑 豆瓣-H8327DM.md"
+  },
+  "exportConfig": {
+    "titleFormat": 1,
+    "titleTemplate": "{{ createat_ts | date(\"YYYY/MM\") }}/wucai-{{title}}",
+    "writeStyle": 2,
+    "titleStyle": 2,
+    "highlightStyle": 1,
+    "annotationStyle": 1,
+    "tagStyle": 2,
+    "haveWuCaiTag": 1,
+    "obTemplate": "---\n标题: \"{{title}}\"\n创建时间: {{createat}}\n更新时间: {{updateat}}\n笔记ID: {{noteid}}\n---\n\n## {{title}} \n{{tags}} #五彩插件 {{createat}} [原文]({{url}})\n\n## 页面笔记\n{% block pagenote %}\n{{pagenote}}\n{% endblock %}\n\n## 划线列表\n{% block highlights %}\n{% for item in highlights %}\n{{ item | style1({prefix:\"> \", anno:\"> __想法__：\", color:\"█  \"}) }}\n{% endfor %}\n{% endblock %}\n\n## 其他\n\n",
+    "obTemplateVer": 0
+  }
+}
