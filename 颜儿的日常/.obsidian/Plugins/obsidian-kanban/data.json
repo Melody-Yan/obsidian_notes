@@ -1,3 +1,5 @@
 {
-  "show-checkboxes": true
+  "show-checkboxes": true,
+  "new-line-trigger": "shift-enter",
+  "date-picker-week-start": 1
 }

@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"type":"file","file":"Read It Later/百宝箱/resource/4b4d1864f5edd389bad8524f230c08b.jpg","id":"529eb9a3ae2cb34d","x":-210,"y":400,"width":320,"height":711},
+		{"type":"file","file":"Read It Later/百宝箱/resource/0f6381885cd79f6663f6ac9dbff05f3.jpg","id":"eb8de33c9b092cbe","x":-210,"y":1240,"width":320,"height":711},
+		{"type":"file","file":"Read It Later/百宝箱/resource/134536859e919e253bab65921581993.jpg","id":"1a9443ab46a9c6e9","x":-210,"y":2020,"width":333,"height":740},
+		{"type":"file","file":"Read It Later/百宝箱/resource/d8aa30274483f005d8171502377c15f.jpg","id":"250946c885c15ee0","x":-200,"y":-280,"width":260,"height":578}
+	],
+	"edges":[]
+}

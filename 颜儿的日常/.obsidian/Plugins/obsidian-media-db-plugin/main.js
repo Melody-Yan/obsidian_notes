@@ -224,7 +224,7 @@ var round = Math.round;
 // node_modules/@popperjs/core/lib/utils/userAgent.js
 function getUAString() {
   var uaData = navigator.userAgentData;
-  if (uaData != null && uaData.brands) {
+  if (uaData != null && uaData.brands && Array.isArray(uaData.brands)) {
     return uaData.brands.map(function(item) {
       return item.brand + "/" + item.version;
     }).join(" ");
@@ -455,15 +455,7 @@ function effect2(_ref2) {
       return;
     }
   }
-  if (true) {
-    if (!isHTMLElement(arrowElement)) {
-      console.error(['Popper: "arrow" element must be an HTMLElement (not an SVGElement).', "To use an SVG arrow, wrap it in an HTMLElement that will be used as", "the arrow."].join(" "));
-    }
-  }
   if (!contains(state.elements.popper, arrowElement)) {
-    if (true) {
-      console.error(['Popper: "arrow" modifier\'s `element` must be a child of the popper', "element."].join(" "));
-    }
     return;
   }
   state.elements.arrow = arrowElement;
@@ -490,9 +482,8 @@ var unsetSides = {
   bottom: "auto",
   left: "auto"
 };
-function roundOffsetsByDPR(_ref) {
+function roundOffsetsByDPR(_ref, win) {
   var x = _ref.x, y = _ref.y;
-  var win = window;
   var dpr = win.devicePixelRatio || 1;
   return {
     x: round(x * dpr) / dpr || 0,
@@ -548,7 +539,7 @@ function mapToStyles(_ref2) {
   var _ref4 = roundOffsets === true ? roundOffsetsByDPR({
     x,
     y
-  }) : {
+  }, getWindow(popper2)) : {
     x,
     y
   };
@@ -563,14 +554,6 @@ function mapToStyles(_ref2) {
 function computeStyles(_ref5) {
   var state = _ref5.state, options = _ref5.options;
   var _options$gpuAccelerat = options.gpuAcceleration, gpuAcceleration = _options$gpuAccelerat === void 0 ? true : _options$gpuAccelerat, _options$adaptive = options.adaptive, adaptive = _options$adaptive === void 0 ? true : _options$adaptive, _options$roundOffsets = options.roundOffsets, roundOffsets = _options$roundOffsets === void 0 ? true : _options$roundOffsets;
-  if (true) {
-    var transitionProperty = getComputedStyle2(state.elements.popper).transitionProperty || "";
-    if (adaptive && ["transform", "top", "right", "bottom", "left"].some(function(property) {
-      return transitionProperty.indexOf(property) >= 0;
-    })) {
-      console.warn(["Popper: Detected CSS transitions on at least one of the following", 'CSS properties: "transform", "top", "right", "bottom", "left".', "\n\n", 'Disable the "computeStyles" modifier\'s `adaptive` option to allow', "for smooth transitions, or remove these properties from the CSS", "transition declaration on the popper element if only transitioning", "opacity or background-color for example.", "\n\n", "We recommend using the popper element as a wrapper around an inner", "element that can have any CSS property transitioned for animations."].join(" "));
-    }
-  }
   var commonStyles = {
     placement: getBasePlacement(state.placement),
     variation: getVariation(state.placement),
@@ -927,9 +910,6 @@ function computeAutoPlacement(state, options) {
   });
   if (allowedPlacements.length === 0) {
     allowedPlacements = placements2;
-    if (true) {
-      console.error(["Popper: The `allowedAutoPlacements` option did not allow any", "placements. Ensure the `placement` option matches the variation", "of the allowed placements.", 'For example, "auto" cannot be used to allow "bottom-start".', 'Use "auto-start" instead.'].join(" "));
-    }
   }
   var overflows = allowedPlacements.reduce(function(acc, placement2) {
     acc[placement2] = detectOverflow(state, {
@@ -1373,92 +1353,6 @@ function debounce(fn2) {
   };
 }
 
-// node_modules/@popperjs/core/lib/utils/format.js
-function format(str) {
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-  return [].concat(args).reduce(function(p, c) {
-    return p.replace(/%s/, c);
-  }, str);
-}
-
-// node_modules/@popperjs/core/lib/utils/validateModifiers.js
-var INVALID_MODIFIER_ERROR = 'Popper: modifier "%s" provided an invalid %s property, expected %s but got %s';
-var MISSING_DEPENDENCY_ERROR = 'Popper: modifier "%s" requires "%s", but "%s" modifier is not available';
-var VALID_PROPERTIES = ["name", "enabled", "phase", "fn", "effect", "requires", "options"];
-function validateModifiers(modifiers) {
-  modifiers.forEach(function(modifier) {
-    [].concat(Object.keys(modifier), VALID_PROPERTIES).filter(function(value, index, self) {
-      return self.indexOf(value) === index;
-    }).forEach(function(key) {
-      switch (key) {
-        case "name":
-          if (typeof modifier.name !== "string") {
-            console.error(format(INVALID_MODIFIER_ERROR, String(modifier.name), '"name"', '"string"', '"' + String(modifier.name) + '"'));
-          }
-          break;
-        case "enabled":
-          if (typeof modifier.enabled !== "boolean") {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"enabled"', '"boolean"', '"' + String(modifier.enabled) + '"'));
-          }
-          break;
-        case "phase":
-          if (modifierPhases.indexOf(modifier.phase) < 0) {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"phase"', "either " + modifierPhases.join(", "), '"' + String(modifier.phase) + '"'));
-          }
-          break;
-        case "fn":
-          if (typeof modifier.fn !== "function") {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"fn"', '"function"', '"' + String(modifier.fn) + '"'));
-          }
-          break;
-        case "effect":
-          if (modifier.effect != null && typeof modifier.effect !== "function") {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"effect"', '"function"', '"' + String(modifier.fn) + '"'));
-          }
-          break;
-        case "requires":
-          if (modifier.requires != null && !Array.isArray(modifier.requires)) {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"requires"', '"array"', '"' + String(modifier.requires) + '"'));
-          }
-          break;
-        case "requiresIfExists":
-          if (!Array.isArray(modifier.requiresIfExists)) {
-            console.error(format(INVALID_MODIFIER_ERROR, modifier.name, '"requiresIfExists"', '"array"', '"' + String(modifier.requiresIfExists) + '"'));
-          }
-          break;
-        case "options":
-        case "data":
-          break;
-        default:
-          console.error('PopperJS: an invalid property has been provided to the "' + modifier.name + '" modifier, valid properties are ' + VALID_PROPERTIES.map(function(s) {
-            return '"' + s + '"';
-          }).join(", ") + '; but "' + key + '" was provided.');
-      }
-      modifier.requires && modifier.requires.forEach(function(requirement) {
-        if (modifiers.find(function(mod2) {
-          return mod2.name === requirement;
-        }) == null) {
-          console.error(format(MISSING_DEPENDENCY_ERROR, String(modifier.name), requirement, requirement));
-        }
-      });
-    });
-  });
-}
-
-// node_modules/@popperjs/core/lib/utils/uniqueBy.js
-function uniqueBy(arr, fn2) {
-  var identifiers = new Set();
-  return arr.filter(function(item) {
-    var identifier = fn2(item);
-    if (!identifiers.has(identifier)) {
-      identifiers.add(identifier);
-      return true;
-    }
-  });
-}
-
 // node_modules/@popperjs/core/lib/utils/mergeByName.js
 function mergeByName(modifiers) {
   var merged = modifiers.reduce(function(merged2, current) {
@@ -1475,8 +1369,6 @@ function mergeByName(modifiers) {
 }
 
 // node_modules/@popperjs/core/lib/createPopper.js
-var INVALID_ELEMENT_ERROR = "Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.";
-var INFINITE_LOOP_ERROR = "Popper: An infinite loop in the modifiers cycle has been detected! The cycle has been interrupted to prevent a browser crash.";
 var DEFAULT_OPTIONS = {
   placement: "bottom",
   modifiers: [],
@@ -1527,28 +1419,6 @@ function popperGenerator(generatorOptions) {
         state.orderedModifiers = orderedModifiers.filter(function(m) {
           return m.enabled;
         });
-        if (true) {
-          var modifiers = uniqueBy([].concat(orderedModifiers, state.options.modifiers), function(_ref) {
-            var name = _ref.name;
-            return name;
-          });
-          validateModifiers(modifiers);
-          if (getBasePlacement(state.options.placement) === auto) {
-            var flipModifier = state.orderedModifiers.find(function(_ref2) {
-              var name = _ref2.name;
-              return name === "flip";
-            });
-            if (!flipModifier) {
-              console.error(['Popper: "auto" placements require the "flip" modifier be', "present and enabled to work."].join(" "));
-            }
-          }
-          var _getComputedStyle = getComputedStyle2(popper2), marginTop = _getComputedStyle.marginTop, marginRight = _getComputedStyle.marginRight, marginBottom = _getComputedStyle.marginBottom, marginLeft = _getComputedStyle.marginLeft;
-          if ([marginTop, marginRight, marginBottom, marginLeft].some(function(margin) {
-            return parseFloat(margin);
-          })) {
-            console.warn(['Popper: CSS "margin" styles cannot be used to apply padding', "between the popper and its reference element or boundary.", "To replicate margin, use the `offset` modifier, as well as", "the `padding` option in the `preventOverflow` and `flip`", "modifiers."].join(" "));
-          }
-        }
         runModifierEffects();
         return instance4.update();
       },
@@ -1558,9 +1428,6 @@ function popperGenerator(generatorOptions) {
         }
         var _state$elements = state.elements, reference3 = _state$elements.reference, popper3 = _state$elements.popper;
         if (!areValidElements(reference3, popper3)) {
-          if (true) {
-            console.error(INVALID_ELEMENT_ERROR);
-          }
           return;
         }
         state.rects = {
@@ -1572,15 +1439,7 @@ function popperGenerator(generatorOptions) {
         state.orderedModifiers.forEach(function(modifier) {
           return state.modifiersData[modifier.name] = Object.assign({}, modifier.data);
         });
-        var __debug_loops__ = 0;
         for (var index = 0; index < state.orderedModifiers.length; index++) {
-          if (true) {
-            __debug_loops__ += 1;
-            if (__debug_loops__ > 100) {
-              console.error(INFINITE_LOOP_ERROR);
-              break;
-            }
-          }
           if (state.reset === true) {
             state.reset = false;
             index = -1;
@@ -1609,9 +1468,6 @@ function popperGenerator(generatorOptions) {
       }
     };
     if (!areValidElements(reference2, popper2)) {
-      if (true) {
-        console.error(INVALID_ELEMENT_ERROR);
-      }
       return instance4;
     }
     instance4.setOptions(options).then(function(state2) {
@@ -1620,8 +1476,8 @@ function popperGenerator(generatorOptions) {
       }
     });
     function runModifierEffects() {
-      state.orderedModifiers.forEach(function(_ref3) {
-        var name = _ref3.name, _ref3$options = _ref3.options, options2 = _ref3$options === void 0 ? {} : _ref3$options, effect4 = _ref3.effect;
+      state.orderedModifiers.forEach(function(_ref) {
+        var name = _ref.name, _ref$options = _ref.options, options2 = _ref$options === void 0 ? {} : _ref$options, effect4 = _ref.effect;
         if (typeof effect4 === "function") {
           var cleanupFn = effect4({
             state,
@@ -1655,7 +1511,7 @@ var createPopper = /* @__PURE__ */ popperGenerator({
 var pluginName = "obsidian-media-db-plugin";
 var contactEmail = "m.projects.code@gmail.com";
 var mediaDbTag = "mediaDB";
-var mediaDbVersion = "0.5.0";
+var mediaDbVersion = "0.5.2";
 function wrapAround(value, size) {
   if (size <= 0) {
     throw Error("size may not be zero or negative");
@@ -1984,6 +1840,32 @@ function is_empty(obj) {
   return Object.keys(obj).length === 0;
 }
 var tasks = new Set();
+var globals = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : global;
+var ResizeObserverSingleton = class {
+  constructor(options) {
+    this.options = options;
+    this._listeners = "WeakMap" in globals ? new WeakMap() : void 0;
+  }
+  observe(element2, listener) {
+    this._listeners.set(element2, listener);
+    this._getObserver().observe(element2, this.options);
+    return () => {
+      this._listeners.delete(element2);
+      this._observer.unobserve(element2);
+    };
+  }
+  _getObserver() {
+    var _a;
+    return (_a = this._observer) !== null && _a !== void 0 ? _a : this._observer = new ResizeObserver((entries) => {
+      var _a2;
+      for (const entry of entries) {
+        ResizeObserverSingleton.entries.set(entry.target, entry);
+        (_a2 = this._listeners.get(entry.target)) === null || _a2 === void 0 ? void 0 : _a2(entry);
+      }
+    });
+  }
+};
+ResizeObserverSingleton.entries = "WeakMap" in globals ? new WeakMap() : void 0;
 var is_hydrating = false;
 function start_hydrating() {
   is_hydrating = true;
@@ -2057,20 +1939,21 @@ function children(element2) {
 }
 function set_data(text2, data) {
   data = "" + data;
-  if (text2.wholeText !== data)
-    text2.data = data;
+  if (text2.data === data)
+    return;
+  text2.data = data;
 }
 function set_input_value(input, value) {
   input.value = value == null ? "" : value;
 }
 function set_style(node, key, value, important) {
-  if (value === null) {
+  if (value == null) {
     node.style.removeProperty(key);
   } else {
     node.style.setProperty(key, value, important ? "important" : "");
   }
 }
-function select_option(select, value) {
+function select_option(select, value, mounting) {
   for (let i = 0; i < select.options.length; i += 1) {
     const option = select.options[i];
     if (option.__value === value) {
@@ -2078,10 +1961,12 @@ function select_option(select, value) {
       return;
     }
   }
-  select.selectedIndex = -1;
+  if (!mounting || value !== void 0) {
+    select.selectedIndex = -1;
+  }
 }
 function select_value(select) {
-  const selected_option = select.querySelector(":checked") || select.options[0];
+  const selected_option = select.querySelector(":checked");
   return selected_option && selected_option.__value;
 }
 var managed_styles = new Map();
@@ -2101,7 +1986,7 @@ var dirty_components = [];
 var binding_callbacks = [];
 var render_callbacks = [];
 var flush_callbacks = [];
-var resolved_promise = Promise.resolve();
+var resolved_promise = /* @__PURE__ */ Promise.resolve();
 var update_scheduled = false;
 function schedule_update() {
   if (!update_scheduled) {
@@ -2163,6 +2048,13 @@ function update($$) {
     $$.after_update.forEach(add_render_callback);
   }
 }
+function flush_render_callbacks(fns) {
+  const filtered = [];
+  const targets = [];
+  render_callbacks.forEach((c) => fns.indexOf(c) === -1 ? filtered.push(c) : targets.push(c));
+  targets.forEach((c) => c());
+  render_callbacks = filtered;
+}
 var outroing = new Set();
 var outros;
 function group_outros() {
@@ -2202,8 +2094,7 @@ function transition_out(block, local, detach2, callback) {
     callback();
   }
 }
-var globals = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : global;
-var boolean_attributes = new Set([
+var _boolean_attributes = [
   "allowfullscreen",
   "allowpaymentrequest",
   "async",
@@ -2218,7 +2109,6 @@ var boolean_attributes = new Set([
   "hidden",
   "inert",
   "ismap",
-  "itemscope",
   "loop",
   "multiple",
   "muted",
@@ -2230,7 +2120,8 @@ var boolean_attributes = new Set([
   "required",
   "reversed",
   "selected"
-]);
+];
+var boolean_attributes = new Set([..._boolean_attributes]);
 function create_component(block) {
   block && block.c();
 }
@@ -2253,6 +2144,7 @@ function mount_component(component, target, anchor, customElement) {
 function destroy_component(component, detaching) {
   const $$ = component.$$;
   if ($$.fragment !== null) {
+    flush_render_callbacks($$.after_update);
     run_all($$.on_destroy);
     $$.fragment && $$.fragment.d(detaching);
     $$.on_destroy = $$.fragment = null;
@@ -2650,9 +2542,11 @@ function create_else_block(ctx) {
     m(target, anchor) {
       insert(target, select, anchor);
       for (let i = 0; i < each_blocks.length; i += 1) {
-        each_blocks[i].m(select, null);
+        if (each_blocks[i]) {
+          each_blocks[i].m(select, null);
+        }
       }
-      select_option(select, ctx[7].mapping);
+      select_option(select, ctx[7].mapping, true);
       insert(target, t, anchor);
       if (if_block)
         if_block.m(target, anchor);
@@ -3005,7 +2899,9 @@ function create_fragment2(ctx) {
       append(div2, t1);
       append(div2, div1);
       for (let i = 0; i < each_blocks.length; i += 1) {
-        each_blocks[i].m(div1, null);
+        if (each_blocks[i]) {
+          each_blocks[i].m(div1, null);
+        }
       }
       append(div2, t2);
       if (if_block)
@@ -3206,7 +3102,9 @@ function create_fragment3(ctx) {
     m(target, anchor) {
       insert(target, div, anchor);
       for (let i = 0; i < each_blocks.length; i += 1) {
-        each_blocks[i].m(div, null);
+        if (each_blocks[i]) {
+          each_blocks[i].m(div, null);
+        }
       }
       current = true;
     },
@@ -3563,7 +3461,6 @@ var MediaTypeManager = class {
       if (!folderPath) {
         folderPath = `/`;
       }
-      console.log(folderPath);
       if (!(yield app.vault.adapter.exists(folderPath))) {
         yield app.vault.createFolder(folderPath);
       }
@@ -3981,7 +3878,6 @@ ${JSON.stringify(data, void 0, 4)}`);
         throw Error(`MDB | Received status code ${fetchData.status} from an API.`);
       }
       const result = yield fetchData.json();
-      console.debug(result);
       if (result.Response === "False") {
         throw Error(`MDB | Received error from ${this.apiName}: ${result.Error}`);
       }
@@ -4635,7 +4531,7 @@ var YAMLConverter = class {
     } else if (typeof value === "number") {
       return value.toString();
     } else if (typeof value === "string") {
-      return '"' + value + '"';
+      return '"' + value.replace('"', '\\"') + '"';
     } else if (typeof value === "object") {
       let output = "";
       if (Array.isArray(value)) {
@@ -5162,6 +5058,7 @@ var MediaDbPreviewModal = class extends import_obsidian14.Modal {
     this.title = previewModalOptions.modalTitle;
     this.elements = previewModalOptions.elements;
     this.createNoteOptions = previewModalOptions.createNoteOptions;
+    this.markdownComponent = new import_obsidian14.Component();
   }
   setSubmitCallback(submitCallback) {
     this.submitCallback = submitCallback;
@@ -5175,14 +5072,19 @@ var MediaDbPreviewModal = class extends import_obsidian14.Modal {
       contentEl.addClass("media-db-plugin-preview-modal");
       contentEl.createEl("h2", { text: this.title });
       const previewWrapper = contentEl.createDiv({ cls: "media-db-plugin-preview-wrapper" });
+      this.markdownComponent.load();
       for (const result of this.elements) {
         previewWrapper.createEl("h3", { text: result.englishTitle });
-        const fileDiv = previewWrapper.createDiv();
+        const fileDiv = previewWrapper.createDiv({ cls: "media-db-plugin-preview" });
         let fileContent = yield this.plugin.generateMediaDbNoteContents(result, this.createNoteOptions);
         fileContent = `
 ${fileContent}
 `;
-        import_obsidian14.MarkdownRenderer.renderMarkdown(fileContent, fileDiv, null, null);
+        try {
+          yield import_obsidian14.MarkdownRenderer.renderMarkdown(fileContent, fileDiv, "", this.markdownComponent);
+        } catch (e) {
+          console.warn(`mdb | error during rendering of preview`, e);
+        }
       }
       contentEl.createDiv({ cls: "media-db-plugin-spacer" });
       const bottomSettingRow = new import_obsidian14.Setting(contentEl);
@@ -5205,6 +5107,7 @@ ${fileContent}
     this.preview();
   }
   onClose() {
+    this.markdownComponent.unload();
     this.closeCallback();
   }
 };

@@ -4,14 +4,15 @@
   "frequency": "0",
   "triggerOnLoad": true,
   "isSyncing": false,
-  "lastSyncFailed": false,
+  "lastSyncFailed": true,
   "refreshNotes": false,
   "notesToRefresh": [],
   "reimportShowConfirmation": true,
-  "lastCursor": "eyJsYXN0SGlnaGxpZ2h0UEtJRCI6NjA1NDA3LCJja1BLSUQiOjAsImNrTklEIjowLCJja1hOSUQiOjAsImNrVCI6MTY4OTU2MjA2N30=",
+  "lastCursor": "eyJsYXN0SGlnaGxpZ2h0UEtJRCI6OTQ3MzU5LCJsbmkiOjAsImNrUEtJRCI6MCwiY2tOSUQiOjAsImNrVCI6MTY5MzI0MTc3NH0=",
   "dataVersion": 0,
   "notePaths": {
-    "H8327DM": "WuCai/2023/05/wucai-漆中之黑 豆瓣-H8327DM.md"
+    "H8327DM": "WuCai/2023/05/wucai-漆中之黑 豆瓣-H8327DM.md",
+    "H8AAH6B": "WuCai/2023/07/wucai-Slowly  慢慢地-H8AAH6B.md"
   },
   "exportConfig": {
     "titleFormat": 1,

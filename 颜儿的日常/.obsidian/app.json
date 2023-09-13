@@ -2,11 +2,7 @@
   "attachmentFolderPath": "Read It Later/百宝箱/resource",
   "showLineNumber": true,
   "spellcheck": true,
-  "spellcheckLanguages": [
-    "zh-CN",
-    "en-US",
-    "en-GB"
-  ],
+  "spellcheckLanguages": null,
   "newFileLocation": "root",
   "pdfExportSettings": {
     "includeName": true,

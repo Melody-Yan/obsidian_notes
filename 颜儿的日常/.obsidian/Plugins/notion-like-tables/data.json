@@ -1,4 +1,16 @@
 {
+  "shouldDebug": false,
+  "createAtObsidianAttachmentFolder": false,
+  "customFolderForNewFiles": "",
+  "exportRenderMarkdown": true,
+  "defaultEmbedWidth": "100%",
+  "defaultEmbedHeight": "340px",
+  "hasMigratedTo800": true,
+  "showWelcomeModal": false,
+  "showDonationModal": true,
+  "showWhatsNewModal": true,
+  "defaultFrozenColumnCount": 1,
+  "pluginVersion": "8.2.2",
   "data": {
     "table-id-FTiVlA": {
       "model": {
@@ -221,6 +233,5 @@
     ],
     "eventType": "update-state"
   },
-  "shouldClear": false,
-  "shouldDebug": false
+  "shouldClear": false
 }

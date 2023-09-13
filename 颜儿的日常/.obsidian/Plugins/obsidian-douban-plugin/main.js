@@ -1459,7 +1459,7 @@ PS: This file could be delete if you want to.
   "121401": `Status Bar`,
   "121402": `Display status bar when import data ?`,
   "121430": `Save Attachment File`,
-  "121431": `Save attachment file to local disk, such as image ?`,
+  "121431": `Save attachment file to local disk, such as image ? If you do not enable this feature, it will not show cover image in note`,
   "121432": `Attachment folder`,
   "121433": `Attachment file created from Obsidian-Douban will be placed in this folder, If blank, they will be placed in the default location for this vault.`,
   "121434": `assets`,
@@ -1918,12 +1918,12 @@ var zh_cn_default = {
   "121401": `\u72B6\u6001\u680F`,
   "121402": `\u5F53\u5728\u5BFC\u5165\u6570\u636E\u65F6, \u662F\u5426\u9700\u8981\u5728\u72B6\u6001\u680F\u663E\u793A\u5904\u7406\u72B6\u6001? `,
   "121430": `\u4FDD\u5B58\u56FE\u7247\u9644\u4EF6`,
-  "121431": `\u5BFC\u5165\u6570\u636E\u4F1A\u540C\u6B65\u4FDD\u5B58\u56FE\u7247\u9644\u4EF6\u5230\u672C\u5730\u6587\u4EF6\u5939, \u5982\u7535\u5F71\u5C01\u9762,\u4E66\u7C4D\u5C01\u9762 `,
+  "121431": `\u5BFC\u5165\u6570\u636E\u4F1A\u540C\u6B65\u4FDD\u5B58\u56FE\u7247\u9644\u4EF6\u5230\u672C\u5730\u6587\u4EF6\u5939, \u5982\u7535\u5F71\u5C01\u9762,\u4E66\u7C4D\u5C01\u9762\u3002\u5982\u679C\u9700\u8981\u663E\u793A\u5C01\u9762\uFF0C\u8BF7\u4FDD\u6301\u5F00\u542F\u8BE5\u529F\u80FD\u3002`,
   "121432": `\u9644\u4EF6\u5B58\u653E\u4F4D\u7F6E`,
   "121433": `\u4FDD\u5B58\u7684\u9644\u4EF6\u5C06\u4F1A\u5B58\u653E\u81F3\u8BE5\u6587\u4EF6\u5939\u4E2D. \u5982\u679C\u4E3A\u7A7A, \u7B14\u8BB0\u5C06\u4F1A\u5B58\u653E\u5230\u9ED8\u8BA4\u4F4D\u7F6E(assets) `,
   "121434": `assets`,
   "121435": `\u4FDD\u5B58\u9AD8\u6E05\u5C01\u9762`,
-  "121436": `\u9AD8\u6E05\u5C01\u9762\u56FE\u7247\u8D28\u91CF\u66F4\u9AD8\u6E05\u6670\u5EA6\u66F4\u597D,\u5E76\u4E14\u9700\u8981\u60A8\u5728\u6B64\u63D2\u4EF6\u767B\u5F55\u8C46\u74E3\u624D\u80FD\u751F\u6548,\u82E5\u672A\u767B\u5F55\u5219\u9ED8\u8BA4\u4F7F\u7528\u4F4E\u7CBE\u5EA6\u7248\u672C\u5C01\u9762`,
+  "121436": `\u9AD8\u6E05\u5C01\u9762\u56FE\u7247\u8D28\u91CF\u66F4\u9AD8\u6E05\u6670\u5EA6\u66F4\u597D, \u9700\u8981\u60A8\u5728\u6B64\u63D2\u4EF6 \u767B\u5F55\u8C46\u74E3 \u624D\u80FD\u751F\u6548, \u82E5\u672A\u767B\u5F55\u5219\u9ED8\u8BA4\u4F7F\u7528\u4F4E\u7CBE\u5EA6\u7248\u672C\u5C01\u9762`,
   "121437": `\u767B\u5F55\u540E\u6B64\u529F\u80FD\u624D\u4F1A\u751F\u6548`,
   "121438": `\u9AD8\u6E05\u5C01\u9762\u56FE\u7247\u8D28\u91CF\u66F4\u9AD8, \u6E05\u6670\u5EA6\u66F4\u597D, \u4F46\u5360\u7528\u7A7A\u95F4\u4F1A\u6BD4\u666E\u901A\u6E05\u6670\u5EA6\u5C01\u9762\u66F4\u591A`,
   "121501": `\u7B14\u8BB0\u5B58\u653E\u4F4D\u7F6E`,
@@ -16373,12 +16373,13 @@ var DoubanAbstractLoadHandler = class {
       if (!folder) {
         folder = DEFAULT_SETTINGS.attachmentPath;
       }
+      const referHeaders = { "referer": image };
       if ((syncConfig ? syncConfig.cacheHighQuantityImage : context.settings.cacheHighQuantityImage) && context.userComponent.isLogin()) {
         try {
           const fileNameSpilt = filename.split(".");
           const highFilename = fileNameSpilt.first() + ".jpg";
           const highImage = this.getHighQuantityImageUrl(highFilename);
-          const resultValue2 = yield context.netFileHandler.downloadFile(highImage, folder, highFilename, context, false);
+          const resultValue2 = yield context.netFileHandler.downloadFile(highImage, folder, highFilename, context, false, referHeaders);
           if (resultValue2 && resultValue2.success) {
             extract.image = resultValue2.filepath;
             return;
@@ -16388,7 +16389,7 @@ var DoubanAbstractLoadHandler = class {
           console.error("\u4E0B\u8F7D\u9AD8\u6E05\u5C01\u9762\u5931\u8D25\uFF0C\u5C06\u4F1A\u4F7F\u7528\u666E\u901A\u5C01\u9762");
         }
       }
-      const resultValue = yield context.netFileHandler.downloadFile(image, folder, filename, context, true);
+      const resultValue = yield context.netFileHandler.downloadFile(image, folder, filename, context, true, referHeaders);
       if (resultValue && resultValue.success) {
         extract.image = resultValue.filepath;
       }
@@ -16396,6 +16397,7 @@ var DoubanAbstractLoadHandler = class {
   }
   humanCheck(html3, url) {
     return __async(this, null, function* () {
+      this.doubanPlugin.settingsManager.debug(html3);
       if (html3 && html3.indexOf("<title>\u7981\u6B62\u8BBF\u95EE</title>") != -1) {
         const loginModel = new DoubanHumanCheckModel(url);
         yield loginModel.load();
@@ -19244,7 +19246,6 @@ function constructLoginCookieSettingsUI(containerEl, parentContainerEl, manager)
     return text3;
   }).addExtraButton((button) => {
     return button.setIcon("check").onClick(() => __async(this, null, function* () {
-      button.setDisabled(true);
       manager.debug(`\u914D\u7F6E\u754C\u9762:\u786E\u8BA4\u8F93\u5165Cookie`);
       const user = yield manager.plugin.userComponent.loginCookie(manager.getCookieTemp());
       if (!user || !user.id) {
@@ -20380,13 +20381,20 @@ var NetFileHandler = class {
   constructor(fileHandler) {
     this.fileHandler = fileHandler;
   }
-  downloadFile(url, folder, filename, context, showError) {
+  downloadFile(url, folder, filename, context, showError, headers) {
     return __async(this, null, function* () {
+      const headersCookie = { Cookie: context.settings.loginCookiesContent };
+      const headersInner = {};
+      if (headers) {
+        Object.assign(headersInner, headers, headersCookie);
+      } else {
+        Object.assign(headersInner, headersCookie);
+      }
       const requestUrlParam = {
         url,
         method: "GET",
         throw: true,
-        headers: { Cookie: context.settings.loginCookiesContent }
+        headers: headersInner
       };
       const filePath = FileUtil.join(folder, filename);
       return (0, import_obsidian26.requestUrl)(requestUrlParam).then((response) => {
