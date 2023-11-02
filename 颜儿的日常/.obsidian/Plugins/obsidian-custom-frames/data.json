@@ -1,0 +1,16 @@
+{
+  "frames": [
+    {
+      "url": "https://weread.qq.com/",
+      "displayName": "微信读书",
+      "icon": "",
+      "hideOnMobile": true,
+      "addRibbonIcon": true,
+      "openInCenter": false,
+      "zoomLevel": 1,
+      "forceIframe": false,
+      "customCss": ""
+    }
+  ],
+  "padding": 5
+}

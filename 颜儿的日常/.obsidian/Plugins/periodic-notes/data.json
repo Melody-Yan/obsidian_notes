@@ -1,32 +1,35 @@
 {
-  "showGettingStartedBanner": true,
+  "showGettingStartedBanner": false,
   "hasMigratedDailyNoteSettings": false,
   "hasMigratedWeeklyNoteSettings": false,
   "daily": {
     "format": "",
     "template": "",
-    "folder": ""
+    "folder": "MEMO＆DAILY/MEMOS",
+    "enabled": true
   },
   "weekly": {
     "format": "",
     "template": "",
-    "folder": "",
+    "folder": "MEMO＆DAILY/MEMOS",
     "enabled": true
   },
   "monthly": {
     "format": "",
     "template": "",
-    "folder": "",
+    "folder": "MEMO＆DAILY/MEMOS",
     "enabled": true
   },
   "quarterly": {
     "format": "",
     "template": "",
-    "folder": ""
+    "folder": "MEMO＆DAILY/MEMOS",
+    "enabled": true
   },
   "yearly": {
     "format": "",
     "template": "",
-    "folder": ""
+    "folder": "MEMO＆DAILY/MEMOS",
+    "enabled": true
   }
 }

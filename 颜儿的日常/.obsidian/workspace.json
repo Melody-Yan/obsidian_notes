@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "6d985b7f55ef15e4",
+        "id": "9beaef8a0290178e",
         "type": "tabs",
         "children": [
           {
-            "id": "56b3eea324719b1e",
+            "id": "98fd8c0058ffba40",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "攻略/开学准备/开学准备.md",
+                "file": "快速记录/对比阅读/瓦尔登湖.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -21,13 +21,13 @@
             }
           },
           {
-            "id": "0d61f30ef80ba054",
+            "id": "7934f51e0e93e837",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "快速记录/1.md",
-                "mode": "source",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+                "mode": "preview",
                 "backlinks": true,
                 "source": false
               }
@@ -46,7 +46,7 @@
       {
         "id": "fb08aa6e132aaed9",
         "type": "tabs",
-        "dimension": 55.05735140771637,
+        "dimension": 62.04379562043796,
         "children": [
           {
             "id": "ef01d5ec1b589285",
@@ -67,17 +67,6 @@
             }
           },
           {
-            "id": "b2f9db0e04c7fcdb",
-            "type": "leaf",
-            "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true
-              }
-            }
-          },
-          {
             "id": "d21950b484b62e1e",
             "type": "leaf",
             "state": {
@@ -89,6 +78,17 @@
                 "collapseAll": false,
                 "extraContext": true,
                 "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b2f9db0e04c7fcdb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
               }
             }
           },
@@ -105,7 +105,7 @@
       {
         "id": "4c275ce8c024178b",
         "type": "tabs",
-        "dimension": 44.94264859228363,
+        "dimension": 37.95620437956204,
         "children": [
           {
             "id": "10edaa578b60d590",
@@ -119,7 +119,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 265.5
+    "width": 263.5
   },
   "right": {
     "id": "628262475fc8c9f5",
@@ -128,7 +128,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 33.541666666666664,
+        "dimension": 40.4776869893149,
         "children": [
           {
             "id": "d20243282689f9c6",
@@ -144,7 +144,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "快速记录/1.md",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -161,7 +161,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "快速记录/1.md",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -193,12 +193,13 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 5
       },
       {
         "id": "eb8df96c63e62749",
         "type": "tabs",
-        "dimension": 34.270833333333336,
+        "dimension": 20.678818353236963,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -206,7 +207,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "快速记录/1.md"
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md"
               }
             }
           },
@@ -225,13 +226,30 @@
               "type": "Strange New Worlds",
               "state": {}
             }
+          },
+          {
+            "id": "2987e884e3aa81d6",
+            "type": "leaf",
+            "state": {
+              "type": "memos_view",
+              "state": {}
+            }
+          },
+          {
+            "id": "5e297d7ec2dd9083",
+            "type": "leaf",
+            "state": {
+              "type": "custom-frames-微信读书",
+              "state": {}
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       },
       {
         "id": "007ecc252bcc06a1",
         "type": "tabs",
-        "dimension": 32.1875,
+        "dimension": 38.84349465744815,
         "children": [
           {
             "id": "b403bc74b6124abc",
@@ -265,6 +283,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "obsidian-custom-frames:Open 微信读书": false,
       "graph:查看关系图谱": false,
       "command-palette:打开命令面板": false,
       "canvas:新建白板": false,
@@ -286,39 +305,40 @@
       "notion-like-tables:Create new loom": false,
       "obsidian-weread-plugin:Weread": false,
       "chronology:Open Chronology": false,
-      "periodic-notes:Open this week": false,
+      "periodic-notes:Open today": false,
       "obsidian-memos:Memos": false
     }
   },
-  "active": "0d61f30ef80ba054",
+  "active": "7934f51e0e93e837",
   "lastOpenFiles": [
-    "dictionary.md",
-    "Excalidraw/Drawing 2023-07-24 17.09.06.excalidraw.md",
-    "Excalidraw/Drawing 2023-05-25 16.49.53.excalidraw.md",
-    "MEMO＆DAILY/Daily/2023/2023年9月30日.md",
-    "Day Planners/Day Planner-20230909.md",
-    "攻略/开学准备/开学准备.md",
-    "攻略/未命名看板.md",
-    "2023-09-10.md",
-    "2023-09-01.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/乘风破浪的姐姐,强化了｜削弱了性别刻板印.md",
+    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/想说的话｜评分.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/翼娃子的星期天   导演陈晨.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/哼将军和哈将军   导演刘高翔.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/外婆的蓝色铁皮柜轮椅   导演刘毛宁.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/蒯老伯的糖水铺   导演俞昆.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/小火车   导演赵易.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/萤火虫女孩   导演李念泽.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/小兔的问题   导演兰茜雅.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/第四集   乡村巴士带走了王孩儿和神仙.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/中国奇谭第四集《乡村巴士带走了王孩儿和神仙》深度解析.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第八集 玉兔/第八集   玉兔.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/其他想说的.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/中国奇谭.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第七集 小卖部/第七集   小卖部.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第六集 飞鸟与鱼/第六集   飞鸟与鱼.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第五集 小满/第五集   小满.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第三集 林林/第三集   林林.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第二集鹅鹅鹅/第二集鹅鹅鹅.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第一集小妖怪的夏天/第一集小妖怪的夏天.md",
+    "快速记录/对比阅读/瓦尔登湖.md",
+    "学习/可可英语晨读/Drawing 2023-07-12 09.00.09.excalidraw.md",
+    "读书笔记/日日杂记/日日杂记.md",
+    "读书笔记/尤利西斯（读客三个圈经典文库）/尤利西斯（读客三个圈经典文库）-詹姆斯·乔伊斯.md",
+    "学习/英语竞赛预备",
     "攻略/开学准备/开学.canvas",
-    "Day Planners/Day Planner-20230410.md",
-    "Day Planners/Day Planner-20230421.md",
-    "Day Planners/713.md",
-    "观影/院人全年无休计划/02.md",
-    "Day Planners/Day Planner-20230718.md",
-    "作业/718.md",
-    "Day Planners/Day Planner-20230719.md",
-    "Day Planners/Day Planner-20230908.md",
-    "MEMO＆DAILY/Daily/2023/又撑又饿.md",
-    "MEMO＆DAILY/Daily/2023/活得热烈.md",
-    "My manuscript/随笔/2023/我当然悲哀.md",
-    "生活用品.md",
-    "My manuscript/随笔/2023/你又让我怎么回答.md",
-    "My manuscript/随笔/2023/可他小心翼翼又理直气壮.md",
-    "My manuscript/随笔/2023/后半夜的月亮.md",
-    "My manuscript/随笔/2023/黑暗渐渐织上天空.md",
-    "My manuscript/随笔/2023/城市的夜晚星星很少.md",
     "Read It Later/百宝箱/resource/134536859e919e253bab65921581993.jpg",
     "Read It Later/百宝箱/resource/0f6381885cd79f6663f6ac9dbff05f3.jpg",
     "Read It Later/百宝箱/resource/4b4d1864f5edd389bad8524f230c08b.jpg",
@@ -333,7 +353,6 @@
     "Excalidraw/Scripts/Downloaded/Add Link to Existing File and Open.svg",
     "My manuscript/世界观架构/未命名",
     "My manuscript/世界观架构",
-    "WuCai/2023/05",
     "Read It Later/百宝箱/resource/Pasted Image 20230525165112_707.png",
     "Read It Later/百宝箱/resource/Pasted Image 20230525165112_697.png",
     "Read It Later/百宝箱/resource/Pasted image 20230525164841.png",

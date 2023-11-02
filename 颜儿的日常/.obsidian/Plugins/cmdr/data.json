@@ -94,6 +94,12 @@
       "icon": "lucide-bookmark-plus",
       "name": "Bookmarks: Bookmark...",
       "mode": "any"
+    },
+    {
+      "id": "obsidian-custom-frames:open-custom-frames-微信读书",
+      "icon": "book-open",
+      "name": "Custom Frames: Open 微信读书",
+      "mode": "any"
     }
   ],
   "macros": [],
