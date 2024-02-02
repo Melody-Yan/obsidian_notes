@@ -1,12 +1,12 @@
 {
   "cookies": [
     {
-      "name": "wr_fp",
-      "value": "3262074245"
-    },
-    {
       "name": "wr_gid",
       "value": "274165448"
+    },
+    {
+      "name": "wr_fp",
+      "value": "146622093"
     },
     {
       "name": "wr_vid",
@@ -14,7 +14,7 @@
     },
     {
       "name": "wr_skey",
-      "value": "2hxhzewS"
+      "value": "zv99rL05"
     },
     {
       "name": "wr_pf",
@@ -22,7 +22,7 @@
     },
     {
       "name": "wr_rt",
-      "value": "web@e~PV~vp_yx7q1tu4vzw_WL"
+      "value": "web@ZPx2YGACRpMyNjtdv8x_AL"
     },
     {
       "name": "wr_localvid",
@@ -34,7 +34,7 @@
     },
     {
       "name": "wr_avatar",
-      "value": "https://thirdwx.qlogo.cn/mmopen/vi_32/gJsLqv7XF09riccMOILj9DsANUTiayria8dGp9DsCyG6leVZJytQmd6JcOLZqMPrDVPtbC0A3fxw3d94vQIBvaKcw/132"
+      "value": "https://res.weread.qq.com/wravatar/WV0010-rzc7oaH8i14FEx5687hTpd5/0"
     },
     {
       "name": "wr_gender",
@@ -46,7 +46,7 @@
   "insertAfter": "<!-- start of weread -->",
   "insertBefore": "<!-- end of weread -->",
   "dailyNotesFormat": "YYYY-MM-DD",
-  "lastCookieTime": 1684334716376,
+  "lastCookieTime": 1706896274611,
   "isCookieValid": true,
   "user": "南风的旅行.",
   "userVid": "232063128",
@@ -54,5 +54,7 @@
   "noteCountLimit": -1,
   "subFolderType": "title",
   "fileNameType": "BOOK_NAME-AUTHOR",
-  "dailyNotesToggle": true
+  "dailyNotesToggle": true,
+  "notesBlacklist": "",
+  "showEmptyChapterTitleToggle": false
 }

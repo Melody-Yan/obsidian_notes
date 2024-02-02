@@ -1,0 +1,18 @@
+{
+  "tag": "book",
+  "libraries": [
+    "E:\\书籍\\电子书"
+  ],
+  "byDrag": true,
+  "savePath": "epub",
+  "assetsPath": "{{savePath}}/{{bookName}}/images",
+  "granularity": 4,
+  "mocName": "{{bookName}}",
+  "mocPropertysTemplate": "title: {{bookName}}\nauthor: {{author}}\npublisher: {{publisher}}\nstatus: false",
+  "notePropertysTemplate": "",
+  "imageFormat": "![](imagePath)",
+  "autoOpenRightPanel": true,
+  "allbooks": true,
+  "removeDuplicateFolders": false,
+  "moreLog": false
+}

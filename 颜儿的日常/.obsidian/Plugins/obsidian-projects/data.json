@@ -1,0 +1,131 @@
+{
+  "version": 2,
+  "projects": [
+    {
+      "fieldConfig": {},
+      "defaultName": "",
+      "templates": [],
+      "excludedNotes": [],
+      "isDefault": false,
+      "dataSource": {
+        "kind": "folder",
+        "config": {
+          "path": "快速记录/测试专用",
+          "recursive": false
+        }
+      },
+      "newNotesFolder": "",
+      "views": [
+        {
+          "config": {},
+          "filter": {
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "6bab46af-1df9-43cf-a511-4bda04fa9abd",
+          "name": "表格",
+          "type": "table"
+        }
+      ],
+      "id": "0f0ef016-6028-4de0-a646-fd4d90738d72",
+      "name": "2"
+    },
+    {
+      "fieldConfig": {},
+      "defaultName": "",
+      "templates": [],
+      "excludedNotes": [],
+      "isDefault": false,
+      "dataSource": {
+        "kind": "folder",
+        "config": {
+          "path": "书库/book",
+          "recursive": true
+        }
+      },
+      "newNotesFolder": "",
+      "views": [
+        {
+          "config": {},
+          "filter": {
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "38f5f169-0a14-47be-a146-19b431fbfec9",
+          "name": "表格",
+          "type": "table"
+        },
+        {
+          "config": {
+            "includeFields": [
+              "author",
+              "binding",
+              "collectionDate",
+              "datePublished",
+              "isbn",
+              "myRatingStar",
+              "producer",
+              "score"
+            ],
+            "fitStyle": "cover",
+            "coverField": "path",
+            "cardWidth": 200
+          },
+          "filter": {
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "fd80094d-5e3b-4d59-98b7-bd0b88d83159",
+          "name": "画册",
+          "type": "gallery"
+        },
+        {
+          "config": {},
+          "filter": {
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "b93f69d2-09ca-4a35-b8e3-544619ef9807",
+          "name": "看板",
+          "type": "board"
+        }
+      ],
+      "id": "b7ee8bcb-f9d0-42cc-a841-5a1b5d0f34d5",
+      "name": "个人图书馆"
+    }
+  ],
+  "archives": [],
+  "preferences": {
+    "projectSizeLimit": 1000,
+    "frontmatter": {
+      "quoteStrings": "QUOTE_DOUBLE"
+    },
+    "commands": [
+      {
+        "project": "b7ee8bcb-f9d0-42cc-a841-5a1b5d0f34d5",
+        "view": "38f5f169-0a14-47be-a146-19b431fbfec9"
+      }
+    ],
+    "linkBehavior": "open-editor"
+  }
+}

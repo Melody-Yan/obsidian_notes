@@ -7644,6 +7644,21 @@ function parseQuerySortOrder(content, plugin) {
     return querySortOrder;
   }
 }
+function replaceThisInQuery(query, app) {
+  const regex = /([\n \(])this\./g;
+  let activeFileName = "";
+  try {
+    activeFileName = app.workspace.getActiveFile().basename;
+  } catch (error) {
+    return query;
+  }
+  const newQuery = query.replace(regex, (match, precedingChar) => {
+    return `${precedingChar}[[${activeFileName}]].`;
+  });
+  console.log(activeFileName);
+  console.log(newQuery);
+  return newQuery;
+}
 
 // functionsYear.ts
 var YearTimeline = class {
@@ -7657,6 +7672,7 @@ var YearTimeline = class {
         return createErrorMsg("Dataview is not installed. The Release Timeline plugin requires Dataview to properly function.");
       }
       var sortOrder = parseQuerySortOrder(content, this.plugin);
+      content = replaceThisInQuery(content, this.plugin.app);
       try {
         var results;
         var results0 = yield dv.query(content);
@@ -7767,192 +7783,227 @@ var MonthTimeline = class {
       if (typeof dv == "undefined") {
         return createErrorMsg("Dataview is not installed. The Release Timeline plugin requires Dataview to properly function.");
       }
-      var sortOrder = parseQuerySortOrder(content, this.plugin);
+      let dvResults;
+      let dvResultsFiltered;
       try {
-        var results;
-        var results0 = yield dv.query(content);
-        let a = results0.value.values;
-        let b = a.filter((x) => typeof x[1] !== "undefined" && x[1] !== null);
-        b = b.filter((x) => !(typeof x[1] == "number"));
-        b.forEach((x) => x[1] = (0, import_obsidian2.moment)(x[1].toString()).format("YYYY-MM"));
-        b = b.filter((x) => x[1] != "Invalid date");
-        b.forEach((x) => x[0] = x[0].path.match(/([^\/]+(?=\.)).md/)[1]);
-        b.forEach((x) => x[2] == null ? x[2] = x[0] : 1);
-        let monthGroup = [];
-        for (let i = 0; i < b.length; i++) {
-          let item = b[i][1];
-          const ind = monthGroup.findIndex((e) => e.yearMonth === item);
-          if (ind > -1) {
-            monthGroup[ind].values.push([b[i][0], b[i][2]]);
-          } else {
-            monthGroup.push({ "yearMonth": item, "values": [[b[i][0], b[i][2]]] });
-          }
-        }
-        let yearMonthGroup = [];
-        for (let j = 0; j < monthGroup.length; j++) {
-          let item = monthGroup[j].yearMonth.split("-")[0];
-          const ind = yearMonthGroup.findIndex((e) => e.year === item);
-          if (ind > -1) {
-            yearMonthGroup[ind].months.push(monthGroup[j]);
-          } else {
-            yearMonthGroup.push({ "year": item, "months": [monthGroup[j]] });
-          }
-        }
-        results = sortOrder == "asc" ? yearMonthGroup.sort((a2, b2) => Number(a2.year) - Number(b2.year)) : yearMonthGroup.sort((a2, b2) => Number(b2.year) - Number(a2.year));
+        content = replaceThisInQuery(content, this.plugin.app);
+        dvResults = yield dv.query(content);
+        let dvResultsValues = dvResults.value.values;
+        let a = dvResultsValues.filter((x) => typeof x[1] !== "undefined" && x[1] !== null);
+        let b = a.filter((x) => !(typeof x[1] == "number"));
+        dvResultsFiltered = b.filter((x) => (0, import_obsidian2.moment)(x[1].toString()).format("YYYY-MM") != "Invalid date");
+        dvResultsFiltered.forEach((x) => x[1] = (0, import_obsidian2.moment)(x[1].toString()));
       } catch (error) {
         return createErrorMsg("Error from dataview: " + error.message);
       }
-      if (results.length == 0) {
+      const dvResultsTransformed = this.transformDvResults(dvResultsFiltered);
+      if (dvResultsTransformed.length == 0) {
         return createErrorMsg("No results");
+      }
+      const fullMonthTimelineData = this.fillInMissingMonths(dvResultsTransformed);
+      const collapsedEmptyYearsTimelineData = this.collapseEmptyYears(fullMonthTimelineData);
+      const sortOrder = parseQuerySortOrder(content, this.plugin);
+      const sortedTimelineData = this.sortTimelineData(collapsedEmptyYearsTimelineData, sortOrder);
+      const markedSeparatorsTimelineData = this.markSeparators(sortedTimelineData);
+      const renderedTimeline = this.renderTimeline(markedSeparatorsTimelineData);
+      return renderedTimeline;
+    });
+  }
+  transformDvResults(dvResults) {
+    let transformedResults = [];
+    dvResults.forEach((item) => {
+      const momentDate = item[1];
+      const newYear = (0, import_obsidian2.moment)(momentDate).format("Y");
+      const newMonth = (0, import_obsidian2.moment)(momentDate).format("Y-MM");
+      const newMonthDisplay = (0, import_obsidian2.moment)(momentDate).format("MMM");
+      const fileName = item[0].path.match(/([^\/]+(?=\.)).md/)[1];
+      const aliasName = item[2] === null || item[2] === void 0 ? fileName : item[2];
+      const pageObject = {
+        fileName,
+        aliasName,
+        date: momentDate.format("YYYY-MM-DD")
+      };
+      let element = transformedResults.find((e) => e.month === newMonth);
+      if (element) {
+        element.contents.push(pageObject);
       } else {
-        return this.createTimelineTableMonth(results, sortOrder);
+        let newMonthObject = {
+          year: newYear,
+          month: newMonth,
+          monthDisplay: newMonthDisplay,
+          contents: [pageObject],
+          collapsed: false,
+          separator: false
+        };
+        transformedResults.push(newMonthObject);
       }
     });
+    return transformedResults;
   }
-  createTimelineTableMonth(timeline, sortOrder) {
-    const newTbl = document.createElement("table");
-    newTbl.classList.add("release-timeline");
-    let newTbody = document.createElement("tbody");
-    let isLongRow = 0;
-    let prevYearExists = false;
-    let nextYearExists = timeline[1] !== void 0 ? true : false;
-    let nextYear = timeline[1] == void 0 ? void 0 : Number(timeline[1].year);
-    timeline.forEach((item, index) => {
-      nextYearExists = timeline[index + 1] !== void 0 ? true : false;
-      nextYear = timeline[index + 1] == void 0 ? void 0 : Number(timeline[index + 1].year);
-      newTbody = this.renderYearMonth(item, prevYearExists, nextYearExists, nextYear, newTbody, sortOrder);
-      prevYearExists = true;
-    });
-    newTbl.appendChild(newTbody);
-    return newTbl;
+  fillInMissingMonths(contentData) {
+    let filledInData = this.insertEmptyMonthsCollapsedNo(contentData);
+    return filledInData;
   }
-  renderYearMonth(item, prevYearExists, nextYearExists, nextYear, newTbody, sortOrder) {
-    newTbody.appendChild(createRowSeparatorYearMonth("no-border"));
-    let currentYear = item.year;
+  insertEmptyMonthsCollapsedNo(contentData) {
+    let existingMonths = contentData.map((item) => item.month).sort();
+    const minMonth = (0, import_obsidian2.moment)(existingMonths[0]);
+    const maxMonth = (0, import_obsidian2.moment)(existingMonths[existingMonths.length - 1]);
+    for (let month = minMonth; month.isSameOrBefore(maxMonth); month.add(1, "months")) {
+      const monthFormatted = month.format("Y-MM");
+      if (!existingMonths.includes(monthFormatted)) {
+        const newYear = (0, import_obsidian2.moment)(month).format("Y");
+        const newMonth = monthFormatted;
+        const newMonthDisplay = (0, import_obsidian2.moment)(month).format("MMM");
+        const newMonthObject = {
+          year: newYear,
+          month: newMonth,
+          monthDisplay: newMonthDisplay,
+          contents: [],
+          collapsed: false,
+          separator: false
+        };
+        contentData.push(newMonthObject);
+      }
+    }
+    return contentData;
+  }
+  collapseEmptyYears(fullMonthTimelineData) {
+    let minYear = fullMonthTimelineData.reduce((min, item) => item.year < min ? item.year : min, fullMonthTimelineData[0].year);
+    let maxYear = fullMonthTimelineData.reduce((max, item) => item.year > max ? item.year : max, fullMonthTimelineData[0].year);
+    for (let year = (0, import_obsidian2.moment)(minYear); year.isSameOrBefore((0, import_obsidian2.moment)(maxYear)); year.add(1, "years")) {
+      const yearFormatted = year.format("Y");
+      const yearData = fullMonthTimelineData.filter((elem) => elem.year == yearFormatted);
+      const itemsInYear = yearData.reduce((acc, item) => acc + item.contents.length, 0);
+      if (itemsInYear == 0) {
+        fullMonthTimelineData = fullMonthTimelineData.filter((elem) => elem.year != yearFormatted);
+        const newYear = year.format("Y");
+        const newMonth = year.format("Y-MM");
+        const newObject = {
+          year: newYear,
+          month: newMonth,
+          monthDisplay: "",
+          contents: [],
+          collapsed: true,
+          separator: false
+        };
+        fullMonthTimelineData.push(newObject);
+      }
+    }
+    return fullMonthTimelineData;
+  }
+  sortTimelineData(fullMonthTimelineData, sortOrder) {
+    if (sortOrder == "asc") {
+      fullMonthTimelineData.sort((a, b) => a.month.localeCompare(b.month));
+      fullMonthTimelineData.forEach((item) => {
+        item.contents.sort((a, b) => a.date.localeCompare(b.date));
+      });
+    }
     if (sortOrder == "desc") {
-      var firstMonth = import_obsidian2.moment.max(...item.months.map((o) => (0, import_obsidian2.moment)(o.yearMonth)));
-      var lastMonth = import_obsidian2.moment.min(...item.months.map((o) => (0, import_obsidian2.moment)(o.yearMonth)));
-    } else if (sortOrder == "asc") {
-      var firstMonth = import_obsidian2.moment.min(...item.months.map((o) => (0, import_obsidian2.moment)(o.yearMonth)));
-      var lastMonth = import_obsidian2.moment.max(...item.months.map((o) => (0, import_obsidian2.moment)(o.yearMonth)));
+      fullMonthTimelineData.sort((a, b) => b.month.localeCompare(a.month));
+      fullMonthTimelineData.forEach((item) => {
+        item.contents.sort((a, b) => b.date.localeCompare(a.date));
+      });
     }
-    if (prevYearExists) {
-      if (sortOrder == "asc" && firstMonth.format("MM") != "01") {
-        firstMonth = (0, import_obsidian2.moment)([currentYear, 0]);
-      }
-      if (sortOrder == "desc" && firstMonth.format("MM") != "12") {
-        firstMonth = (0, import_obsidian2.moment)([currentYear, 11]);
-      }
-    }
-    ;
-    if (nextYearExists) {
-      if (sortOrder == "asc" && lastMonth.format("MM") != "12") {
-        lastMonth = (0, import_obsidian2.moment)([currentYear, 11]);
-      }
-      if (sortOrder == "desc" && lastMonth.format("MM") != "01") {
-        lastMonth = (0, import_obsidian2.moment)([currentYear, 0]);
-      }
-    }
-    ;
-    let nbRows = Math.abs(firstMonth.diff(lastMonth, "months")) + 1;
-    for (let q = 0; q < item.months.length; q++) {
-      if (item.months[q].values.length > 1) {
-        nbRows += item.months[q].values.length - 1;
-      }
-    }
-    nbRows += 1;
-    let monthDiff = Math.abs(firstMonth.diff(lastMonth, "months"));
-    let iterator = sortOrder == "asc" ? 1 : -1;
-    let isLongRow0 = false;
-    let ii = (0, import_obsidian2.moment)(firstMonth);
-    for (let qq = 0; qq <= monthDiff; qq++) {
-      let ind2 = item.months.findIndex((e) => e.yearMonth === ii.format("YYYY-MM"));
-      if (isLongRow0) {
-        nbRows += 1;
-      }
-      ;
-      if (ind2 > -1) {
-        isLongRow0 = false;
-        if (item.months[ind2].values.length == 1) {
-        } else {
-          if (qq != 0) {
-            nbRows += 1;
-          }
-          ;
-          isLongRow0 = true;
-        }
-      } else {
-        isLongRow0 = false;
-      }
-      ii.add(iterator, "months");
-    }
-    ;
-    let yearRow = createRowYear({ val: currentYear, cls: "year-header", rowspanNb: nbRows });
-    const newYearRow = createNewRow(yearRow);
-    newTbody.appendChild(newYearRow);
-    let i = (0, import_obsidian2.moment)(firstMonth);
-    let isLongRow = false;
-    for (let q = 0; q <= monthDiff; q++) {
-      let ind = item.months.findIndex((e) => e.yearMonth === i.format("YYYY-MM"));
-      if (isLongRow) {
-        newTbody.appendChild(createRowSeparator());
-      }
-      ;
-      if (ind > -1) {
-        isLongRow = false;
-        if (item.months[ind].values.length == 1) {
-          const rowYear = createRowYear({ val: i.format("MMM"), cls: "year-existing", rowspanNb: 1 });
-          const rowItem = createRowItem({ fileName: item.months[ind].values[0][0], fileAlias: item.months[ind].values[0][1] });
-          const newRow = createNewRow(rowYear, rowItem);
-          newTbody.appendChild(newRow);
-        } else {
-          if (q != 0) {
-            newTbody.appendChild(createRowSeparator());
-          }
-          ;
-          isLongRow = true;
-          const rowYear = createRowYear({ val: i.format("MMM"), cls: "year-existing", rowspanNb: item.months[ind].values.length });
-          const rowItem = createRowItem({ fileName: item.months[ind].values[0][0], fileAlias: item.months[ind].values[0][1], cls: "td-first" });
-          const newRow = createNewRow(rowYear, rowItem);
-          newTbody.appendChild(newRow);
-          for (let j = 1; j < item.months[ind].values.length; j++) {
-            const rowItem2 = createRowItem({ fileName: item.months[ind].values[j][0], fileAlias: item.months[ind].values[j][1], cls: "td-next" });
-            const newRow2 = createNewRow(rowItem2);
-            newTbody.appendChild(newRow2);
-          }
-        }
-      } else {
-        isLongRow = false;
-        const rowYear = createRowYear({ val: i.format("MMM"), cls: "year-nonexisting" });
-        const rowItem = createRowItem({ fileName: "", fileAlias: "" });
-        const newRow = createNewRow(rowYear, rowItem);
-        newTbody.appendChild(newRow);
-      }
-      i.add(iterator, "months");
-    }
-    let yearDiff2 = Math.abs(Number(currentYear) - nextYear);
-    if (nextYearExists) {
-      newTbody.appendChild(createRowSeparatorYearMonth("border"));
-    } else {
-      newTbody.appendChild(createRowSeparatorYearMonth("no-border"));
-    }
-    if (nextYearExists && yearDiff2 > 1) {
-      newTbody = this.createEmptyYears(newTbody, yearDiff2, sortOrder, currentYear);
-    }
-    return newTbody;
+    return fullMonthTimelineData;
   }
-  createEmptyYears(newTbody, yearDiff, sortOrder, currentYear) {
-    newTbody.appendChild(createRowSeparatorYearMonth("no-border"));
-    for (let j = 1; j < yearDiff; j++) {
-      let i = sortOrder == "asc" ? Number(currentYear) + j : Number(currentYear) - j;
-      const rowYear0 = createRowYear({ val: "", cls: "year-header" });
-      const rowYear1 = createRowYear({ val: i, cls: "year-nonexisting" });
-      const rowItem2 = createRowItem({ fileName: "", fileAlias: "" });
-      const newRow3 = createNewRow(rowYear0, rowYear1, rowItem2);
-      newTbody.appendChild(newRow3);
+  markSeparators(timelineData) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    for (let i = 0; i < timelineData.length; i++) {
+      let minusTwoMonthNbItems = (_b = (_a = timelineData[i - 2]) == null ? void 0 : _a.contents.length) != null ? _b : 0;
+      let minusOneMonthNbItems = (_d = (_c = timelineData[i - 1]) == null ? void 0 : _c.contents.length) != null ? _d : 0;
+      ;
+      let currMonthNbItems = (_f = (_e = timelineData[i]) == null ? void 0 : _e.contents.length) != null ? _f : 0;
+      ;
+      let plusOneMonthNbItems = (_h = (_g = timelineData[i + 1]) == null ? void 0 : _g.contents.length) != null ? _h : 0;
+      ;
+      let condition = minusOneMonthNbItems > 1 && (currMonthNbItems > 0 || minusTwoMonthNbItems > 0) || currMonthNbItems > 1 && (minusOneMonthNbItems > 0 || plusOneMonthNbItems > 0);
+      if (condition) {
+        timelineData[i].separator = true;
+      }
     }
-    newTbody.appendChild(createRowSeparatorYearMonth("border"));
-    return newTbody;
+    return timelineData;
+  }
+  renderTimeline(sortedTimelineData) {
+    let rlsTbody = document.createElement("tbody");
+    let prevYearCollapsed = void 0;
+    while (sortedTimelineData.length != 0) {
+      const currYear = sortedTimelineData[0].year;
+      let currYearCollapsed = sortedTimelineData[0].collapsed;
+      if (!(currYearCollapsed == true && prevYearCollapsed == true || prevYearCollapsed == void 0)) {
+        const yearBorder = createRowSeparatorYearMonth("border");
+        const yearBorder2 = createRowSeparatorYearMonth("no-border");
+        rlsTbody.appendChild(yearBorder);
+        rlsTbody.appendChild(yearBorder2);
+      }
+      prevYearCollapsed = currYearCollapsed;
+      const timelineDataFilteredByYear = sortedTimelineData.filter((elem) => elem.year == currYear);
+      sortedTimelineData = sortedTimelineData.filter((elem) => elem.year != currYear);
+      if (currYearCollapsed == false) {
+        const htmlYearData = this.renderMonthsInYear(timelineDataFilteredByYear);
+        const yearRowSpanNb = this.calculateRowSpanYear(htmlYearData);
+        let htmlYearTr = createEl("tr");
+        let htmlYearTh = createEl("th", { cls: "year-header", text: currYear });
+        htmlYearTh.setAttribute("scope", "row");
+        htmlYearTh.setAttribute("rowspan", yearRowSpanNb);
+        htmlYearTr.appendChild(htmlYearTh);
+        rlsTbody.appendChild(htmlYearTr);
+        rlsTbody.appendChild(htmlYearData);
+      } else {
+        let htmlYearTr = createEl("tr");
+        let htmlYearTd = createEl("td");
+        let htmlYearTh = createEl("th", { cls: "year-nonexisting", text: currYear });
+        htmlYearTr.appendChild(htmlYearTd);
+        htmlYearTr.appendChild(htmlYearTh);
+        rlsTbody.appendChild(htmlYearTr);
+      }
+    }
+    const rlsTbl = document.createElement("table");
+    rlsTbl.classList.add("release-timeline");
+    rlsTbl.appendChild(rlsTbody);
+    return rlsTbl;
+  }
+  renderMonthsInYear(timelineDataFilteredByYear) {
+    let yearContainer = document.createDocumentFragment();
+    timelineDataFilteredByYear.forEach((monthData) => {
+      const currMonthText = monthData.monthDisplay;
+      const currMonthHasData = monthData.contents.length;
+      const renderSeparator = monthData.separator;
+      let htmlMonthTr = createEl("tr");
+      if (renderSeparator) {
+        let newSeparator = createRowSeparatorYearMonth("no-border");
+        yearContainer.appendChild(newSeparator);
+      }
+      let htmlMonthTh;
+      if (currMonthHasData == 0) {
+        htmlMonthTh = createEl("th", { cls: "year-nonexisting", text: currMonthText });
+      } else {
+        htmlMonthTh = createEl("th", { cls: "year-existing", text: currMonthText });
+      }
+      const monthRowSpanNb = this.calculateRowSpanMonth(monthData);
+      htmlMonthTh.setAttribute("scope", "row");
+      htmlMonthTh.setAttribute("rowspan", monthRowSpanNb);
+      htmlMonthTr.appendChild(htmlMonthTh);
+      yearContainer.appendChild(htmlMonthTr);
+      const createBulletPoints = monthData.contents.length;
+      monthData.contents.forEach((monthEvent) => {
+        const rowItem = createRowItem({ fileName: monthEvent.fileName, fileAlias: monthEvent.aliasName });
+        if (createBulletPoints > 1) {
+          rowItem.addClass("td-next");
+        }
+        const newRow = createNewRow(rowItem);
+        yearContainer.appendChild(newRow);
+      });
+    });
+    return yearContainer;
+  }
+  /****************/
+  calculateRowSpanYear(htmlYear) {
+    var trCount = htmlYear.querySelectorAll("tr").length + 1;
+    return trCount;
+  }
+  calculateRowSpanMonth(dataMonth) {
+    let distinctItems = dataMonth.contents.length;
+    return distinctItems + 1;
   }
 };
 
@@ -7972,9 +8023,13 @@ var WeekTimeline = class {
       let dvResults;
       let dvResultsFiltered;
       try {
+        content = replaceThisInQuery(content, this.plugin.app);
         dvResults = yield dv.query(content);
         let dvResultsValues = dvResults.value.values;
-        dvResultsFiltered = dvResultsValues.filter((item) => item[1].constructor.name == "DateTime");
+        let a = dvResultsValues.filter((x) => typeof x[1] !== "undefined" && x[1] !== null);
+        let b = a.filter((x) => !(typeof x[1] == "number"));
+        dvResultsFiltered = b.filter((x) => (0, import_obsidian3.moment)(x[1].toString()).format("YYYY-MM") != "Invalid date");
+        dvResultsFiltered.forEach((x) => x[1] = (0, import_obsidian3.moment)(x[1].toString()));
       } catch (error) {
         return createErrorMsg("Error from dataview: " + error.message);
       }
@@ -7993,11 +8048,7 @@ var WeekTimeline = class {
   transformDvResults(dvResults) {
     let transformedResults = [];
     dvResults.forEach((item) => {
-      const datePart = item[1].c;
-      const yearPart = datePart.year;
-      const monthPart = datePart.month - 1;
-      const dayPart = datePart.day;
-      const momentDate = (0, import_obsidian3.moment)({ year: yearPart, month: monthPart, day: dayPart });
+      const momentDate = item[1];
       const momentDateThursday = (0, import_obsidian3.moment)(momentDate).isoWeekday(4);
       const newYear = momentDateThursday.format("Y");
       const newMonth = momentDateThursday.format("Y-MM");
@@ -8245,7 +8296,7 @@ var DEFAULT_SETTINGS = {
   bulletPoints: true,
   collapseLimit: "2",
   collapseEmptyMonthsWeeklyTimeline: true,
-  weekDisplayFormat: "weekNames"
+  weekDisplayFormat: "dateNames"
 };
 var SampleSettingTab = class extends import_obsidian4.PluginSettingTab {
   constructor(app, plugin) {

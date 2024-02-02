@@ -64,6 +64,14 @@
               "type": "starred",
               "state": {}
             }
+          },
+          {
+            "id": "bc31e83266218102",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
           }
         ]
       }
@@ -227,8 +235,13 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "2eca6cd3ed5b0fc5",
+  "active": "17a8826d4413368e",
   "lastOpenFiles": [
+    "颜儿的日常/Day Planners/Day Planner-20240123.md",
+    "Day Planners/Day Planner-20240116.md",
+    "颜儿的日常/Day Planners/Day Planner-20240116.md",
+    "颜儿的日常/Day Planners/Day Planner-20240115.md",
+    "Day Planners/Day Planner-20240115.md",
     "Day Planners/Day Planner-20230321.md",
     "Day Planners",
     "颜儿的日常/Pasted image 20230224155352.png"

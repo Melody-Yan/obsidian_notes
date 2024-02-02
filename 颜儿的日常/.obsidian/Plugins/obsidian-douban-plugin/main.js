@@ -27,6 +27,18 @@ var __spreadValues = (a, b) => {
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+var __objRest = (source, exclude) => {
+  var target = {};
+  for (var prop2 in source)
+    if (__hasOwnProp.call(source, prop2) && exclude.indexOf(prop2) < 0)
+      target[prop2] = source[prop2];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop2 of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop2) < 0 && __propIsEnum.call(source, prop2))
+        target[prop2] = source[prop2];
+    }
+  return target;
+};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -67,6 +79,896 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 
+// node_modules/ms/index.js
+var require_ms = __commonJS({
+  "node_modules/ms/index.js"(exports, module2) {
+    var s = 1e3;
+    var m = s * 60;
+    var h = m * 60;
+    var d = h * 24;
+    var w = d * 7;
+    var y = d * 365.25;
+    module2.exports = function(val2, options) {
+      options = options || {};
+      var type = typeof val2;
+      if (type === "string" && val2.length > 0) {
+        return parse6(val2);
+      } else if (type === "number" && isFinite(val2)) {
+        return options.long ? fmtLong(val2) : fmtShort(val2);
+      }
+      throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val2));
+    };
+    function parse6(str) {
+      str = String(str);
+      if (str.length > 100) {
+        return;
+      }
+      var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
+      if (!match) {
+        return;
+      }
+      var n = parseFloat(match[1]);
+      var type = (match[2] || "ms").toLowerCase();
+      switch (type) {
+        case "years":
+        case "year":
+        case "yrs":
+        case "yr":
+        case "y":
+          return n * y;
+        case "weeks":
+        case "week":
+        case "w":
+          return n * w;
+        case "days":
+        case "day":
+        case "d":
+          return n * d;
+        case "hours":
+        case "hour":
+        case "hrs":
+        case "hr":
+        case "h":
+          return n * h;
+        case "minutes":
+        case "minute":
+        case "mins":
+        case "min":
+        case "m":
+          return n * m;
+        case "seconds":
+        case "second":
+        case "secs":
+        case "sec":
+        case "s":
+          return n * s;
+        case "milliseconds":
+        case "millisecond":
+        case "msecs":
+        case "msec":
+        case "ms":
+          return n;
+        default:
+          return void 0;
+      }
+    }
+    function fmtShort(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return Math.round(ms / d) + "d";
+      }
+      if (msAbs >= h) {
+        return Math.round(ms / h) + "h";
+      }
+      if (msAbs >= m) {
+        return Math.round(ms / m) + "m";
+      }
+      if (msAbs >= s) {
+        return Math.round(ms / s) + "s";
+      }
+      return ms + "ms";
+    }
+    function fmtLong(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return plural(ms, msAbs, d, "day");
+      }
+      if (msAbs >= h) {
+        return plural(ms, msAbs, h, "hour");
+      }
+      if (msAbs >= m) {
+        return plural(ms, msAbs, m, "minute");
+      }
+      if (msAbs >= s) {
+        return plural(ms, msAbs, s, "second");
+      }
+      return ms + " ms";
+    }
+    function plural(ms, msAbs, n, name) {
+      var isPlural = msAbs >= n * 1.5;
+      return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
+    }
+  }
+});
+
+// node_modules/debug/src/common.js
+var require_common = __commonJS({
+  "node_modules/debug/src/common.js"(exports, module2) {
+    function setup(env) {
+      createDebug.debug = createDebug;
+      createDebug.default = createDebug;
+      createDebug.coerce = coerce;
+      createDebug.disable = disable;
+      createDebug.enable = enable;
+      createDebug.enabled = enabled;
+      createDebug.humanize = require_ms();
+      createDebug.destroy = destroy;
+      Object.keys(env).forEach((key) => {
+        createDebug[key] = env[key];
+      });
+      createDebug.names = [];
+      createDebug.skips = [];
+      createDebug.formatters = {};
+      function selectColor(namespace) {
+        let hash3 = 0;
+        for (let i = 0; i < namespace.length; i++) {
+          hash3 = (hash3 << 5) - hash3 + namespace.charCodeAt(i);
+          hash3 |= 0;
+        }
+        return createDebug.colors[Math.abs(hash3) % createDebug.colors.length];
+      }
+      createDebug.selectColor = selectColor;
+      function createDebug(namespace) {
+        let prevTime;
+        let enableOverride = null;
+        let namespacesCache;
+        let enabledCache;
+        function debug(...args) {
+          if (!debug.enabled) {
+            return;
+          }
+          const self = debug;
+          const curr = Number(new Date());
+          const ms = curr - (prevTime || curr);
+          self.diff = ms;
+          self.prev = prevTime;
+          self.curr = curr;
+          prevTime = curr;
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
+          }
+          let index2 = 0;
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+            if (match === "%%") {
+              return "%";
+            }
+            index2++;
+            const formatter = createDebug.formatters[format2];
+            if (typeof formatter === "function") {
+              const val2 = args[index2];
+              match = formatter.call(self, val2);
+              args.splice(index2, 1);
+              index2--;
+            }
+            return match;
+          });
+          createDebug.formatArgs.call(self, args);
+          const logFn = self.log || createDebug.log;
+          logFn.apply(self, args);
+        }
+        debug.namespace = namespace;
+        debug.useColors = createDebug.useColors();
+        debug.color = createDebug.selectColor(namespace);
+        debug.extend = extend;
+        debug.destroy = createDebug.destroy;
+        Object.defineProperty(debug, "enabled", {
+          enumerable: true,
+          configurable: false,
+          get: () => {
+            if (enableOverride !== null) {
+              return enableOverride;
+            }
+            if (namespacesCache !== createDebug.namespaces) {
+              namespacesCache = createDebug.namespaces;
+              enabledCache = createDebug.enabled(namespace);
+            }
+            return enabledCache;
+          },
+          set: (v) => {
+            enableOverride = v;
+          }
+        });
+        if (typeof createDebug.init === "function") {
+          createDebug.init(debug);
+        }
+        return debug;
+      }
+      function extend(namespace, delimiter) {
+        const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
+        newDebug.log = this.log;
+        return newDebug;
+      }
+      function enable(namespaces) {
+        createDebug.save(namespaces);
+        createDebug.namespaces = namespaces;
+        createDebug.names = [];
+        createDebug.skips = [];
+        let i;
+        const split = (typeof namespaces === "string" ? namespaces : "").split(/[\s,]+/);
+        const len = split.length;
+        for (i = 0; i < len; i++) {
+          if (!split[i]) {
+            continue;
+          }
+          namespaces = split[i].replace(/\*/g, ".*?");
+          if (namespaces[0] === "-") {
+            createDebug.skips.push(new RegExp("^" + namespaces.slice(1) + "$"));
+          } else {
+            createDebug.names.push(new RegExp("^" + namespaces + "$"));
+          }
+        }
+      }
+      function disable() {
+        const namespaces = [
+          ...createDebug.names.map(toNamespace),
+          ...createDebug.skips.map(toNamespace).map((namespace) => "-" + namespace)
+        ].join(",");
+        createDebug.enable("");
+        return namespaces;
+      }
+      function enabled(name) {
+        if (name[name.length - 1] === "*") {
+          return true;
+        }
+        let i;
+        let len;
+        for (i = 0, len = createDebug.skips.length; i < len; i++) {
+          if (createDebug.skips[i].test(name)) {
+            return false;
+          }
+        }
+        for (i = 0, len = createDebug.names.length; i < len; i++) {
+          if (createDebug.names[i].test(name)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function toNamespace(regexp) {
+        return regexp.toString().substring(2, regexp.toString().length - 2).replace(/\.\*\?$/, "*");
+      }
+      function coerce(val2) {
+        if (val2 instanceof Error) {
+          return val2.stack || val2.message;
+        }
+        return val2;
+      }
+      function destroy() {
+        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+      }
+      createDebug.enable(createDebug.load());
+      return createDebug;
+    }
+    module2.exports = setup;
+  }
+});
+
+// node_modules/debug/src/browser.js
+var require_browser = __commonJS({
+  "node_modules/debug/src/browser.js"(exports, module2) {
+    exports.formatArgs = formatArgs;
+    exports.save = save;
+    exports.load = load2;
+    exports.useColors = useColors;
+    exports.storage = localstorage();
+    exports.destroy = (() => {
+      let warned = false;
+      return () => {
+        if (!warned) {
+          warned = true;
+          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        }
+      };
+    })();
+    exports.colors = [
+      "#0000CC",
+      "#0000FF",
+      "#0033CC",
+      "#0033FF",
+      "#0066CC",
+      "#0066FF",
+      "#0099CC",
+      "#0099FF",
+      "#00CC00",
+      "#00CC33",
+      "#00CC66",
+      "#00CC99",
+      "#00CCCC",
+      "#00CCFF",
+      "#3300CC",
+      "#3300FF",
+      "#3333CC",
+      "#3333FF",
+      "#3366CC",
+      "#3366FF",
+      "#3399CC",
+      "#3399FF",
+      "#33CC00",
+      "#33CC33",
+      "#33CC66",
+      "#33CC99",
+      "#33CCCC",
+      "#33CCFF",
+      "#6600CC",
+      "#6600FF",
+      "#6633CC",
+      "#6633FF",
+      "#66CC00",
+      "#66CC33",
+      "#9900CC",
+      "#9900FF",
+      "#9933CC",
+      "#9933FF",
+      "#99CC00",
+      "#99CC33",
+      "#CC0000",
+      "#CC0033",
+      "#CC0066",
+      "#CC0099",
+      "#CC00CC",
+      "#CC00FF",
+      "#CC3300",
+      "#CC3333",
+      "#CC3366",
+      "#CC3399",
+      "#CC33CC",
+      "#CC33FF",
+      "#CC6600",
+      "#CC6633",
+      "#CC9900",
+      "#CC9933",
+      "#CCCC00",
+      "#CCCC33",
+      "#FF0000",
+      "#FF0033",
+      "#FF0066",
+      "#FF0099",
+      "#FF00CC",
+      "#FF00FF",
+      "#FF3300",
+      "#FF3333",
+      "#FF3366",
+      "#FF3399",
+      "#FF33CC",
+      "#FF33FF",
+      "#FF6600",
+      "#FF6633",
+      "#FF9900",
+      "#FF9933",
+      "#FFCC00",
+      "#FFCC33"
+    ];
+    function useColors() {
+      if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+        return true;
+      }
+      if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+        return false;
+      }
+      return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+    }
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+      if (!this.useColors) {
+        return;
+      }
+      const c = "color: " + this.color;
+      args.splice(1, 0, c, "color: inherit");
+      let index2 = 0;
+      let lastC = 0;
+      args[0].replace(/%[a-zA-Z%]/g, (match) => {
+        if (match === "%%") {
+          return;
+        }
+        index2++;
+        if (match === "%c") {
+          lastC = index2;
+        }
+      });
+      args.splice(lastC, 0, c);
+    }
+    exports.log = console.debug || console.log || (() => {
+    });
+    function save(namespaces) {
+      try {
+        if (namespaces) {
+          exports.storage.setItem("debug", namespaces);
+        } else {
+          exports.storage.removeItem("debug");
+        }
+      } catch (error) {
+      }
+    }
+    function load2() {
+      let r;
+      try {
+        r = exports.storage.getItem("debug");
+      } catch (error) {
+      }
+      if (!r && typeof process !== "undefined" && "env" in process) {
+        r = process.env.DEBUG;
+      }
+      return r;
+    }
+    function localstorage() {
+      try {
+        return localStorage;
+      } catch (error) {
+      }
+    }
+    module2.exports = require_common()(exports);
+    var { formatters } = module2.exports;
+    formatters.j = function(v) {
+      try {
+        return JSON.stringify(v);
+      } catch (error) {
+        return "[UnexpectedJSONParseError]: " + error.message;
+      }
+    };
+  }
+});
+
+// node_modules/follow-redirects/debug.js
+var require_debug = __commonJS({
+  "node_modules/follow-redirects/debug.js"(exports, module2) {
+    var debug;
+    module2.exports = function() {
+      if (!debug) {
+        try {
+          debug = require_browser()("follow-redirects");
+        } catch (error) {
+        }
+        if (typeof debug !== "function") {
+          debug = function() {
+          };
+        }
+      }
+      debug.apply(null, arguments);
+    };
+  }
+});
+
+// node_modules/follow-redirects/index.js
+var require_follow_redirects = __commonJS({
+  "node_modules/follow-redirects/index.js"(exports, module2) {
+    var url = require("url");
+    var URL2 = url.URL;
+    var http = require("http");
+    var https2 = require("https");
+    var Writable = require("stream").Writable;
+    var assert = require("assert");
+    var debug = require_debug();
+    var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
+    var eventHandlers = Object.create(null);
+    events.forEach(function(event) {
+      eventHandlers[event] = function(arg1, arg2, arg3) {
+        this._redirectable.emit(event, arg1, arg2, arg3);
+      };
+    });
+    var InvalidUrlError = createErrorType("ERR_INVALID_URL", "Invalid URL", TypeError);
+    var RedirectionError = createErrorType("ERR_FR_REDIRECTION_FAILURE", "Redirected request failed");
+    var TooManyRedirectsError = createErrorType("ERR_FR_TOO_MANY_REDIRECTS", "Maximum number of redirects exceeded");
+    var MaxBodyLengthExceededError = createErrorType("ERR_FR_MAX_BODY_LENGTH_EXCEEDED", "Request body larger than maxBodyLength limit");
+    var WriteAfterEndError = createErrorType("ERR_STREAM_WRITE_AFTER_END", "write after end");
+    var destroy = Writable.prototype.destroy || noop;
+    function RedirectableRequest(options, responseCallback) {
+      Writable.call(this);
+      this._sanitizeOptions(options);
+      this._options = options;
+      this._ended = false;
+      this._ending = false;
+      this._redirectCount = 0;
+      this._redirects = [];
+      this._requestBodyLength = 0;
+      this._requestBodyBuffers = [];
+      if (responseCallback) {
+        this.on("response", responseCallback);
+      }
+      var self = this;
+      this._onNativeResponse = function(response) {
+        self._processResponse(response);
+      };
+      this._performRequest();
+    }
+    RedirectableRequest.prototype = Object.create(Writable.prototype);
+    RedirectableRequest.prototype.abort = function() {
+      destroyRequest(this._currentRequest);
+      this._currentRequest.abort();
+      this.emit("abort");
+    };
+    RedirectableRequest.prototype.destroy = function(error) {
+      destroyRequest(this._currentRequest, error);
+      destroy.call(this, error);
+      return this;
+    };
+    RedirectableRequest.prototype.write = function(data2, encoding, callback) {
+      if (this._ending) {
+        throw new WriteAfterEndError();
+      }
+      if (!isString2(data2) && !isBuffer(data2)) {
+        throw new TypeError("data should be a string, Buffer or Uint8Array");
+      }
+      if (isFunction(encoding)) {
+        callback = encoding;
+        encoding = null;
+      }
+      if (data2.length === 0) {
+        if (callback) {
+          callback();
+        }
+        return;
+      }
+      if (this._requestBodyLength + data2.length <= this._options.maxBodyLength) {
+        this._requestBodyLength += data2.length;
+        this._requestBodyBuffers.push({ data: data2, encoding });
+        this._currentRequest.write(data2, encoding, callback);
+      } else {
+        this.emit("error", new MaxBodyLengthExceededError());
+        this.abort();
+      }
+    };
+    RedirectableRequest.prototype.end = function(data2, encoding, callback) {
+      if (isFunction(data2)) {
+        callback = data2;
+        data2 = encoding = null;
+      } else if (isFunction(encoding)) {
+        callback = encoding;
+        encoding = null;
+      }
+      if (!data2) {
+        this._ended = this._ending = true;
+        this._currentRequest.end(null, null, callback);
+      } else {
+        var self = this;
+        var currentRequest = this._currentRequest;
+        this.write(data2, encoding, function() {
+          self._ended = true;
+          currentRequest.end(null, null, callback);
+        });
+        this._ending = true;
+      }
+    };
+    RedirectableRequest.prototype.setHeader = function(name, value) {
+      this._options.headers[name] = value;
+      this._currentRequest.setHeader(name, value);
+    };
+    RedirectableRequest.prototype.removeHeader = function(name) {
+      delete this._options.headers[name];
+      this._currentRequest.removeHeader(name);
+    };
+    RedirectableRequest.prototype.setTimeout = function(msecs, callback) {
+      var self = this;
+      function destroyOnTimeout(socket) {
+        socket.setTimeout(msecs);
+        socket.removeListener("timeout", socket.destroy);
+        socket.addListener("timeout", socket.destroy);
+      }
+      function startTimer(socket) {
+        if (self._timeout) {
+          clearTimeout(self._timeout);
+        }
+        self._timeout = setTimeout(function() {
+          self.emit("timeout");
+          clearTimer();
+        }, msecs);
+        destroyOnTimeout(socket);
+      }
+      function clearTimer() {
+        if (self._timeout) {
+          clearTimeout(self._timeout);
+          self._timeout = null;
+        }
+        self.removeListener("abort", clearTimer);
+        self.removeListener("error", clearTimer);
+        self.removeListener("response", clearTimer);
+        self.removeListener("close", clearTimer);
+        if (callback) {
+          self.removeListener("timeout", callback);
+        }
+        if (!self.socket) {
+          self._currentRequest.removeListener("socket", startTimer);
+        }
+      }
+      if (callback) {
+        this.on("timeout", callback);
+      }
+      if (this.socket) {
+        startTimer(this.socket);
+      } else {
+        this._currentRequest.once("socket", startTimer);
+      }
+      this.on("socket", destroyOnTimeout);
+      this.on("abort", clearTimer);
+      this.on("error", clearTimer);
+      this.on("response", clearTimer);
+      this.on("close", clearTimer);
+      return this;
+    };
+    [
+      "flushHeaders",
+      "getHeader",
+      "setNoDelay",
+      "setSocketKeepAlive"
+    ].forEach(function(method) {
+      RedirectableRequest.prototype[method] = function(a, b) {
+        return this._currentRequest[method](a, b);
+      };
+    });
+    ["aborted", "connection", "socket"].forEach(function(property) {
+      Object.defineProperty(RedirectableRequest.prototype, property, {
+        get: function() {
+          return this._currentRequest[property];
+        }
+      });
+    });
+    RedirectableRequest.prototype._sanitizeOptions = function(options) {
+      if (!options.headers) {
+        options.headers = {};
+      }
+      if (options.host) {
+        if (!options.hostname) {
+          options.hostname = options.host;
+        }
+        delete options.host;
+      }
+      if (!options.pathname && options.path) {
+        var searchPos = options.path.indexOf("?");
+        if (searchPos < 0) {
+          options.pathname = options.path;
+        } else {
+          options.pathname = options.path.substring(0, searchPos);
+          options.search = options.path.substring(searchPos);
+        }
+      }
+    };
+    RedirectableRequest.prototype._performRequest = function() {
+      var protocol = this._options.protocol;
+      var nativeProtocol = this._options.nativeProtocols[protocol];
+      if (!nativeProtocol) {
+        this.emit("error", new TypeError("Unsupported protocol " + protocol));
+        return;
+      }
+      if (this._options.agents) {
+        var scheme = protocol.slice(0, -1);
+        this._options.agent = this._options.agents[scheme];
+      }
+      var request3 = this._currentRequest = nativeProtocol.request(this._options, this._onNativeResponse);
+      request3._redirectable = this;
+      for (var event of events) {
+        request3.on(event, eventHandlers[event]);
+      }
+      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : this._options.path;
+      if (this._isRedirect) {
+        var i = 0;
+        var self = this;
+        var buffers = this._requestBodyBuffers;
+        (function writeNext(error) {
+          if (request3 === self._currentRequest) {
+            if (error) {
+              self.emit("error", error);
+            } else if (i < buffers.length) {
+              var buffer = buffers[i++];
+              if (!request3.finished) {
+                request3.write(buffer.data, buffer.encoding, writeNext);
+              }
+            } else if (self._ended) {
+              request3.end();
+            }
+          }
+        })();
+      }
+    };
+    RedirectableRequest.prototype._processResponse = function(response) {
+      var statusCode = response.statusCode;
+      if (this._options.trackRedirects) {
+        this._redirects.push({
+          url: this._currentUrl,
+          headers: response.headers,
+          statusCode
+        });
+      }
+      var location = response.headers.location;
+      if (!location || this._options.followRedirects === false || statusCode < 300 || statusCode >= 400) {
+        response.responseUrl = this._currentUrl;
+        response.redirects = this._redirects;
+        this.emit("response", response);
+        this._requestBodyBuffers = [];
+        return;
+      }
+      destroyRequest(this._currentRequest);
+      response.destroy();
+      if (++this._redirectCount > this._options.maxRedirects) {
+        this.emit("error", new TooManyRedirectsError());
+        return;
+      }
+      var requestHeaders;
+      var beforeRedirect = this._options.beforeRedirect;
+      if (beforeRedirect) {
+        requestHeaders = Object.assign({
+          Host: response.req.getHeader("host")
+        }, this._options.headers);
+      }
+      var method = this._options.method;
+      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
+        this._options.method = "GET";
+        this._requestBodyBuffers = [];
+        removeMatchingHeaders(/^content-/i, this._options.headers);
+      }
+      var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
+      var currentUrlParts = url.parse(this._currentUrl);
+      var currentHost = currentHostHeader || currentUrlParts.host;
+      var currentUrl = /^\w+:/.test(location) ? this._currentUrl : url.format(Object.assign(currentUrlParts, { host: currentHost }));
+      var redirectUrl;
+      try {
+        redirectUrl = url.resolve(currentUrl, location);
+      } catch (cause) {
+        this.emit("error", new RedirectionError({ cause }));
+        return;
+      }
+      debug("redirecting to", redirectUrl);
+      this._isRedirect = true;
+      var redirectUrlParts = url.parse(redirectUrl);
+      Object.assign(this._options, redirectUrlParts);
+      if (redirectUrlParts.protocol !== currentUrlParts.protocol && redirectUrlParts.protocol !== "https:" || redirectUrlParts.host !== currentHost && !isSubdomain(redirectUrlParts.host, currentHost)) {
+        removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
+      }
+      if (isFunction(beforeRedirect)) {
+        var responseDetails = {
+          headers: response.headers,
+          statusCode
+        };
+        var requestDetails = {
+          url: currentUrl,
+          method,
+          headers: requestHeaders
+        };
+        try {
+          beforeRedirect(this._options, responseDetails, requestDetails);
+        } catch (err) {
+          this.emit("error", err);
+          return;
+        }
+        this._sanitizeOptions(this._options);
+      }
+      try {
+        this._performRequest();
+      } catch (cause) {
+        this.emit("error", new RedirectionError({ cause }));
+      }
+    };
+    function wrap2(protocols) {
+      var exports2 = {
+        maxRedirects: 21,
+        maxBodyLength: 10 * 1024 * 1024
+      };
+      var nativeProtocols = {};
+      Object.keys(protocols).forEach(function(scheme) {
+        var protocol = scheme + ":";
+        var nativeProtocol = nativeProtocols[protocol] = protocols[scheme];
+        var wrappedProtocol = exports2[scheme] = Object.create(nativeProtocol);
+        function request3(input, options, callback) {
+          if (isString2(input)) {
+            var parsed;
+            try {
+              parsed = urlToOptions(new URL2(input));
+            } catch (err) {
+              parsed = url.parse(input);
+            }
+            if (!isString2(parsed.protocol)) {
+              throw new InvalidUrlError({ input });
+            }
+            input = parsed;
+          } else if (URL2 && input instanceof URL2) {
+            input = urlToOptions(input);
+          } else {
+            callback = options;
+            options = input;
+            input = { protocol };
+          }
+          if (isFunction(options)) {
+            callback = options;
+            options = null;
+          }
+          options = Object.assign({
+            maxRedirects: exports2.maxRedirects,
+            maxBodyLength: exports2.maxBodyLength
+          }, input, options);
+          options.nativeProtocols = nativeProtocols;
+          if (!isString2(options.host) && !isString2(options.hostname)) {
+            options.hostname = "::1";
+          }
+          assert.equal(options.protocol, protocol, "protocol mismatch");
+          debug("options", options);
+          return new RedirectableRequest(options, callback);
+        }
+        function get2(input, options, callback) {
+          var wrappedRequest = wrappedProtocol.request(input, options, callback);
+          wrappedRequest.end();
+          return wrappedRequest;
+        }
+        Object.defineProperties(wrappedProtocol, {
+          request: { value: request3, configurable: true, enumerable: true, writable: true },
+          get: { value: get2, configurable: true, enumerable: true, writable: true }
+        });
+      });
+      return exports2;
+    }
+    function noop() {
+    }
+    function urlToOptions(urlObject) {
+      var options = {
+        protocol: urlObject.protocol,
+        hostname: urlObject.hostname.startsWith("[") ? urlObject.hostname.slice(1, -1) : urlObject.hostname,
+        hash: urlObject.hash,
+        search: urlObject.search,
+        pathname: urlObject.pathname,
+        path: urlObject.pathname + urlObject.search,
+        href: urlObject.href
+      };
+      if (urlObject.port !== "") {
+        options.port = Number(urlObject.port);
+      }
+      return options;
+    }
+    function removeMatchingHeaders(regex, headers) {
+      var lastValue;
+      for (var header in headers) {
+        if (regex.test(header)) {
+          lastValue = headers[header];
+          delete headers[header];
+        }
+      }
+      return lastValue === null || typeof lastValue === "undefined" ? void 0 : String(lastValue).trim();
+    }
+    function createErrorType(code, message, baseClass) {
+      function CustomError(properties) {
+        Error.captureStackTrace(this, this.constructor);
+        Object.assign(this, properties || {});
+        this.code = code;
+        this.message = this.cause ? message + ": " + this.cause.message : message;
+      }
+      CustomError.prototype = new (baseClass || Error)();
+      CustomError.prototype.constructor = CustomError;
+      CustomError.prototype.name = "Error [" + code + "]";
+      return CustomError;
+    }
+    function destroyRequest(request3, error) {
+      for (var event of events) {
+        request3.removeListener(event, eventHandlers[event]);
+      }
+      request3.on("error", noop);
+      request3.destroy(error);
+    }
+    function isSubdomain(subdomain, domain) {
+      assert(isString2(subdomain) && isString2(domain));
+      var dot = subdomain.length - domain.length - 1;
+      return dot > 0 && subdomain[dot] === "." && subdomain.endsWith(domain);
+    }
+    function isString2(value) {
+      return typeof value === "string" || value instanceof String;
+    }
+    function isFunction(value) {
+      return typeof value === "function";
+    }
+    function isBuffer(value) {
+      return typeof value === "object" && "length" in value;
+    }
+    module2.exports = wrap2({ http, https: https2 });
+    module2.exports.wrap = wrap2;
+  }
+});
+
 // node_modules/boolbase/index.js
 var require_boolbase = __commonJS({
   "node_modules/boolbase/index.js"(exports, module2) {
@@ -78,128 +980,6 @@ var require_boolbase = __commonJS({
         return false;
       }
     };
-  }
-});
-
-// node_modules/nth-check/lib/parse.js
-var require_parse = __commonJS({
-  "node_modules/nth-check/lib/parse.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parse = void 0;
-    var whitespace = new Set([9, 10, 12, 13, 32]);
-    var ZERO = "0".charCodeAt(0);
-    var NINE = "9".charCodeAt(0);
-    function parse5(formula) {
-      formula = formula.trim().toLowerCase();
-      if (formula === "even") {
-        return [2, 0];
-      } else if (formula === "odd") {
-        return [2, 1];
-      }
-      var idx = 0;
-      var a = 0;
-      var sign = readSign();
-      var number = readNumber();
-      if (idx < formula.length && formula.charAt(idx) === "n") {
-        idx++;
-        a = sign * (number !== null && number !== void 0 ? number : 1);
-        skipWhitespace();
-        if (idx < formula.length) {
-          sign = readSign();
-          skipWhitespace();
-          number = readNumber();
-        } else {
-          sign = number = 0;
-        }
-      }
-      if (number === null || idx < formula.length) {
-        throw new Error("n-th rule couldn't be parsed ('" + formula + "')");
-      }
-      return [a, sign * number];
-      function readSign() {
-        if (formula.charAt(idx) === "-") {
-          idx++;
-          return -1;
-        }
-        if (formula.charAt(idx) === "+") {
-          idx++;
-        }
-        return 1;
-      }
-      function readNumber() {
-        var start2 = idx;
-        var value = 0;
-        while (idx < formula.length && formula.charCodeAt(idx) >= ZERO && formula.charCodeAt(idx) <= NINE) {
-          value = value * 10 + (formula.charCodeAt(idx) - ZERO);
-          idx++;
-        }
-        return idx === start2 ? null : value;
-      }
-      function skipWhitespace() {
-        while (idx < formula.length && whitespace.has(formula.charCodeAt(idx))) {
-          idx++;
-        }
-      }
-    }
-    exports.parse = parse5;
-  }
-});
-
-// node_modules/nth-check/lib/compile.js
-var require_compile = __commonJS({
-  "node_modules/nth-check/lib/compile.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.compile = void 0;
-    var boolbase_1 = require_boolbase();
-    function compile3(parsed) {
-      var a = parsed[0];
-      var b = parsed[1] - 1;
-      if (b < 0 && a <= 0)
-        return boolbase_1.falseFunc;
-      if (a === -1)
-        return function(index2) {
-          return index2 <= b;
-        };
-      if (a === 0)
-        return function(index2) {
-          return index2 === b;
-        };
-      if (a === 1)
-        return b < 0 ? boolbase_1.trueFunc : function(index2) {
-          return index2 >= b;
-        };
-      var absA = Math.abs(a);
-      var bMod = (b % absA + absA) % absA;
-      return a > 1 ? function(index2) {
-        return index2 >= b && index2 % absA === bMod;
-      } : function(index2) {
-        return index2 <= b && index2 % absA === bMod;
-      };
-    }
-    exports.compile = compile3;
-  }
-});
-
-// node_modules/nth-check/lib/index.js
-var require_lib = __commonJS({
-  "node_modules/nth-check/lib/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.compile = exports.parse = void 0;
-    var parse_1 = require_parse();
-    Object.defineProperty(exports, "parse", { enumerable: true, get: function() {
-      return parse_1.parse;
-    } });
-    var compile_1 = require_compile();
-    Object.defineProperty(exports, "compile", { enumerable: true, get: function() {
-      return compile_1.compile;
-    } });
-    function nthCheck(formula) {
-      return (0, compile_1.compile)((0, parse_1.parse)(formula));
-    }
-    exports.default = nthCheck;
   }
 });
 
@@ -984,10 +1764,10 @@ var require_turndown = __commonJS({
     function replacementForNode(node) {
       var rule = this.rules.forNode(node);
       var content = process2.call(this, node);
-      var whitespace = node.flankingWhitespace;
-      if (whitespace.leading || whitespace.trailing)
+      var whitespace2 = node.flankingWhitespace;
+      if (whitespace2.leading || whitespace2.trailing)
         content = content.trim();
-      return whitespace.leading + rule.replacement(content, node, this.options) + whitespace.trailing;
+      return whitespace2.leading + rule.replacement(content, node, this.options) + whitespace2.trailing;
     }
     function separatingNewlines(output, replacement) {
       var newlines = [
@@ -1328,6 +2108,7 @@ PS: This file could be delete if you want to.
   "110050": `Type`,
   "110051": `Number`,
   "110052": `Description`,
+  "110152": `Confirm`,
   "exists": `[exists]`,
   "unHandle": `[unHandle]`,
   "replace": `[replace]`,
@@ -1394,6 +2175,18 @@ PS: This file could be delete if you want to.
   "124105": `Input custom variable value`,
   "124106": `Active type`,
   "124107": `Delete custom variable`,
+  "124109": `ArrayBegin:`,
+  "124110": `ElementBegin:`,
+  "124111": `Spilt:`,
+  "124112": `ElementEnd:`,
+  "124113": `ArrayEnd:`,
+  "1243": `Score Display`,
+  "124120": `FullValue:`,
+  "124121": `EmptyValue:`,
+  "124122": `DisplayEmpty:`,
+  "124310": `The setting will effect variables {{scoreStar}} and {{myRatingStar}}. When the score is {0}/{1}, template is \`score: {{scoreStar}}\``,
+  "124311": `MaxStar:`,
+  "124312": `Integer:`,
   "121101": `Template File`,
   "121102": `This template will be used when creating new notes. If keep empty, it will use default template`,
   "120101": `Movie Template File`,
@@ -1442,9 +2235,9 @@ PS: This file could be delete if you want to.
   "120507": `Your current syntax looks like this`,
   "120508": `format reference`,
   "120601": `Array Spilt String`,
-  "120602": `string to join between array type, such as authors, actors. 
-    example: ','
-    the list of actor's name will be shown as: 'actor1,actor2,actor3'`,
+  "120602": `string to join between array type, start\u3001end string for array, such as authors, actors. 
+    support 
+ (enter)`,
   "120701": `Douban Request Headers`,
   "120801": `This type of import is not supported temporarily, please go to github to submit issues for help`,
   "120901": `Douban`,
@@ -1473,6 +2266,13 @@ PS: This file could be delete if you want to.
   "121601": `Note Name`,
   "121602": `Nodes created from Obsidian-Douban will use this fileName as template(also support filePath),
 	 If blank, they will be created by default name. support all basic template variables. example: {{type}}/{{title}}`,
+  "121604": `Note Path Previous`,
+  "120603": `Display Preview`,
+  "120604": `ArrayTypeName:`,
+  "120605": `Template use example\uFF1A propertyName:{{actor`,
+  "120606": `Delete Array Display Type`,
+  "120607": `Add Array Display Type`,
+  "120608": `Display/Hidden Array Setting`,
   "121603": `assets`,
   "121701": `Search Template File`,
   "121703": `Default`,
@@ -1482,10 +2282,20 @@ PS: This file could be delete if you want to.
   "121903": `Copy default template content (that your state in object) to clipboard`,
   "125001": `Debug Mode`,
   "125002": `Open Debug Mode, so that this plugin will log some message in console`,
+  "125011": `Reset Setting`,
+  "125012": `Reset Setting to default value, but not include \`Custom Variables\``,
+  "125013": `Reset Setting to default value`,
+  "125021": `Clear Login Cache`,
+  "125022": `Clear Login Info, so that you can login again`,
+  "125031": `Clear Sync Cache`,
+  "125032": `Clear Sync Cache, It will clear all the sync data, so that you can sync again`,
+  "125033": `Are you sure you want to perform this operation?`,
   "130101": `Fetch Data Error, {0}`,
   "140101": `Not support for current type. You can add Issues at Github:Wanxp/obsidian-douban`,
+  "140102": `subject type is different, will not sync this, chosen sync type is {0} but this {1} subject type is {2}`,
   "130105": `Can not use Douban this time, Please try again after 12 hour or 24 hour. Or you can reset your connection `,
   "130106": `Can not use Douban this time, Please try Login In Douban Plugin. If not working please again after 12 hour or 24 hour. Or you can reset your connection `,
+  "130107": `Can not find array setting for {1} in {0} , Please add it in array settings`,
   "140201": `[OB-Douban]: searching '{0}'...`,
   "140202": `[OB-Douban]: result {0} rows`,
   "140203": `[OB-Douban]: request '{0}'`,
@@ -1499,8 +2309,10 @@ PS: This file could be delete if you want to.
   "140302": `Douban: Sync complete`,
   "140304": `Douban: Need Login, Please login in Obsidian-Douban plugin`,
   "150101": `Choose an item...`,
+  "150106": `[Previous Page (Item Result)]...`,
   "150102": `[Previous Page]...`,
   "150103": `[Next Page]...`,
+  "150105": `[Next Page (Group Post)]...`,
   "150104": `[Next Page (Please Login First)]...`,
   "200101": `. `,
   "210101": `Default`,
@@ -1511,6 +2323,7 @@ PS: This file could be delete if you want to.
   "122004": `To use the template variables, you need to wrap them in double curly brackets. For example, {{title}} will be replaced with the title of the note.`,
   "122010": `My State Variables`,
   "410101": `Unknown`,
+  "410200": `\u8BC4\u5206\u2B50`,
   "300101": `\u53C2\u6570`,
   "300102": `\u4E66\u7C4D`,
   "300103": `\u7535\u5F71`,
@@ -1523,7 +2336,7 @@ PS: This file could be delete if you want to.
   "310102": `\u4E66\u540D`,
   "310103": `\u7C7B\u578B`,
   "310104": `\u8BC4\u5206`,
-  "310105": `\u5C01\u9762URL`,
+  "310105": `\u5C01\u9762\u8DEF\u5F84`,
   "310106": `\u8C46\u74E3\u7F51\u5740`,
   "310107": `\u5185\u5BB9\u7B80\u4ECB`,
   "310108": `\u51FA\u7248\u793E`,
@@ -1540,11 +2353,12 @@ PS: This file could be delete if you want to.
   "310119": `-`,
   "310120": `-`,
   "310130": `\u51FA\u7248\u5E74\u4EFD`,
+  "310121": `\u5C01\u9762URL`,
   "310201": `\u8C46\u74E3ID`,
   "310202": `\u7535\u5F71\u540D\u79F0`,
   "310203": `\u7C7B\u578B`,
   "310204": `\u8BC4\u5206`,
-  "310205": `\u5C01\u9762`,
+  "310205": `\u5C01\u9762\u8DEF\u5F84`,
   "310206": `\u8C46\u74E3\u7F51\u5740`,
   "310207": `\u7B80\u4ECB`,
   "310208": ``,
@@ -1561,11 +2375,12 @@ PS: This file could be delete if you want to.
   "310219": `IMDb`,
   "310220": `-`,
   "310230": `\u4E0A\u6620\u5E74\u4EFD`,
+  "310221": `\u5C01\u9762URL`,
   "310301": `\u8C46\u74E3ID`,
   "310302": `\u7535\u89C6\u5267\u540D\u79F0`,
   "310303": `\u7C7B\u578B`,
   "310304": `\u8BC4\u5206`,
-  "310305": `\u5C01\u9762`,
+  "310305": `\u5C01\u9762\u8DEF\u5F84`,
   "310306": `\u8C46\u74E3\u7F51\u5740`,
   "310307": `\u7B80\u4ECB`,
   "310308": ``,
@@ -1582,11 +2397,12 @@ PS: This file could be delete if you want to.
   "310319": `IMDb`,
   "310320": `episode:\u96C6\u6570`,
   "310330": `\u4E0A\u6620\u5E74\u4EFD`,
+  "310321": `\u5C01\u9762URL`,
   "310401": `\u8C46\u74E3ID`,
   "310402": `\u97F3\u4E50\u540D`,
   "310403": `\u7C7B\u578B`,
   "310404": `\u8BC4\u5206`,
-  "310405": `\u5C01\u9762`,
+  "310405": `\u5C01\u9762\u8DEF\u5F84`,
   "310406": `\u8C46\u74E3\u7F51\u5740`,
   "310407": `\u7B80\u4ECB`,
   "310408": `\u51FA\u7248\u8005`,
@@ -1603,11 +2419,12 @@ PS: This file could be delete if you want to.
   "310419": `-`,
   "310420": `-`,
   "310430": `\u53D1\u884C\u5E74\u4EFD`,
+  "310421": `\u5C01\u9762URL`,
   "310501": `\u8C46\u74E3ID`,
   "310502": `\u65E5\u8BB0\u6807\u9898`,
   "310503": `\u7C7B\u578B`,
   "310504": `\u8BC4\u5206`,
-  "310505": `\u56FE\u7247`,
+  "310505": `\u5C01\u9762\u8DEF\u5F84`,
   "310506": `\u8C46\u74E3\u7F51\u5740`,
   "310507": `\u7B80\u4ECB`,
   "310508": `\u53D1\u5E03\u8005`,
@@ -1624,11 +2441,12 @@ PS: This file could be delete if you want to.
   "310519": `-`,
   "310520": `-`,
   "310530": `\u53D1\u5E03\u5E74\u4EFD`,
+  "310521": `\u5C01\u9762URL`,
   "310601": `\u8C46\u74E3ID`,
   "310602": `\u6E38\u620F\u540D\u79F0`,
   "310603": `\u7C7B\u578B`,
   "310604": `\u8BC4\u5206`,
-  "310605": `\u5C01\u9762`,
+  "310605": `\u5C01\u9762\u8DEF\u5F84`,
   "310606": `\u8C46\u74E3\u7F51\u5740`,
   "310607": `\u7B80\u4ECB`,
   "310608": `\u53D1\u884C\u5546`,
@@ -1645,6 +2463,7 @@ PS: This file could be delete if you want to.
   "310619": `-`,
   "310620": `-`,
   "310630": `\u53D1\u884C\u5E74\u4EFD`,
+  "310621": `\u5C01\u9762URL`,
   "310701": `\u5F85\u5F00\u53D1`,
   "310702": `\u5F85\u5F00\u53D1`,
   "310703": `\u5F85\u5F00\u53D1`,
@@ -1666,6 +2485,7 @@ PS: This file could be delete if you want to.
   "310719": `-`,
   "310720": `-`,
   "310730": `-`,
+  "310721": `\u5C01\u9762URL`,
   "320101": `\u6269\u5C551`,
   "320102": `\u6269\u5C552`,
   "320103": `\u6269\u5C553`,
@@ -1717,9 +2537,11 @@ PS: This file could be delete if you want to.
   "160228": `My state at book-reading/video-watching.`,
   "160229": `Comment`,
   "160230": `Rate Date`,
+  "160231": `The rate that I rate to subject.(1\u2B50-5\u2B50)`,
   "500001": `Sync Config`,
   "504102": `My Book`,
   "504103": `My Movie`,
+  "504107": `My Teleplay`,
   "504104": `My Broadcast`,
   "504105": `My Note`,
   "504106": `My Music`,
@@ -1732,6 +2554,8 @@ PS: This file could be delete if you want to.
   "NOTE": `note`,
   "GAME": `game`,
   "TELEPLAY": `teleplay`,
+  "THEATER": `theater`,
+  "MOVIE_AND_TELEPLAY": `movie&tv`,
   "DAY": `D`,
   "HOUR": `H`,
   "MINUTE": `m`,
@@ -1760,6 +2584,7 @@ var zh_cn_default = {
   "110034": `\u8F93\u51FA\u6587\u4EF6\u5939:`,
   "110035": `\u6587\u6863\u540D: (\u63D0\u793A:\u652F\u6301\u53C2\u6570\u5316\u4EE5\u53CA\u591A\u7EA7\u8DEF\u5F84, \u53EF\u7528\u53C2\u6570\u89C1\u914D\u7F6E\u754C\u9762)`,
   "110036": `\u5B8C\u6210`,
+  "110152": `\u786E\u8BA4`,
   "110037": `
 ### \u540C\u6B65\u7ED3\u679C\u6C47\u603B
 {0}
@@ -1840,6 +2665,13 @@ var zh_cn_default = {
   "1251": `\u2622\u9AD8\u7EA7\u8BBE\u7F6E\u53EA\u6709\u5F53\u4F60\u77E5\u9053\u4FEE\u6539\u6B64\u8BBE\u7F6E\u4E4B\u540E\u7684\u5F71\u54CD\u624D\u5141\u8BB8\u4FEE\u6539, \u6B63\u5E38\u60C5\u51B5\u4E0B\u8BF7\u4FDD\u6301\u9ED8\u8BA4`,
   "125001": `\u8C03\u8BD5\u6A21\u5F0F`,
   "125002": `\u8C03\u8BD5\u6A21\u5F0F\u5F00\u542F\u540E\uFF0C\u5C06\u4F1A\u5728\u63A7\u5236\u53F0\u6253\u5370\u6B64\u63D2\u4EF6\u7684\u65E5\u5FD7\u4FE1\u606F`,
+  "125011": `\u91CD\u7F6E\u8BBE\u7F6E\u4E3A\u9ED8\u8BA4`,
+  "125012": `\u5C06\u8BBE\u7F6E\u91CD\u7F6E\u4E3A\u9ED8\u8BA4\u503C\uFF0C\u4F46\u4E0D\u4F1A\u6E05\u9664\u767B\u5F55\u4FE1\u606F\uFF0C\u4E5F\u4E0D\u4F1A\u6E05\u9664\u81EA\u5B9A\u4E49\u53C2\u6570`,
+  "125021": `\u6E05\u9664\u767B\u5F55\u7F13\u5B58`,
+  "125022": `\u6E05\u9664\u767B\u5F55\u4FE1\u606F\uFF0C\u5982\u679C\u4F60\u9047\u5230\u767B\u5F55\u95EE\u9898\uFF0C\u53EF\u4EE5\u5C1D\u8BD5\u6E05\u9664\u767B\u5F55\u7F13\u5B58\uFF0C\u70B9\u51FB\u6309\u94AE\u5C06\u6E05\u9664\u6240\u6709\u767B\u5F55\u7F13\u5B58\u6570\u636E`,
+  "125031": `\u6E05\u9664\u540C\u6B65\u7F13\u5B58`,
+  "125032": `\u6E05\u9664\u540C\u6B65\u7F13\u5B58\uFF0C\u70B9\u51FB\u6309\u94AE\u5C06\u6E05\u9664\u6240\u6709\u540C\u6B65\u7F13\u5B58\u6570\u636E\uFF08\u4F46\u4E0D\u4F1A\u6E05\u9664\u5DF2\u540C\u6B65\u7684\u6587\u6863\uFF09`,
+  "125033": `\u786E\u8BA4\u8981\u6267\u884C\u6B64\u64CD\u4F5C\u5417\uFF1F`,
   "124101": `\u65B0\u589E`,
   "124108": `\u65B0\u589E\u4E00\u4E2A\u81EA\u5B9A\u4E49\u53C2\u6570`,
   "124102": `\u53C2\u6570\u540D\u79F0:`,
@@ -1894,10 +2726,21 @@ var zh_cn_default = {
   "120506": `\u8BE6\u7EC6\u4ECB\u7ECD\u8BF7\u53C2\u8003`,
   "120507": `\u65F6\u95F4\u53C2\u6570\u65F6\u95F4\u683C\u5F0F\u9884\u89C8`,
   "120508": `\u683C\u5F0F\u53C2\u8003`,
-  "120601": `\u6570\u7EC4\u5206\u5272\u5B57\u7B26\u4E32`,
-  "120602": `\u5F53\u6A21\u677F\u4E2D\u7684\u53D8\u91CF\u5B58\u5728\u6570\u7EC4, \u5219\u9700\u8981\u8BBE\u5B9A\u6570\u7EC4\u5143\u7D20\u4E2D\u7684\u5206\u5272\u7B26\u53F7,\u6BD4\u5982\u6F14\u5458\u5217\u8868\u7B49.
-    \u4E3E\u4F8B: ','	
-    \u5219\u6F14\u5458\u8868\u5C06\u4F1A\u663E\u793A\u4E3A: '\u6F14\u54581,\u6F14\u54582,\u6F14\u54583'`,
+  "120601": `\u6570\u7EC4\u663E\u793A\u5F62\u5F0F`,
+  "120602": `\u5F53\u6A21\u677F\u4E2D\u7684\u53D8\u91CF\u5B58\u5728\u6570\u7EC4, \u5219\u9700\u8981\u8BBE\u5B9A\u6570\u7EC4\u5143\u7D20\u4E2D\u7684\u5206\u5272\u7B26\u53F7\u4EE5\u53CA\u8D77\u59CB\u4E0E\u7ED3\u675F\u7B26\u53F7, \u6BD4\u5982\u6F14\u5458\u5217\u8868,
+	\u652F\u6301\u8F6C\u4E49\u5B57\u7B26\\n(\u56DE\u8F66)\u3002\u5E76\u4E14\u540C\u65F6\u652F\u6301\u591A\u79CD\u65B9\u5F0F\u8F93\u51FA\u5185\u5BB9\uFF0C\u663E\u793A\u66F4\u591A\u914D\u7F6E\u53EF\u70B9\u51FB\u53F3\u4FA7[>>]\u5C55\u5F00\u6216\u70B9\u51FB[+]\u65B0\u589E\u4E0D\u540C\u8F93\u51FA\u5F62\u5F0F\uFF0C\u4E14\u652F\u6301\u8F93\u51FA\u7ED3\u679C\u9884\u89C8\u3002`,
+  "124109": `\u9996:`,
+  "124110": `\u5143\u7D20\u9996:`,
+  "124111": `\u5206\u9694\u7B26:`,
+  "124112": `\u5143\u7D20\u5C3E:`,
+  "124113": `\u5C3E:`,
+  "1243": `\u8BC4\u5206scoreStar/myRateStar\u663E\u793A`,
+  "124120": `\u5F97\u5206\u7B26\u53F7:`,
+  "124121": `\u672A\u5F97\u5206\u7B26\u53F7:`,
+  "124122": `\u663E\u793A\u672A\u5F97\u5206:`,
+  "124310": `\u8BC4\u5206\uFF08\u661F\uFF09\u53C2\u6570{{scoreStar}} and {{myRatingStar}}\u8F93\u51FA\u683C\u5F0F\u3002\u5F53\u5206\u6570\u662F{0}/{1}\u65F6\uFF0C\u6A21\u677F\u6848\u4F8B\`score: {{scoreStar}}\``,
+  "124311": `\u6700\u5927\u7B26\u53F7\u6570:`,
+  "124312": `\u9ED8\u8BA4\u6574\u6570:`,
   "120701": `\u8C46\u74E3HTTP\u8BF7\u6C42\u5934`,
   "120702": `\u5982\u679C\u8C46\u74E3\u641C\u7D22\u6216\u8005\u83B7\u53D6\u6570\u636E\u5931\u8D25,\u8BF7\u5C1D\u8BD5\u4FEE\u6539\u8FD9\u4E2A\u53C2\u6570,
 
@@ -1930,6 +2773,13 @@ var zh_cn_default = {
   "121502": `\u521B\u5EFA\u7684\u7B14\u8BB0\u5C06\u4F1A\u5B58\u653E\u81F3\u8BE5\u6587\u4EF6\u5939\u4E2D. \u5982\u679C\u4E3A\u7A7A, \u7B14\u8BB0\u5C06\u4F1A\u5B58\u653E\u5230Obsidian\u7684\u9ED8\u8BA4\u4F4D\u7F6E`,
   "121601": `\u7B14\u8BB0\u540D\u79F0`,
   "121602": `\u521B\u5EFA\u7684\u7B14\u8BB0\u5C06\u4F1A\u4F7F\u7528\u6B64\u540D\u79F0\u4F5C\u4E3A\u6A21\u677F, \u652F\u6301\u6240\u6709'\u901A\u7528'\u7684\u53C2\u6570\u4F5C\u4E3A\u540D\u79F0(\u5982:{{type}}/{{title}}), \u4E14\u652F\u6301\u8DEF\u5F84, \u6BD4\u5982: 'MyData/{{title}}'. \u5982\u679C\u4E3A\u7A7A, \u7B14\u8BB0\u5C06\u4F1A\u4F7F\u7528\u9ED8\u8BA4\u540D\u79F0. `,
+  "121604": `\u6587\u4EF6\u8DEF\u5F84\u9884\u89C8`,
+  "120603": `\u8F93\u51FA\u6548\u679C\u9884\u89C8`,
+  "120604": `\u6570\u7EC4\u7C7B\u578B\u540D\u79F0:`,
+  "120605": `\u6A21\u677F\u4E2D\u4F7F\u7528\u4E3E\u4F8B\uFF1A propertyName:{{actor`,
+  "120606": `\u5220\u9664\u5217\u8868\u7C7B\u578B\u5B57\u6BB5\u663E\u793A\u65B9\u5F0F`,
+  "120607": `\u65B0\u589E\u5217\u8868\u7C7B\u578B\u5B57\u6BB5\u663E\u793A\u65B9\u5F0F:`,
+  "120608": `\u663E\u793A\u6216\u9690\u85CF\u5217\u8868\u8F93\u51FA\u8BBE\u7F6E`,
   "121701": `\u9009\u62E9\u6A21\u677F\u6587\u4EF6`,
   "121901": `\u590D\u5236\u57FA\u7840\u6A21\u677F\u5185\u5BB9`,
   "121903": `\u590D\u5236\u542B\u6709\u6211\u7684\u8BC4\u5206\u7684\u6A21\u677F\u5185\u5BB9. \u6A21\u677F\u4E2D\u6709\u767B\u5F55\u540E\u53EF\u4EE5\u7528\u7684\u53C2\u6570,\u5982\u6211\u7684\u8BC4\u5206, \u6211\u7684\u9605\u8BFB\u72B6\u6001\u7B49`,
@@ -1937,8 +2787,10 @@ var zh_cn_default = {
   "130102": `Obsidian Douban\u63D2\u4EF6\u9519\u8BEF\u63D0\u793A:`,
   "130103": `Obsidian Douban\u63D2\u4EF6\u5F02\u5E38\u63D0\u793A:`,
   "140101": `\u5F53\u524D\u7248\u672C\u6682\u4E0D\u652F\u6301\u8BE5\u7C7B\u578B\u5BFC\u5165,\u8BF7\u5347\u7EA7Obsidian Douban\u6216\u81F3github\u63D0\u4EA4issuess\u83B7\u53D6\u5E2E\u52A9`,
+  "140102": `\u540C\u6B65\u7684\u5BF9\u8C61\u548C\u9009\u62E9\u5BF9\u8C61\u4E0D\u4E00\u81F4\uFF0C\u5C06\u4E0D\u4F1A\u540C\u6B65, \u73B0\u5728\u9009\u62E9\u540C\u6B65\u7684\u7C7B\u578B\uFF1A{0}\uFF0C\u4F46\u662F\u83B7\u53D6[{1}]\u7684\u7C7B\u578B\uFF1A{2}`,
   "130105": `\u7531\u4E8E\u591A\u6B21\u9891\u7E41\u8BF7\u6C42\u6570\u636E\uFF0C\u8C46\u74E3\u5F53\u524D\u6682\u65F6\u4E0D\u53EF\u7528. \u8BF7\u4E8E12\u5C0F\u65F6\u621624\u5C0F\u65F6\u540E\u518D\u91CD\u8BD5\uFF0C\u6216\u91CD\u7F6E\u4F60\u7684\u7F51\u7EDC(\u5982\u91CD\u65B0\u62E8\u53F7\u6216\u66F4\u6362\u7F51\u7EDC) `,
   "130106": `\u8BF7\u5C1D\u8BD5\u5728Douban\u63D2\u4EF6\u4E2D\u767B\u5F55\u540E\u64CD\u4F5C. \u82E5\u8FD8\u662F\u65E0\u6548\u679C\u5219\u5C1D\u8BD5\u4E8E12\u5C0F\u65F6\u621624\u5C0F\u65F6\u540E\u518D\u91CD\u8BD5\uFF0C\u6216\u91CD\u7F6E\u4F60\u7684\u7F51\u7EDC(\u5982\u91CD\u65B0\u62E8\u53F7\u6216\u66F4\u6362\u7F51\u7EDC) `,
+  "130107": `\u53C2\u6570{0}\u4E2D\u6307\u5B9A\u7684\u6570\u7EC4\u8F93\u51FA\u7C7B\u578B{1}\u4E0D\u5B58\u5728\uFF0C\u8BF7\u524D\u5F80\u914D\u7F6E\u8FDB\u884C\u8BBE\u7F6E`,
   "140201": `[OB-Douban]: \u5F00\u59CB\u641C\u7D22'{0}'...`,
   "140202": `[OB-Douban]: \u641C\u7D22\u6761\u6570{0}\u6761`,
   "140203": `[OB-Douban]: \u8BF7\u6C42\u8C46\u74E3'{0}'...`,
@@ -1953,8 +2805,10 @@ var zh_cn_default = {
   "140304": `Douban: \u6B64\u529F\u80FD\u9700\u8981\u767B\u5F55, \u8BF7\u5148\u81F3\u63D2\u4EF6\u4E2D\u767B\u5F55\u8C46\u74E3`,
   "150101": `\u9009\u62E9\u4E00\u9879\u5185\u5BB9...`,
   "121902": `\u91CD\u7F6E\u4E3A\u9ED8\u8BA4\u503C`,
+  "150106": `[\u4E0A\u4E00\u9875]...(\u9ED8\u8BA4\u67E5\u8BE2\u7ED3\u679C)`,
   "150102": `[\u4E0A\u4E00\u9875]...`,
   "150103": `[\u4E0B\u4E00\u9875]...`,
+  "150105": `[\u4E0B\u4E00\u9875]...(\u5C0F\u7EC4\u5E16\u5B50\u7ED3\u679C)`,
   "150104": `[\u4E0B\u4E00\u9875]...(\u8BF7\u5148\u5728\u63D2\u4EF6\u4E2D\u767B\u5F55\u624D\u80FD\u4F7F\u7528\u6B64\u529F\u80FD)`,
   "200101": `\u3002`,
   "122001": `\u901A\u7528\u53C2\u6570`,
@@ -1964,6 +2818,7 @@ var zh_cn_default = {
   "122010": `\u6211\u7684\u72B6\u6001\u53C2\u6570`,
   "410101": ``,
   "410102": `\u672A\u77E5`,
+  "410200": `\u8BC4\u5206\u2B50`,
   "300101": `\u53C2\u6570`,
   "300102": `\u4E66\u7C4D`,
   "300103": `\u7535\u5F71`,
@@ -1976,7 +2831,7 @@ var zh_cn_default = {
   "310102": `\u4E66\u540D`,
   "310103": `\u7C7B\u578B`,
   "310104": `\u8BC4\u5206`,
-  "310105": `\u5C01\u9762URL`,
+  "310105": `\u5C01\u9762\u8DEF\u5F84`,
   "310106": `\u8C46\u74E3\u7F51\u5740`,
   "310107": `\u5185\u5BB9\u7B80\u4ECB`,
   "310108": `\u51FA\u7248\u793E`,
@@ -1991,11 +2846,12 @@ var zh_cn_default = {
   "310117": `binding:\u88C5\u5E27`,
   "310118": `producer:\u51FA\u54C1\u65B9`,
   "310130": `\u51FA\u7248\u5E74\u4EFD`,
+  "310121": `\u5C01\u9762URL`,
   "310201": `\u8C46\u74E3ID`,
   "310202": `\u7535\u5F71\u540D\u79F0`,
   "310203": `\u7C7B\u578B`,
   "310204": `\u8BC4\u5206`,
-  "310205": `\u5C01\u9762`,
+  "310205": `\u5C01\u9762\u8DEF\u5F84`,
   "310206": `\u8C46\u74E3\u7F51\u5740`,
   "310207": `\u7B80\u4ECB`,
   "310208": ``,
@@ -2012,11 +2868,12 @@ var zh_cn_default = {
   "310219": `IMDb`,
   "310220": `-`,
   "310230": `\u4E0A\u6620\u5E74\u4EFD`,
+  "310221": `\u5C01\u9762URL`,
   "310301": `\u8C46\u74E3ID`,
   "310302": `\u7535\u89C6\u5267\u540D\u79F0`,
   "310303": `\u7C7B\u578B`,
   "310304": `\u8BC4\u5206`,
-  "310305": `\u5C01\u9762`,
+  "310305": `\u5C01\u9762\u8DEF\u5F84`,
   "310306": `\u8C46\u74E3\u7F51\u5740`,
   "310307": `\u7B80\u4ECB`,
   "310308": `(\u56FA\u5B9A\u503C:\u672A\u77E5)`,
@@ -2033,11 +2890,12 @@ var zh_cn_default = {
   "310319": `IMDb`,
   "310320": `episode:\u96C6\u6570`,
   "310330": `\u4E0A\u6620\u5E74\u4EFD`,
+  "310321": `\u5C01\u9762URL`,
   "310401": `\u8C46\u74E3ID`,
   "310402": `\u97F3\u4E50\u540D`,
   "310403": `\u7C7B\u578B`,
   "310404": `\u8BC4\u5206`,
-  "310405": `\u5C01\u9762`,
+  "310405": `\u5C01\u9762\u8DEF\u5F84`,
   "310406": `\u8C46\u74E3\u7F51\u5740`,
   "310407": `\u7B80\u4ECB`,
   "310408": `\u51FA\u7248\u8005`,
@@ -2052,11 +2910,12 @@ var zh_cn_default = {
   "310417": `-`,
   "310418": `-`,
   "310430": `\u53D1\u884C\u5E74\u4EFD`,
+  "310421": `\u5C01\u9762URL`,
   "310501": `\u8C46\u74E3ID`,
   "310502": `\u65E5\u8BB0\u6807\u9898`,
   "310503": `\u7C7B\u578B`,
   "310504": `\u8BC4\u5206`,
-  "310505": `\u56FE\u7247`,
+  "310505": `\u5C01\u9762\u8DEF\u5F84`,
   "310506": `\u8C46\u74E3\u7F51\u5740`,
   "310507": `\u7B80\u4ECB`,
   "310508": `\u53D1\u5E03\u8005`,
@@ -2071,11 +2930,12 @@ var zh_cn_default = {
   "310517": `-`,
   "310518": `-`,
   "310530": `\u53D1\u5E03\u5E74\u4EFD`,
+  "310521": `\u5C01\u9762URL`,
   "310601": `\u8C46\u74E3ID`,
   "310602": `\u6E38\u620F\u540D\u79F0`,
   "310603": `\u7C7B\u578B`,
   "310604": `\u8BC4\u5206`,
-  "310605": `\u5C01\u9762`,
+  "310605": `\u5C01\u9762\u8DEF\u5F84`,
   "310606": `\u8C46\u74E3\u7F51\u5740`,
   "310607": `\u7B80\u4ECB`,
   "310608": `\u53D1\u884C\u5546`,
@@ -2090,6 +2950,7 @@ var zh_cn_default = {
   "310617": `-`,
   "310618": `-`,
   "310630": `\u53D1\u884C\u5E74\u4EFD`,
+  "310621": `\u5C01\u9762URL`,
   "310701": `\u5F85\u5F00\u53D1`,
   "310702": `\u5F85\u5F00\u53D1`,
   "310703": `\u5F85\u5F00\u53D1`,
@@ -2109,6 +2970,7 @@ var zh_cn_default = {
   "310717": `-`,
   "310718": `-`,
   "310730": `-`,
+  "310721": `\u5C01\u9762URL`,
   "320101": `\u6269\u5C551`,
   "320102": `\u6269\u5C552`,
   "320103": `\u6269\u5C553`,
@@ -2156,12 +3018,14 @@ var zh_cn_default = {
   "160225": `\u4EE5\u4E0B\u53C2\u6570\u767B\u5F55\u540E\u65B9\u53EF\u5728\u6A21\u677F\u4E2D\u4F7F\u7528, \u4F7F\u7528\u65F6\u8BF7\u7528'{{}}'\u5305\u88F9, \u4E3E\u4F8B: \u53C2\u6570myTags, \u5219\u4F7F\u7528\u65F6\u4E3A{{myTags}}`,
   "160226": `\u6211\u6807\u8BB0\u7684\u6807\u7B7E`,
   "160227": `\u6211\u7684\u8BC4\u5206(1-5)`,
+  "160231": `\u6211\u7684\u8BC4\u5206(\u2B50)`,
   "160228": `\u6211\u7684\u9605\u8BFB/\u6B23\u8D4F/\u542C/\u73A9\u7684\u72B6\u6001`,
   "160229": `\u6211\u7684\u8BC4\u8BBA`,
   "160230": `\u6211\u7684\u8BC4\u8BBA/\u6807\u8BB0\u7684\u65E5\u671F`,
   "500001": `\u540C\u6B65\u8BBE\u7F6E`,
   "504102": `\u6211\u7684\u4E66\u7C4D`,
   "504103": `\u6211\u7684\u7535\u5F71`,
+  "504107": `\u6211\u7684\u7535\u89C6\u5267`,
   "504104": `\u6211\u7684\u5E7F\u64AD`,
   "504105": `\u6211\u7684\u65E5\u8BB0`,
   "504106": `\u6211\u7684\u97F3\u4E50`,
@@ -2172,6 +3036,8 @@ var zh_cn_default = {
   "NOTE": `\u7B14\u8BB0`,
   "GAME": `\u6E38\u620F`,
   "TELEPLAY": `\u7535\u89C6\u5267`,
+  "THEATER": `\u620F\u5267`,
+  "MOVIE_AND_TELEPLAY": `\u5F71\u89C6\u5267`,
   "DAY": `\u5929`,
   "HOUR": `\u65F6`,
   "MINUTE": `\u5206`,
@@ -2200,6 +3066,119 @@ var I18nHelper = class {
   }
 };
 var i18nHelper = new I18nHelper();
+
+// src/org/wanxp/utils/StringUtil.ts
+var StringUtil = class {
+  static isBlank(str) {
+    return str == null || str.trim().length == 0;
+  }
+  static defaultIfBlank(str, defaultStr) {
+    return StringUtil.isBlank(str) ? defaultStr : str;
+  }
+  static analyzeIdByUrl(url) {
+    let idPattern = /(\d){5,10}/g;
+    let idE = idPattern.exec(url);
+    let id = idE ? idE[0] : "";
+    return id;
+  }
+  static parseHeaders(text3) {
+    let headers = {};
+    if (text3) {
+      if (text3.indexOf("GET") == 0 || text3.indexOf("POST") == 0) {
+        text3 = text3.substring(text3.indexOf("\n") + 1);
+      }
+      let lines = text3.split("\n");
+      for (let line of lines) {
+        let index2 = line.indexOf(":");
+        if (index2 > 0) {
+          let key = line.substring(0, index2);
+          let value = line.substring(index2 + 1).trim();
+          headers[key] = value;
+        }
+      }
+    }
+    return headers;
+  }
+  static confuse(text3) {
+    if (!text3) {
+      return;
+    }
+    let texts = Array.from(text3);
+    const length = texts.length;
+    const newTexts = [];
+    for (let i = 0; i < length; i++) {
+      let val2 = text3[i];
+      if (i >= length / 3 && i <= length * 2 / 3) {
+        val2 = "*";
+      }
+      newTexts[i] = val2;
+    }
+    return newTexts.join("");
+  }
+  static escape(text3) {
+    if (!text3) {
+      return text3;
+    }
+    let newText = text3;
+    EscapeMap.forEach((value, key) => {
+      newText = newText.replace(key, value);
+    });
+    return newText;
+  }
+  static handleArray(arr, arraySetting) {
+    let content = "";
+    const elementStart = StringUtil.escape(arraySetting.arrayElementStart);
+    const elementEnd = StringUtil.escape(arraySetting.arrayElementEnd);
+    const spilt = StringUtil.escape(arraySetting.arraySpiltV2);
+    const start2 = StringUtil.escape(arraySetting.arrayStart);
+    const end3 = StringUtil.escape(arraySetting.arrayEnd);
+    for (let i = 0; i < arr.length; i++) {
+      let el = arr[i];
+      if (!el) {
+        continue;
+      }
+      if (i == arr.length - 1) {
+        content += elementStart + el + elementEnd;
+      } else {
+        content += elementStart + el + elementEnd + spilt;
+      }
+    }
+    content = start2 + content + end3;
+    return content;
+  }
+};
+var EscapeMap = new Map([
+  [/\\n/g, "\n"],
+  [/\\t/g, "	"],
+  [/\\r/g, "\r"],
+  [/\\f/g, "\f"],
+  [/\\b/g, "\b"],
+  [/\\'/g, "'"],
+  [/\\"/g, '"'],
+  [/\\\\/g, "\\"]
+]);
+
+// src/org/wanxp/utils/model/DataField.ts
+var DataField = class {
+  constructor(name, type, origin, value) {
+    this._name = name;
+    this._type = type;
+    this._origin = origin;
+    this._value = value;
+  }
+  get name() {
+    return this._name;
+  }
+  get type() {
+    return this._type;
+  }
+  get origin() {
+    return this._origin;
+  }
+  get value() {
+    return this._value;
+  }
+};
 
 // src/org/wanxp/constant/Constsant.ts
 var BasicConst = {
@@ -2231,39 +3210,107 @@ var PersonNameMode;
   PersonNameMode2["CH_EN_NAME"] = "CH_EN";
 })(PersonNameMode || (PersonNameMode = {}));
 var TemplateKey;
-(function(TemplateKey8) {
-  TemplateKey8["movieTemplateFile"] = "movieTemplateFile";
-  TemplateKey8["bookTemplateFile"] = "bookTemplateFile";
-  TemplateKey8["musicTemplateFile"] = "musicTemplateFile";
-  TemplateKey8["noteTemplateFile"] = "noteTemplateFile";
-  TemplateKey8["gameTemplateFile"] = "gameTemplateFile";
-  TemplateKey8["teleplayTemplateFile"] = "teleplayTemplateFile";
+(function(TemplateKey5) {
+  TemplateKey5["movieTemplateFile"] = "movieTemplateFile";
+  TemplateKey5["bookTemplateFile"] = "bookTemplateFile";
+  TemplateKey5["musicTemplateFile"] = "musicTemplateFile";
+  TemplateKey5["noteTemplateFile"] = "noteTemplateFile";
+  TemplateKey5["gameTemplateFile"] = "gameTemplateFile";
+  TemplateKey5["teleplayTemplateFile"] = "teleplayTemplateFile";
 })(TemplateKey || (TemplateKey = {}));
 var SupportType;
-(function(SupportType2) {
-  SupportType2["ALL"] = "ALL";
-  SupportType2["MOVIE"] = "MOVIE";
-  SupportType2["BOOK"] = "BOOK";
-  SupportType2["MUSIC"] = "MUSIC";
-  SupportType2["NOTE"] = "NOTE";
-  SupportType2["GAME"] = "GAME";
-  SupportType2["TELEPLAY"] = "TELEPLAY";
+(function(SupportType3) {
+  SupportType3["ALL"] = "all";
+  SupportType3["MOVIE"] = "movie";
+  SupportType3["BOOK"] = "book";
+  SupportType3["MUSIC"] = "music";
+  SupportType3["NOTE"] = "note";
+  SupportType3["GAME"] = "game";
+  SupportType3["TELEPLAY"] = "teleplay";
+  SupportType3["THEATER"] = "theater";
 })(SupportType || (SupportType = {}));
+var PropertyName;
+(function(PropertyName3) {
+  PropertyName3["id"] = "id";
+  PropertyName3["title"] = "title";
+  PropertyName3["type"] = "type";
+  PropertyName3["score"] = "score";
+  PropertyName3["image"] = "image";
+  PropertyName3["imageUrl"] = "imageUrl";
+  PropertyName3["url"] = "url";
+  PropertyName3["desc"] = "desc";
+  PropertyName3["publisher"] = "publisher";
+  PropertyName3["datePublished"] = "datePublished";
+  PropertyName3["genre"] = "genre";
+  PropertyName3["tags"] = "tags";
+  PropertyName3["rate"] = "rate";
+  PropertyName3["state"] = "state";
+  PropertyName3["collectionDate"] = "collectionDate";
+  PropertyName3["comment"] = "comment";
+  PropertyName3["author"] = "author";
+  PropertyName3["translator"] = "translator";
+  PropertyName3["isbn"] = "isbn";
+  PropertyName3["originalTitle"] = "originalTitle";
+  PropertyName3["subTitle"] = "subTitle";
+  PropertyName3["totalPage"] = "totalPage";
+  PropertyName3["series"] = "series";
+  PropertyName3["menu"] = "menu";
+  PropertyName3["price"] = "price";
+  PropertyName3["binding"] = "binding";
+  PropertyName3["producer"] = "producer";
+  PropertyName3["director"] = "director";
+  PropertyName3["actor"] = "actor";
+  PropertyName3["aggregateRating"] = "aggregateRating";
+  PropertyName3["aliases"] = "aliases";
+  PropertyName3["country"] = "country";
+  PropertyName3["language"] = "language";
+  PropertyName3["time"] = "time";
+  PropertyName3["IMDb"] = "IMDb";
+  PropertyName3["albumType"] = "albumType";
+  PropertyName3["medium"] = "medium";
+  PropertyName3["records"] = "records";
+  PropertyName3["barcode"] = "barcode";
+  PropertyName3["platform"] = "platform";
+  PropertyName3["developer"] = "developer";
+  PropertyName3["episode"] = "episode";
+  PropertyName3["authorUrl"] = "authorUrl";
+  PropertyName3["content"] = "content";
+})(PropertyName || (PropertyName = {}));
+var SearchTypeRecords = {
+  [SupportType.ALL]: i18nHelper.getMessage("ALL"),
+  [SupportType.MOVIE]: i18nHelper.getMessage("MOVIE_AND_TELEPLAY"),
+  [SupportType.BOOK]: i18nHelper.getMessage("BOOK"),
+  [SupportType.MUSIC]: i18nHelper.getMessage("MUSIC"),
+  [SupportType.NOTE]: i18nHelper.getMessage("NOTE"),
+  [SupportType.GAME]: i18nHelper.getMessage("GAME"),
+  [SupportType.TELEPLAY]: i18nHelper.getMessage("TELEPLAY"),
+  [SupportType.THEATER]: i18nHelper.getMessage("THEATER")
+};
 var PersonNameModeRecords = {
   [PersonNameMode.CH_NAME]: i18nHelper.getMessage("121206"),
   [PersonNameMode.EN_NAME]: i18nHelper.getMessage("121207"),
   [PersonNameMode.CH_EN_NAME]: i18nHelper.getMessage("121208")
 };
 var SyncType;
-(function(SyncType3) {
-  SyncType3["movie"] = "movie";
-  SyncType3["book"] = "book";
-  SyncType3["broadcast"] = "broadcast";
-  SyncType3["note"] = "note";
-  SyncType3["music"] = "music";
+(function(SyncType4) {
+  SyncType4["movie"] = "movie";
+  SyncType4["book"] = "book";
+  SyncType4["broadcast"] = "broadcast";
+  SyncType4["note"] = "note";
+  SyncType4["music"] = "music";
+  SyncType4["teleplay"] = "teleplay";
 })(SyncType || (SyncType = {}));
+var SyncTypeUrlDomain = new Map([
+  [SyncType.movie, "movie"],
+  [SyncType.book, "book"],
+  [SyncType.broadcast, "broadcast"],
+  [SyncType.note, "note"],
+  [SyncType.music, "music"],
+  [SyncType.teleplay, "movie"]
+]);
 var SyncTypeRecords = {
   [SyncType.movie]: i18nHelper.getMessage("504103"),
+  [SyncType.teleplay]: i18nHelper.getMessage("504107"),
   [SyncType.book]: i18nHelper.getMessage("504102"),
   [SyncType.music]: i18nHelper.getMessage("504106")
 };
@@ -2296,11 +3343,40 @@ var DoubanSearchResultSubjectPreviousPage = {
   genre: [],
   id: "",
   image: "",
+  imageUrl: "",
   publisher: "",
   score: 0,
   title: i18nHelper.getMessage("150102"),
   type: "navigate",
   url: NavigateType.previous
+};
+var DoubanSearchGroupPublishResultSubjectPreviousPage = {
+  cast: "",
+  datePublished: void 0,
+  desc: "",
+  genre: [],
+  id: "",
+  image: "",
+  imageUrl: "",
+  publisher: "",
+  score: 0,
+  title: i18nHelper.getMessage("150106"),
+  type: "navigate",
+  url: NavigateType.previous
+};
+var DoubanSearchGroupPublishResultSubjectNextPage = {
+  cast: "",
+  datePublished: void 0,
+  desc: "",
+  genre: [],
+  id: "",
+  image: "",
+  imageUrl: "",
+  publisher: "",
+  score: 0,
+  title: i18nHelper.getMessage("150105"),
+  type: "navigate",
+  url: NavigateType.next
 };
 var DoubanSearchResultSubjectNextPage = {
   cast: "",
@@ -2309,6 +3385,7 @@ var DoubanSearchResultSubjectNextPage = {
   genre: [],
   id: "",
   image: "",
+  imageUrl: "",
   publisher: "",
   score: 0,
   title: i18nHelper.getMessage("150103"),
@@ -2322,28 +3399,115 @@ var DoubanSearchResultSubjectNextPageNeedLogin = {
   genre: [],
   id: "",
   image: "",
+  imageUrl: "",
   publisher: "",
   score: 0,
   title: i18nHelper.getMessage("150104"),
   type: "navigate",
   url: NavigateType.nextNeedLogin
 };
+var SEARCH_ITEM_PAGE_SIZE = 20;
+var DEFAULT_DOUBAN_HEADERS = StringUtil.parseHeaders(`
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Language: zh-CN,zh;q=0.9
+Cache-Control: max-age=0
+Connection: keep-alive
+Host: www.douban.com
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+`);
+var ONLINE_SETTING_DEFAULT = {
+  properties: [
+    {
+      type: SupportType.BOOK,
+      name: PropertyName.comment,
+      selectors: [
+        "#interest_sect_level > div > span:nth-child(7)"
+      ]
+    },
+    {
+      type: SupportType.MOVIE,
+      name: PropertyName.comment,
+      selectors: [
+        "#interest_sect_level > div > span:nth-child(8)",
+        "#interest_sect_level > div > span:nth-child(7)",
+        "#interest_sect_level > div > span:nth-child(9)"
+      ]
+    }
+  ]
+};
+var SubjectHandledStatus;
+(function(SubjectHandledStatus3) {
+  SubjectHandledStatus3["init"] = "init";
+  SubjectHandledStatus3["saved"] = "saved";
+  SubjectHandledStatus3["syncTypeDiffAbort"] = "syncTypeDiffAbort";
+})(SubjectHandledStatus || (SubjectHandledStatus = {}));
+var DEFAULT_SETTINGS_ARRAY_INPUT_SIZE = 2;
+var DataValueType;
+(function(DataValueType2) {
+  DataValueType2[DataValueType2["date"] = 0] = "date";
+  DataValueType2[DataValueType2["number"] = 1] = "number";
+  DataValueType2[DataValueType2["string"] = 2] = "string";
+  DataValueType2[DataValueType2["person"] = 3] = "person";
+  DataValueType2[DataValueType2["array"] = 4] = "array";
+  DataValueType2[DataValueType2["url"] = 5] = "url";
+  DataValueType2[DataValueType2["path"] = 6] = "path";
+})(DataValueType || (DataValueType = {}));
+var DataTargetType;
+(function(DataTargetType2) {
+  DataTargetType2[DataTargetType2["fileName"] = 0] = "fileName";
+  DataTargetType2[DataTargetType2["yaml"] = 1] = "yaml";
+  DataTargetType2[DataTargetType2["content"] = 2] = "content";
+})(DataTargetType || (DataTargetType = {}));
+var EXAMPLE_RATE = 8.5;
+var EXAMPLE_RATE_MAX = 10;
+var EXAMPLE_SUBJECT_MAP = new Map([
+  ["id", new DataField("id", 2, 2, "2253379")],
+  ["title", new DataField("title", 2, 2, "\u7B80\u7231")],
+  ["type", new DataField("type", 2, 2, "book")],
+  ["score", new DataField("score", 1, 1, EXAMPLE_RATE)],
+  ["image", new DataField("image", 5, 5, "https://img9.doubanio.com/view/subject/s/public/s1070959.jpg")],
+  ["imageUrl", new DataField("imageUrl", 5, 5, "https://img9.doubanio.com/view/subject/s/public/s1070959.jpg")],
+  ["url", new DataField("url", 5, 5, "https://book.douban.com/subject/2253379/")],
+  ["desc", new DataField("desc", 2, 2, "\u7B80\u7231\u662F\u4E00\u90E8\u5173\u4E8E\u7231\u3001\u5173\u4E8E\u6210\u957F\u3001\u5173\u4E8E\u8FFD\u6C42\u81EA\u7531\u4E0E\u5C0A\u4E25\u7684\u4F1F\u5927\u5C0F\u8BF4\u3002")],
+  ["publisher", new DataField("publisher", 2, 2, "\u4EBA\u6C11\u6587\u5B66\u51FA\u7248\u793E")],
+  ["datePublished", new DataField("datePublished", 0, 0, "2020-1-1")],
+  ["genre", new DataField("genre", 4, 4, "\u5C0F\u8BF4")],
+  ["tags", new DataField("tags", 4, 4, "\u5C0F\u8BF4")],
+  ["rate", new DataField("rate", 1, 1, 9)],
+  ["state", new DataField("state", 2, 2, "wish")],
+  ["collectionDate", new DataField("collectionDate", 0, 0, "2020-1-1")],
+  ["comment", new DataField("comment", 2, 2, "\u7B80\u7231\u662F\u4E00\u90E8\u5173\u4E8E\u7231\u3001\u5173\u4E8E\u6210\u957F\u3001\u5173\u4E8E\u8FFD\u6C42\u81EA\u7531\u4E0E\u5C0A\u4E25\u7684\u4F1F\u5927\u5C0F\u8BF4\u3002")],
+  ["author", new DataField("author", 3, 3, "\u590F\u6D1B\u8482\xB7\u52C3\u6717\u7279")],
+  ["translator", new DataField("translator", 3, 3, "\u674E\u7EE7\u5B8F")]
+]);
+var MAX_STAR_NUMBER = 100;
 
 // src/org/wanxp/main.ts
 var import_obsidian30 = __toModule(require("obsidian"));
 
-// src/org/wanxp/constant/Douban.ts
-var doubanHeaders = {
-  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-  "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
-  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36"
-};
-var doubanSubjectSyncListUrl = function(subjectType, userId, doType, start2) {
-  return `https://${subjectType}.douban.com/people/${userId}/${doType}?start=${start2}&sort=time&rating=all&filter=all&mode=list`;
-};
-
 // src/org/wanxp/constant/DefaultSettings.ts
 var DEFAULT_SETTINGS = {
+  arraySettings: [
+    {
+      "arrayName": "ArrayType1",
+      "arrayStart": "",
+      "arrayElementStart": "[[",
+      "arraySpiltV2": ",",
+      "arrayElementEnd": "]]",
+      "arrayEnd": "",
+      "index": 1
+    }
+  ],
+  onlineSettingsFileName: "obsidian_douban_plugin_online_settings.json",
+  onlineSettingsGistId: "35693f9ece9bd6abba98f94e81afde19",
   movieTemplateFile: ``,
   bookTemplateFile: ``,
   musicTemplateFile: ``,
@@ -2351,10 +3515,13 @@ var DEFAULT_SETTINGS = {
   gameTemplateFile: ``,
   teleplayTemplateFile: ``,
   searchUrl: "https://www.douban.com/search?q=",
-  searchHeaders: JSON.stringify(doubanHeaders),
   dateFormat: "yyyy-MM-DD",
   timeFormat: "HH:mm:ss",
-  arraySpilt: ", ",
+  arrayStart: "",
+  arrayElementStart: "\\n  - ",
+  arraySpiltV2: "",
+  arrayElementEnd: "",
+  arrayEnd: "",
   personNameMode: PersonNameMode.CH_NAME,
   dataFilePath: "",
   dataFileNamePath: "/{{type}}/{{title}}",
@@ -2369,43 +3536,443 @@ var DEFAULT_SETTINGS = {
     { name: "myType", value: "teleplay", field: SupportType.TELEPLAY }
   ],
   loginCookiesContent: "",
+  loginHeadersContent: "",
   cacheImage: true,
   cacheHighQuantityImage: true,
   attachmentPath: "assets",
-  syncHandledDataArray: []
+  syncHandledDataArray: [],
+  scoreSetting: {
+    starFull: "\u2B50",
+    starEmpty: "\u2606",
+    displayStarEmpty: false,
+    maxStar: 5
+  }
 };
 
 // src/org/wanxp/douban/data/search/DoubanSearchFuzzySuggestModal.ts
+var import_obsidian4 = __toModule(require("obsidian"));
+
+// src/org/wanxp/utils/Logutil.ts
+var import_obsidian = __toModule(require("obsidian"));
+var Logger = class {
+  error(msg, e) {
+    new import_obsidian.Notice(msg);
+    console.log(`OB-Douban: ${msg}`);
+    console.error(e);
+    return e;
+  }
+  notice(e) {
+    new import_obsidian.Notice(e);
+    console.error(`OB-Douban: ${e}`);
+    return e;
+  }
+  warn(e) {
+    new import_obsidian.Notice(e);
+    console.warn(`OB-Douban: ${e}`);
+    return e;
+  }
+  info(e) {
+    console.log(`OB-Douban:${typeof e == "string" ? e : JSON.stringify(e)}`);
+    return e;
+  }
+  debug(e) {
+    if (e instanceof Error) {
+      console.error(e);
+    } else {
+      console.log(`OB-Douban:${(0, import_obsidian.moment)(new Date()).format("YYYY-MM-DD HH:mm:SS")}:${typeof e == "string" ? e : JSON.stringify(e)}`);
+    }
+    return e;
+  }
+  trace(e) {
+    console.log(`OB-Douban:${typeof e == "string" ? e : JSON.stringify(e)}`);
+    return e;
+  }
+  traceN(notion, e) {
+    console.log(`${notion} ${typeof e == "string" ? e : JSON.stringify(e)}`);
+    return e;
+  }
+};
+var log = new Logger();
+
+// src/org/wanxp/utils/HttpUtil.ts
 var import_obsidian3 = __toModule(require("obsidian"));
+
+// src/org/wanxp/douban/component/DoubanHumanCheckModel.ts
+var import_obsidian2 = __toModule(require("obsidian"));
+var DoubanHumanCheckModel = class {
+  constructor(url) {
+    this.url = url;
+    const { remote } = require("electron");
+    const { BrowserWindow: RemoteBrowserWindow } = remote;
+    this.modal = new RemoteBrowserWindow({
+      parent: remote.getCurrentWindow(),
+      width: 960,
+      height: 540,
+      show: false
+    });
+    this.modal.once("ready-to-show", () => {
+      this.modal.setTitle(i18nHelper.getMessage("100102"));
+      this.modal.show();
+    });
+    const session = this.modal.webContents.session;
+    const filter4 = {
+      urls: [this.url]
+    };
+    session.webRequest.onSendHeaders(filter4, (details) => __async(this, null, function* () {
+      const cookies = details.requestHeaders["Cookie"];
+      const cookieArr = this.parseCookies(cookies);
+      if (cookieArr) {
+        this.onClose();
+      } else {
+        this.onReload();
+      }
+    }));
+  }
+  parseCookies(cookies) {
+    return cookies;
+  }
+  load() {
+    return __async(this, null, function* () {
+      try {
+        yield this.modal.loadURL(this.url);
+      } catch (error) {
+        log.error(i18nHelper.getMessage("100101"), error);
+      }
+    });
+  }
+  loadUrl(url) {
+    return __async(this, null, function* () {
+      try {
+        yield this.modal.loadURL(url);
+      } catch (error) {
+        log.error(i18nHelper.getMessage("100101"), error);
+      }
+    });
+  }
+  loadHtml(html3) {
+    return __async(this, null, function* () {
+      try {
+        yield this.modal.loadURL(`data:text/html;charset=utf-8,${html3}`);
+      } catch (error) {
+        log.error(i18nHelper.getMessage("100101"), error);
+      }
+    });
+  }
+  onClose() {
+    this.modal.close();
+    new import_obsidian2.Notice(i18nHelper.getMessage("100103"));
+  }
+  onReload() {
+    this.modal.reload();
+  }
+};
+
+// src/org/wanxp/utils/LoginUtil.ts
+var LoginUtil = class {
+  static contentNeedLogin(content) {
+    return content && content.indexOf("\u4F60\u8981\u7684\u4E1C\u897F\u4E0D\u5728\u8FD9, \u5230\u522B\u5904\u770B\u770B\u5427\u3002") > -1;
+  }
+};
+
+// src/org/wanxp/utils/HttpUtil.ts
+var { https } = require_follow_redirects();
+var HttpUtil = class {
+  static httpRequestGet(url, headers, settingsManager) {
+    settingsManager.debug(`\u8BF7\u6C42\u5730\u5740:${url}`);
+    const _a2 = headers, { ["Accept-Encoding"]: acceptEncoding } = _a2, headersInner = __objRest(_a2, ["Accept-Encoding"]);
+    let options = {
+      headers: headersInner
+    };
+    settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6\u7F51\u9875\u5F00\u59CB:
+url:${url}
+headers:${JSON.stringify(headers)}`);
+    return new Promise((resolve, rejects) => {
+      https.get(url, __spreadValues({}, options), function(response) {
+        let chunks = [], size = 0;
+        if (response.status == 403) {
+          rejects(new Error(i18nHelper.getMessage("130106")));
+        }
+        response.on("data", function(chunk) {
+          chunks.push(chunk);
+          size += chunk.length;
+        });
+        response.on("end", function() {
+          const data2 = Buffer.concat(chunks, size);
+          const html3 = data2.toString();
+          if (settingsManager) {
+            settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6\u7F51\u9875\u5B8C\u6210:
+html:
+${html3}`);
+          }
+          if (LoginUtil.contentNeedLogin(html3)) {
+            rejects(new Error(i18nHelper.getMessage("140304")));
+          }
+          resolve(html3);
+        });
+      });
+    });
+  }
+  static httpRequestGetJson(url, headers, settingsManager) {
+    const _a2 = headers, { ["Accept-Encoding"]: acceptEncoding } = _a2, headersInner = __objRest(_a2, ["Accept-Encoding"]);
+    const options = {
+      headers: headersInner
+    };
+    settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6json\u5F00\u59CB:
+url:${url}
+headers:${JSON.stringify(headers)}`);
+    return new Promise((resolve, rejects) => {
+      https.get(url, __spreadValues({}, options), function(response) {
+        const chunks = [];
+        let size = 0;
+        if (response.status == 403) {
+          rejects(new Error(i18nHelper.getMessage("130106")));
+        }
+        response.on("data", function(chunk) {
+          chunks.push(chunk);
+          size += chunk.length;
+        });
+        response.on("end", function() {
+          const data2 = Buffer.concat(chunks, size);
+          const html3 = data2.toString();
+          if (settingsManager) {
+            settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6\u7F51\u9875\u5B8C\u6210:
+html:
+${html3}`);
+          }
+          if (LoginUtil.contentNeedLogin(html3)) {
+            rejects(new Error(i18nHelper.getMessage("140304")));
+          }
+          resolve(html3);
+        });
+      });
+    });
+  }
+  static httpRequestGetBuffer(url, headers, settingsManager) {
+    let options = {
+      headers
+    };
+    if (settingsManager) {
+      settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6\u6587\u4EF6\u5F00\u59CB:
+${url}`);
+    }
+    return new Promise((resolve, rejects) => {
+      https.get(url, __spreadValues({}, options), function(response) {
+        let chunks = [], size = 0;
+        if (response.status == 403) {
+          rejects(new Error(i18nHelper.getMessage("130106")));
+        }
+        response.on("data", function(chunk) {
+          chunks.push(chunk);
+          size += chunk.length;
+        });
+        response.on("end", function() {
+          let data2 = Buffer.concat(chunks, size);
+          if (settingsManager) {
+            settingsManager.debug(`Obsidian-Douban:\u4ECE\u7F51\u7EDC\u83B7\u53D6\u6587\u4EF6\u5B8C\u6210:
+${url}`);
+          }
+          resolve(data2);
+        });
+      });
+    });
+  }
+  static httpRequestGet1(url, headers, settingsManager) {
+    let requestUrlParam = {
+      url,
+      method: "GET",
+      headers,
+      throw: true
+    };
+    return (0, import_obsidian3.request)(requestUrlParam).then((data2) => {
+      if (data2 && data2.indexOf("https://sec.douban.com/a") > 0) {
+        log.notice(i18nHelper.getMessage("130105"));
+        if (settingsManager) {
+          settingsManager.debug(`Obsidian-Douban:\u83B7\u53D6\u5F02\u5E38\u7F51\u9875\u5982\u4E0B:
+${data2}`);
+        }
+      }
+      settingsManager.debug(`Obsidian-Douban:\u83B7\u53D6\u7F51\u9875\u5982\u4E0B:
+${data2}`);
+      return data2;
+    }).then((s) => this.humanCheck(s, url, settingsManager)).catch((e) => {
+      if (e.toString().indexOf("403") > 0) {
+        throw log.error(i18nHelper.getMessage("130105"), e);
+      } else {
+        throw log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e);
+      }
+    });
+  }
+  static humanCheck(html3, url, settingsManager) {
+    return __async(this, null, function* () {
+      if (settingsManager) {
+        settingsManager.debug(html3);
+      }
+      if (html3 && html3.indexOf("<title>\u7981\u6B62\u8BBF\u95EE</title>") != -1) {
+        const loginModel = new DoubanHumanCheckModel(url);
+        yield loginModel.load();
+        return "";
+      } else {
+        return html3;
+      }
+    });
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/AbstractSearchPageFetcher.ts
+var AbstractSearchPageFetcher = class {
+  constructor(settingsManager) {
+    this.settingsManager = settingsManager;
+  }
+  support(type, pageNum) {
+    throw new Error("Method not implemented.");
+  }
+  fetch(keyword, pageNum, pageSize) {
+    const start2 = (pageNum - 1) * pageSize;
+    const url = this.getUrl(keyword, start2, pageSize);
+    if (!url) {
+      return Promise.resolve("");
+    }
+    return HttpUtil.httpRequestGet(url, this.settingsManager.getHeaders(), this.settingsManager).catch((e) => {
+      throw log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e);
+    });
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/AllPageSearchPageFetcher.ts
+var AllPageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, pageNum, pageSize) {
+    return `https://m.douban.com/rexxar/api/v2/search?q=${keyword}&start=${pageNum}&count=${pageSize}`;
+  }
+  support(type) {
+    return type == SupportType.ALL;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/MoviePageSearchPageFetcher.ts
+var MoviePageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=1002`;
+  }
+  support(type) {
+    return type == SupportType.MOVIE;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/BookPageSearchPageFetcher.ts
+var BookPageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=1001`;
+  }
+  support(type) {
+    return type == SupportType.BOOK;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/GamePageSearchPageFetcher.ts
+var GamePageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=3114`;
+  }
+  support(type) {
+    return type == SupportType.GAME;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/MusicPageSearchPageFetcher.ts
+var MusicPageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=1003`;
+  }
+  support(type) {
+    return type == SupportType.MUSIC;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/TheaterPageSearchPageFetcher.ts
+var TheaterPageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=3069`;
+  }
+  support(type) {
+    return type == SupportType.THEATER;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/NotePageSearchPageFetcher.ts
+var NotePageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/j/search?q=${keyword}&start=${start2}&cat=1015`;
+  }
+  support(type, pageNum) {
+    return type == SupportType.NOTE && pageNum > 1;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/NoteFirstPageSearchPageFetcher.ts
+var NoteFirstPageSearchPageFetcher = class extends AbstractSearchPageFetcher {
+  getUrl(keyword, start2, pageSize) {
+    return `https://www.douban.com/search?cat=1015&q=${keyword}`;
+  }
+  support(type, pageNum) {
+    return type == SupportType.NOTE && pageNum == 1;
+  }
+};
+
+// src/org/wanxp/douban/data/search/searcher/SearchPageFetcher.ts
+var SearchPageFetcher = class {
+  constructor(settingsManager) {
+    this.fetchers = [];
+    this.fetchers.push(new AllPageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new MoviePageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new BookPageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new GamePageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new MusicPageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new TheaterPageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new NotePageSearchPageFetcher(settingsManager));
+    this.fetchers.push(new NoteFirstPageSearchPageFetcher(settingsManager));
+  }
+  fetch(keyword, type, pageNum, pageSize) {
+    for (const fetcher of this.fetchers) {
+      if (fetcher.support(type, pageNum)) {
+        return fetcher.fetch(keyword, pageNum, pageSize);
+      }
+    }
+    throw new Error(`not support type:${type} pageNum:${pageNum}`);
+  }
+};
 
 // src/org/wanxp/douban/data/model/SearchPageInfo.ts
 var SearchPageInfo = class {
-  constructor(total, pageNum, pageSize) {
+  constructor(total, pageNum, pageSize, type) {
     this._total = total;
     this._pageNum = pageNum;
     this._pageSize = pageSize;
-    this._hasNext = (pageNum + 1) * pageSize < total;
+    this._hasNext = pageNum * pageSize < total;
+    this._type = type;
   }
   nextPage() {
     if (!this._hasNext) {
       return this;
     }
-    return new SearchPageInfo(this.total, this._pageNum + 1, this._pageSize);
+    return new SearchPageInfo(this.total, this._pageNum + 1, this._pageSize, this._type);
   }
   previousPage() {
     if (this._pageNum == 0) {
       return this;
     }
-    return new SearchPageInfo(this.total, this._pageNum - 1, this._pageSize);
+    return new SearchPageInfo(this.total, this._pageNum - 1, this._pageSize, this._type);
+  }
+  typePage(type) {
+    return new SearchPageInfo(this.total, 0, this._pageSize, this._type);
   }
   get hasNext() {
     return this._hasNext;
   }
   get hasPrevious() {
-    return this._pageNum > 0;
+    return this._pageNum > 1;
   }
   get start() {
-    return this._pageNum * this._pageSize + 1;
+    return (this._pageNum - 1) * this._pageSize + 1;
   }
   get total() {
     return this._total;
@@ -2416,10 +3983,94 @@ var SearchPageInfo = class {
   get pageNum() {
     return this._pageNum;
   }
+  get type() {
+    return this._type;
+  }
+  allPage() {
+    if (this._pageNum == 0) {
+      return this;
+    }
+    return new SearchPageInfo(this.total, this._pageNum - 1, this._pageSize, SupportType.ALL);
+  }
 };
 
-// src/org/wanxp/douban/data/search/Search.ts
-var import_obsidian2 = __toModule(require("obsidian"));
+// src/org/wanxp/douban/data/model/SearchPage.ts
+var SearchPage = class extends SearchPageInfo {
+  constructor(total, pageNum, pageSize, type, list) {
+    super(total, pageNum, pageSize, type);
+    this._list = list;
+  }
+  get list() {
+    return this._list;
+  }
+  static empty(type) {
+    return new SearchPage(0, 0, 0, type, []);
+  }
+};
+
+// src/org/wanxp/douban/data/search/SearchParserV2.ts
+var SearchParserHandlerV2 = class {
+  static itemMapToSearchResult(items) {
+    if (!items) {
+      return [];
+    }
+    return items.map((i) => {
+      var _a2, _b, _c, _d;
+      const target = i.target;
+      const result = {
+        id: (_a2 = target.id) != null ? _a2 : "",
+        title: (_b = target.title) != null ? _b : "-",
+        score: target.rating && target.rating.value ? Number(target.rating.value) : null,
+        cast: (_c = target.card_subtitle) != null ? _c : "",
+        type: (_d = i.type_name) != null ? _d : "-",
+        desc: "-",
+        url: target.uri ? target.uri.replaceAll("douban://", "https://") : "https://www.douban.com",
+        image: "",
+        imageUrl: "",
+        publisher: "",
+        datePublished: void 0,
+        genre: []
+      };
+      return result;
+    });
+  }
+};
+
+// src/org/wanxp/douban/data/search/parser/AllFirstPageSearchResultPageParser.ts
+var AllFirstPageSearchResultPageParser = class {
+  support(type, pageNum) {
+    return pageNum == 1 && type == SupportType.ALL;
+  }
+  parse(source, type, pageNum, pageSize) {
+    const { subjects } = JSON.parse(source);
+    if (!subjects) {
+      return SearchPage.empty(type);
+    }
+    const { items } = subjects;
+    if (!items || items.length == 0) {
+      return SearchPage.empty(type);
+    }
+    const doubanSearchResultSubjects = SearchParserHandlerV2.itemMapToSearchResult(items);
+    return new SearchPage(2e3, pageNum, pageSize, type, doubanSearchResultSubjects);
+  }
+};
+
+// src/org/wanxp/douban/data/search/parser/OtherAllPageSearchResultPageParser.ts
+var OtherAllPageSearchResultPageParser = class {
+  support(type, pageNum) {
+    return pageNum > 1 && type == SupportType.ALL;
+  }
+  parse(source, type, pageNum, pageSize) {
+    log.debug("\u89E3\u6790\u7ED9\u591A\u9875\u9762\u7ED3\u679C");
+    const { contents: contents2 } = JSON.parse(source);
+    if (!contents2) {
+      return new SearchPage(0, 0, 0, type, []);
+    }
+    const data2 = contents2;
+    const doubanSearchResultSubjects = SearchParserHandlerV2.itemMapToSearchResult(data2.items);
+    return new SearchPage(data2.total, pageNum, pageSize, type, doubanSearchResultSubjects);
+  }
+};
 
 // node_modules/cheerio/lib/esm/options.js
 var defaultOpts = {
@@ -2448,8 +4099,8 @@ __export(static_exports, {
 });
 
 // node_modules/domutils/lib/esm/index.js
-var esm_exports = {};
-__export(esm_exports, {
+var esm_exports2 = {};
+__export(esm_exports2, {
   DocumentPosition: () => DocumentPosition,
   append: () => append,
   appendChild: () => appendChild,
@@ -2494,6 +4145,20 @@ __export(esm_exports, {
 });
 
 // node_modules/domelementtype/lib/esm/index.js
+var esm_exports = {};
+__export(esm_exports, {
+  CDATA: () => CDATA,
+  Comment: () => Comment,
+  Directive: () => Directive,
+  Doctype: () => Doctype,
+  ElementType: () => ElementType,
+  Root: () => Root,
+  Script: () => Script,
+  Style: () => Style,
+  Tag: () => Tag,
+  Text: () => Text,
+  isTag: () => isTag
+});
 var ElementType;
 (function(ElementType3) {
   ElementType3["Root"] = "root";
@@ -2864,10 +4529,10 @@ var DomHandler = class {
 };
 
 // node_modules/entities/lib/esm/generated/decode-data-html.js
-var decode_data_html_default = new Uint16Array([7489, 60, 213, 305, 650, 1181, 1403, 1488, 1653, 1758, 1954, 2006, 2063, 2634, 2705, 3489, 3693, 3849, 3878, 4298, 4648, 4833, 5141, 5277, 5315, 5343, 5413, 0, 0, 0, 0, 0, 0, 5483, 5837, 6541, 7186, 7645, 8062, 8288, 8624, 8845, 9152, 9211, 9282, 10276, 10514, 11528, 11848, 12238, 12310, 12986, 13881, 14252, 14590, 14888, 14961, 15072, 15150, 2048, 69, 77, 97, 98, 99, 102, 103, 108, 109, 110, 111, 112, 114, 115, 116, 117, 92, 98, 102, 109, 115, 127, 132, 139, 144, 149, 152, 166, 179, 185, 200, 207, 108, 105, 103, 32827, 198, 16582, 80, 32827, 38, 16422, 99, 117, 116, 101, 32827, 193, 16577, 114, 101, 118, 101, 59, 16642, 256, 105, 121, 120, 125, 114, 99, 32827, 194, 16578, 59, 17424, 114, 59, 49152, 55349, 56580, 114, 97, 118, 101, 32827, 192, 16576, 112, 104, 97, 59, 17297, 97, 99, 114, 59, 16640, 100, 59, 27219, 256, 103, 112, 157, 161, 111, 110, 59, 16644, 102, 59, 49152, 55349, 56632, 112, 108, 121, 70, 117, 110, 99, 116, 105, 111, 110, 59, 24673, 105, 110, 103, 32827, 197, 16581, 256, 99, 115, 190, 195, 114, 59, 49152, 55349, 56476, 105, 103, 110, 59, 25172, 105, 108, 100, 101, 32827, 195, 16579, 109, 108, 32827, 196, 16580, 1024, 97, 99, 101, 102, 111, 114, 115, 117, 229, 251, 254, 279, 284, 290, 295, 298, 256, 99, 114, 234, 242, 107, 115, 108, 97, 115, 104, 59, 25110, 374, 246, 248, 59, 27367, 101, 100, 59, 25350, 121, 59, 17425, 384, 99, 114, 116, 261, 267, 276, 97, 117, 115, 101, 59, 25141, 110, 111, 117, 108, 108, 105, 115, 59, 24876, 97, 59, 17298, 114, 59, 49152, 55349, 56581, 112, 102, 59, 49152, 55349, 56633, 101, 118, 101, 59, 17112, 99, 242, 275, 109, 112, 101, 113, 59, 25166, 1792, 72, 79, 97, 99, 100, 101, 102, 104, 105, 108, 111, 114, 115, 117, 333, 337, 342, 384, 414, 418, 437, 439, 442, 476, 533, 627, 632, 638, 99, 121, 59, 17447, 80, 89, 32827, 169, 16553, 384, 99, 112, 121, 349, 354, 378, 117, 116, 101, 59, 16646, 256, 59, 105, 359, 360, 25298, 116, 97, 108, 68, 105, 102, 102, 101, 114, 101, 110, 116, 105, 97, 108, 68, 59, 24901, 108, 101, 121, 115, 59, 24877, 512, 97, 101, 105, 111, 393, 398, 404, 408, 114, 111, 110, 59, 16652, 100, 105, 108, 32827, 199, 16583, 114, 99, 59, 16648, 110, 105, 110, 116, 59, 25136, 111, 116, 59, 16650, 256, 100, 110, 423, 429, 105, 108, 108, 97, 59, 16568, 116, 101, 114, 68, 111, 116, 59, 16567, 242, 383, 105, 59, 17319, 114, 99, 108, 101, 512, 68, 77, 80, 84, 455, 459, 465, 470, 111, 116, 59, 25241, 105, 110, 117, 115, 59, 25238, 108, 117, 115, 59, 25237, 105, 109, 101, 115, 59, 25239, 111, 256, 99, 115, 482, 504, 107, 119, 105, 115, 101, 67, 111, 110, 116, 111, 117, 114, 73, 110, 116, 101, 103, 114, 97, 108, 59, 25138, 101, 67, 117, 114, 108, 121, 256, 68, 81, 515, 527, 111, 117, 98, 108, 101, 81, 117, 111, 116, 101, 59, 24605, 117, 111, 116, 101, 59, 24601, 512, 108, 110, 112, 117, 542, 552, 583, 597, 111, 110, 256, 59, 101, 549, 550, 25143, 59, 27252, 384, 103, 105, 116, 559, 566, 570, 114, 117, 101, 110, 116, 59, 25185, 110, 116, 59, 25135, 111, 117, 114, 73, 110, 116, 101, 103, 114, 97, 108, 59, 25134, 256, 102, 114, 588, 590, 59, 24834, 111, 100, 117, 99, 116, 59, 25104, 110, 116, 101, 114, 67, 108, 111, 99, 107, 119, 105, 115, 101, 67, 111, 110, 116, 111, 117, 114, 73, 110, 116, 101, 103, 114, 97, 108, 59, 25139, 111, 115, 115, 59, 27183, 99, 114, 59, 49152, 55349, 56478, 112, 256, 59, 67, 644, 645, 25299, 97, 112, 59, 25165, 1408, 68, 74, 83, 90, 97, 99, 101, 102, 105, 111, 115, 672, 684, 688, 692, 696, 715, 727, 737, 742, 819, 1165, 256, 59, 111, 377, 677, 116, 114, 97, 104, 100, 59, 26897, 99, 121, 59, 17410, 99, 121, 59, 17413, 99, 121, 59, 17423, 384, 103, 114, 115, 703, 708, 711, 103, 101, 114, 59, 24609, 114, 59, 24993, 104, 118, 59, 27364, 256, 97, 121, 720, 725, 114, 111, 110, 59, 16654, 59, 17428, 108, 256, 59, 116, 733, 734, 25095, 97, 59, 17300, 114, 59, 49152, 55349, 56583, 256, 97, 102, 747, 807, 256, 99, 109, 752, 802, 114, 105, 116, 105, 99, 97, 108, 512, 65, 68, 71, 84, 768, 774, 790, 796, 99, 117, 116, 101, 59, 16564, 111, 372, 779, 781, 59, 17113, 98, 108, 101, 65, 99, 117, 116, 101, 59, 17117, 114, 97, 118, 101, 59, 16480, 105, 108, 100, 101, 59, 17116, 111, 110, 100, 59, 25284, 102, 101, 114, 101, 110, 116, 105, 97, 108, 68, 59, 24902, 1136, 829, 0, 0, 0, 834, 852, 0, 1029, 102, 59, 49152, 55349, 56635, 384, 59, 68, 69, 840, 841, 845, 16552, 111, 116, 59, 24796, 113, 117, 97, 108, 59, 25168, 98, 108, 101, 768, 67, 68, 76, 82, 85, 86, 867, 882, 898, 975, 994, 1016, 111, 110, 116, 111, 117, 114, 73, 110, 116, 101, 103, 114, 97, 236, 569, 111, 628, 889, 0, 0, 891, 187, 841, 110, 65, 114, 114, 111, 119, 59, 25043, 256, 101, 111, 903, 932, 102, 116, 384, 65, 82, 84, 912, 918, 929, 114, 114, 111, 119, 59, 25040, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 25044, 101, 229, 714, 110, 103, 256, 76, 82, 939, 964, 101, 102, 116, 256, 65, 82, 947, 953, 114, 114, 111, 119, 59, 26616, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 26618, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 26617, 105, 103, 104, 116, 256, 65, 84, 984, 990, 114, 114, 111, 119, 59, 25042, 101, 101, 59, 25256, 112, 577, 1001, 0, 0, 1007, 114, 114, 111, 119, 59, 25041, 111, 119, 110, 65, 114, 114, 111, 119, 59, 25045, 101, 114, 116, 105, 99, 97, 108, 66, 97, 114, 59, 25125, 110, 768, 65, 66, 76, 82, 84, 97, 1042, 1066, 1072, 1118, 1151, 892, 114, 114, 111, 119, 384, 59, 66, 85, 1053, 1054, 1058, 24979, 97, 114, 59, 26899, 112, 65, 114, 114, 111, 119, 59, 25077, 114, 101, 118, 101, 59, 17169, 101, 102, 116, 722, 1082, 0, 1094, 0, 1104, 105, 103, 104, 116, 86, 101, 99, 116, 111, 114, 59, 26960, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26974, 101, 99, 116, 111, 114, 256, 59, 66, 1113, 1114, 25021, 97, 114, 59, 26966, 105, 103, 104, 116, 468, 1127, 0, 1137, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26975, 101, 99, 116, 111, 114, 256, 59, 66, 1146, 1147, 25025, 97, 114, 59, 26967, 101, 101, 256, 59, 65, 1158, 1159, 25252, 114, 114, 111, 119, 59, 24999, 256, 99, 116, 1170, 1175, 114, 59, 49152, 55349, 56479, 114, 111, 107, 59, 16656, 2048, 78, 84, 97, 99, 100, 102, 103, 108, 109, 111, 112, 113, 115, 116, 117, 120, 1213, 1216, 1220, 1227, 1246, 1250, 1255, 1262, 1269, 1313, 1327, 1334, 1362, 1373, 1376, 1381, 71, 59, 16714, 72, 32827, 208, 16592, 99, 117, 116, 101, 32827, 201, 16585, 384, 97, 105, 121, 1234, 1239, 1244, 114, 111, 110, 59, 16666, 114, 99, 32827, 202, 16586, 59, 17453, 111, 116, 59, 16662, 114, 59, 49152, 55349, 56584, 114, 97, 118, 101, 32827, 200, 16584, 101, 109, 101, 110, 116, 59, 25096, 256, 97, 112, 1274, 1278, 99, 114, 59, 16658, 116, 121, 595, 1286, 0, 0, 1298, 109, 97, 108, 108, 83, 113, 117, 97, 114, 101, 59, 26107, 101, 114, 121, 83, 109, 97, 108, 108, 83, 113, 117, 97, 114, 101, 59, 26027, 256, 103, 112, 1318, 1322, 111, 110, 59, 16664, 102, 59, 49152, 55349, 56636, 115, 105, 108, 111, 110, 59, 17301, 117, 256, 97, 105, 1340, 1353, 108, 256, 59, 84, 1346, 1347, 27253, 105, 108, 100, 101, 59, 25154, 108, 105, 98, 114, 105, 117, 109, 59, 25036, 256, 99, 105, 1367, 1370, 114, 59, 24880, 109, 59, 27251, 97, 59, 17303, 109, 108, 32827, 203, 16587, 256, 105, 112, 1386, 1391, 115, 116, 115, 59, 25091, 111, 110, 101, 110, 116, 105, 97, 108, 69, 59, 24903, 640, 99, 102, 105, 111, 115, 1413, 1416, 1421, 1458, 1484, 121, 59, 17444, 114, 59, 49152, 55349, 56585, 108, 108, 101, 100, 595, 1431, 0, 0, 1443, 109, 97, 108, 108, 83, 113, 117, 97, 114, 101, 59, 26108, 101, 114, 121, 83, 109, 97, 108, 108, 83, 113, 117, 97, 114, 101, 59, 26026, 880, 1466, 0, 1471, 0, 0, 1476, 102, 59, 49152, 55349, 56637, 65, 108, 108, 59, 25088, 114, 105, 101, 114, 116, 114, 102, 59, 24881, 99, 242, 1483, 1536, 74, 84, 97, 98, 99, 100, 102, 103, 111, 114, 115, 116, 1512, 1516, 1519, 1530, 1536, 1554, 1558, 1563, 1565, 1571, 1644, 1650, 99, 121, 59, 17411, 32827, 62, 16446, 109, 109, 97, 256, 59, 100, 1527, 1528, 17299, 59, 17372, 114, 101, 118, 101, 59, 16670, 384, 101, 105, 121, 1543, 1548, 1552, 100, 105, 108, 59, 16674, 114, 99, 59, 16668, 59, 17427, 111, 116, 59, 16672, 114, 59, 49152, 55349, 56586, 59, 25305, 112, 102, 59, 49152, 55349, 56638, 101, 97, 116, 101, 114, 768, 69, 70, 71, 76, 83, 84, 1589, 1604, 1614, 1622, 1627, 1638, 113, 117, 97, 108, 256, 59, 76, 1598, 1599, 25189, 101, 115, 115, 59, 25307, 117, 108, 108, 69, 113, 117, 97, 108, 59, 25191, 114, 101, 97, 116, 101, 114, 59, 27298, 101, 115, 115, 59, 25207, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 27262, 105, 108, 100, 101, 59, 25203, 99, 114, 59, 49152, 55349, 56482, 59, 25195, 1024, 65, 97, 99, 102, 105, 111, 115, 117, 1669, 1675, 1686, 1691, 1694, 1706, 1726, 1738, 82, 68, 99, 121, 59, 17450, 256, 99, 116, 1680, 1684, 101, 107, 59, 17095, 59, 16478, 105, 114, 99, 59, 16676, 114, 59, 24844, 108, 98, 101, 114, 116, 83, 112, 97, 99, 101, 59, 24843, 496, 1711, 0, 1714, 102, 59, 24845, 105, 122, 111, 110, 116, 97, 108, 76, 105, 110, 101, 59, 25856, 256, 99, 116, 1731, 1733, 242, 1705, 114, 111, 107, 59, 16678, 109, 112, 324, 1744, 1752, 111, 119, 110, 72, 117, 109, 240, 303, 113, 117, 97, 108, 59, 25167, 1792, 69, 74, 79, 97, 99, 100, 102, 103, 109, 110, 111, 115, 116, 117, 1786, 1790, 1795, 1799, 1806, 1818, 1822, 1825, 1832, 1860, 1912, 1931, 1935, 1941, 99, 121, 59, 17429, 108, 105, 103, 59, 16690, 99, 121, 59, 17409, 99, 117, 116, 101, 32827, 205, 16589, 256, 105, 121, 1811, 1816, 114, 99, 32827, 206, 16590, 59, 17432, 111, 116, 59, 16688, 114, 59, 24849, 114, 97, 118, 101, 32827, 204, 16588, 384, 59, 97, 112, 1824, 1839, 1855, 256, 99, 103, 1844, 1847, 114, 59, 16682, 105, 110, 97, 114, 121, 73, 59, 24904, 108, 105, 101, 243, 989, 500, 1865, 0, 1890, 256, 59, 101, 1869, 1870, 25132, 256, 103, 114, 1875, 1880, 114, 97, 108, 59, 25131, 115, 101, 99, 116, 105, 111, 110, 59, 25282, 105, 115, 105, 98, 108, 101, 256, 67, 84, 1900, 1906, 111, 109, 109, 97, 59, 24675, 105, 109, 101, 115, 59, 24674, 384, 103, 112, 116, 1919, 1923, 1928, 111, 110, 59, 16686, 102, 59, 49152, 55349, 56640, 97, 59, 17305, 99, 114, 59, 24848, 105, 108, 100, 101, 59, 16680, 491, 1946, 0, 1950, 99, 121, 59, 17414, 108, 32827, 207, 16591, 640, 99, 102, 111, 115, 117, 1964, 1975, 1980, 1986, 2e3, 256, 105, 121, 1969, 1973, 114, 99, 59, 16692, 59, 17433, 114, 59, 49152, 55349, 56589, 112, 102, 59, 49152, 55349, 56641, 483, 1991, 0, 1996, 114, 59, 49152, 55349, 56485, 114, 99, 121, 59, 17416, 107, 99, 121, 59, 17412, 896, 72, 74, 97, 99, 102, 111, 115, 2020, 2024, 2028, 2033, 2045, 2050, 2056, 99, 121, 59, 17445, 99, 121, 59, 17420, 112, 112, 97, 59, 17306, 256, 101, 121, 2038, 2043, 100, 105, 108, 59, 16694, 59, 17434, 114, 59, 49152, 55349, 56590, 112, 102, 59, 49152, 55349, 56642, 99, 114, 59, 49152, 55349, 56486, 1408, 74, 84, 97, 99, 101, 102, 108, 109, 111, 115, 116, 2085, 2089, 2092, 2128, 2147, 2483, 2488, 2503, 2509, 2615, 2631, 99, 121, 59, 17417, 32827, 60, 16444, 640, 99, 109, 110, 112, 114, 2103, 2108, 2113, 2116, 2125, 117, 116, 101, 59, 16697, 98, 100, 97, 59, 17307, 103, 59, 26602, 108, 97, 99, 101, 116, 114, 102, 59, 24850, 114, 59, 24990, 384, 97, 101, 121, 2135, 2140, 2145, 114, 111, 110, 59, 16701, 100, 105, 108, 59, 16699, 59, 17435, 256, 102, 115, 2152, 2416, 116, 1280, 65, 67, 68, 70, 82, 84, 85, 86, 97, 114, 2174, 2217, 2225, 2272, 2278, 2300, 2351, 2395, 912, 2410, 256, 110, 114, 2179, 2191, 103, 108, 101, 66, 114, 97, 99, 107, 101, 116, 59, 26600, 114, 111, 119, 384, 59, 66, 82, 2201, 2202, 2206, 24976, 97, 114, 59, 25060, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 25030, 101, 105, 108, 105, 110, 103, 59, 25352, 111, 501, 2231, 0, 2243, 98, 108, 101, 66, 114, 97, 99, 107, 101, 116, 59, 26598, 110, 468, 2248, 0, 2258, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26977, 101, 99, 116, 111, 114, 256, 59, 66, 2267, 2268, 25027, 97, 114, 59, 26969, 108, 111, 111, 114, 59, 25354, 105, 103, 104, 116, 256, 65, 86, 2287, 2293, 114, 114, 111, 119, 59, 24980, 101, 99, 116, 111, 114, 59, 26958, 256, 101, 114, 2305, 2327, 101, 384, 59, 65, 86, 2313, 2314, 2320, 25251, 114, 114, 111, 119, 59, 24996, 101, 99, 116, 111, 114, 59, 26970, 105, 97, 110, 103, 108, 101, 384, 59, 66, 69, 2340, 2341, 2345, 25266, 97, 114, 59, 27087, 113, 117, 97, 108, 59, 25268, 112, 384, 68, 84, 86, 2359, 2370, 2380, 111, 119, 110, 86, 101, 99, 116, 111, 114, 59, 26961, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26976, 101, 99, 116, 111, 114, 256, 59, 66, 2390, 2391, 25023, 97, 114, 59, 26968, 101, 99, 116, 111, 114, 256, 59, 66, 2405, 2406, 25020, 97, 114, 59, 26962, 105, 103, 104, 116, 225, 924, 115, 768, 69, 70, 71, 76, 83, 84, 2430, 2443, 2453, 2461, 2466, 2477, 113, 117, 97, 108, 71, 114, 101, 97, 116, 101, 114, 59, 25306, 117, 108, 108, 69, 113, 117, 97, 108, 59, 25190, 114, 101, 97, 116, 101, 114, 59, 25206, 101, 115, 115, 59, 27297, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 27261, 105, 108, 100, 101, 59, 25202, 114, 59, 49152, 55349, 56591, 256, 59, 101, 2493, 2494, 25304, 102, 116, 97, 114, 114, 111, 119, 59, 25050, 105, 100, 111, 116, 59, 16703, 384, 110, 112, 119, 2516, 2582, 2587, 103, 512, 76, 82, 108, 114, 2526, 2551, 2562, 2576, 101, 102, 116, 256, 65, 82, 2534, 2540, 114, 114, 111, 119, 59, 26613, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 26615, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 26614, 101, 102, 116, 256, 97, 114, 947, 2570, 105, 103, 104, 116, 225, 959, 105, 103, 104, 116, 225, 970, 102, 59, 49152, 55349, 56643, 101, 114, 256, 76, 82, 2594, 2604, 101, 102, 116, 65, 114, 114, 111, 119, 59, 24985, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 24984, 384, 99, 104, 116, 2622, 2624, 2626, 242, 2124, 59, 25008, 114, 111, 107, 59, 16705, 59, 25194, 1024, 97, 99, 101, 102, 105, 111, 115, 117, 2650, 2653, 2656, 2679, 2684, 2693, 2699, 2702, 112, 59, 26885, 121, 59, 17436, 256, 100, 108, 2661, 2671, 105, 117, 109, 83, 112, 97, 99, 101, 59, 24671, 108, 105, 110, 116, 114, 102, 59, 24883, 114, 59, 49152, 55349, 56592, 110, 117, 115, 80, 108, 117, 115, 59, 25107, 112, 102, 59, 49152, 55349, 56644, 99, 242, 2678, 59, 17308, 1152, 74, 97, 99, 101, 102, 111, 115, 116, 117, 2723, 2727, 2733, 2752, 2836, 2841, 3473, 3479, 3486, 99, 121, 59, 17418, 99, 117, 116, 101, 59, 16707, 384, 97, 101, 121, 2740, 2745, 2750, 114, 111, 110, 59, 16711, 100, 105, 108, 59, 16709, 59, 17437, 384, 103, 115, 119, 2759, 2800, 2830, 97, 116, 105, 118, 101, 384, 77, 84, 86, 2771, 2783, 2792, 101, 100, 105, 117, 109, 83, 112, 97, 99, 101, 59, 24587, 104, 105, 256, 99, 110, 2790, 2776, 235, 2777, 101, 114, 121, 84, 104, 105, 238, 2777, 116, 101, 100, 256, 71, 76, 2808, 2822, 114, 101, 97, 116, 101, 114, 71, 114, 101, 97, 116, 101, 242, 1651, 101, 115, 115, 76, 101, 115, 243, 2632, 76, 105, 110, 101, 59, 16394, 114, 59, 49152, 55349, 56593, 512, 66, 110, 112, 116, 2850, 2856, 2871, 2874, 114, 101, 97, 107, 59, 24672, 66, 114, 101, 97, 107, 105, 110, 103, 83, 112, 97, 99, 101, 59, 16544, 102, 59, 24853, 1664, 59, 67, 68, 69, 71, 72, 76, 78, 80, 82, 83, 84, 86, 2901, 2902, 2922, 2940, 2977, 3051, 3076, 3166, 3204, 3238, 3288, 3425, 3461, 27372, 256, 111, 117, 2907, 2916, 110, 103, 114, 117, 101, 110, 116, 59, 25186, 112, 67, 97, 112, 59, 25197, 111, 117, 98, 108, 101, 86, 101, 114, 116, 105, 99, 97, 108, 66, 97, 114, 59, 25126, 384, 108, 113, 120, 2947, 2954, 2971, 101, 109, 101, 110, 116, 59, 25097, 117, 97, 108, 256, 59, 84, 2962, 2963, 25184, 105, 108, 100, 101, 59, 49152, 8770, 824, 105, 115, 116, 115, 59, 25092, 114, 101, 97, 116, 101, 114, 896, 59, 69, 70, 71, 76, 83, 84, 2998, 2999, 3005, 3017, 3027, 3032, 3045, 25199, 113, 117, 97, 108, 59, 25201, 117, 108, 108, 69, 113, 117, 97, 108, 59, 49152, 8807, 824, 114, 101, 97, 116, 101, 114, 59, 49152, 8811, 824, 101, 115, 115, 59, 25209, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 49152, 10878, 824, 105, 108, 100, 101, 59, 25205, 117, 109, 112, 324, 3058, 3069, 111, 119, 110, 72, 117, 109, 112, 59, 49152, 8782, 824, 113, 117, 97, 108, 59, 49152, 8783, 824, 101, 256, 102, 115, 3082, 3111, 116, 84, 114, 105, 97, 110, 103, 108, 101, 384, 59, 66, 69, 3098, 3099, 3105, 25322, 97, 114, 59, 49152, 10703, 824, 113, 117, 97, 108, 59, 25324, 115, 768, 59, 69, 71, 76, 83, 84, 3125, 3126, 3132, 3140, 3147, 3160, 25198, 113, 117, 97, 108, 59, 25200, 114, 101, 97, 116, 101, 114, 59, 25208, 101, 115, 115, 59, 49152, 8810, 824, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 49152, 10877, 824, 105, 108, 100, 101, 59, 25204, 101, 115, 116, 101, 100, 256, 71, 76, 3176, 3193, 114, 101, 97, 116, 101, 114, 71, 114, 101, 97, 116, 101, 114, 59, 49152, 10914, 824, 101, 115, 115, 76, 101, 115, 115, 59, 49152, 10913, 824, 114, 101, 99, 101, 100, 101, 115, 384, 59, 69, 83, 3218, 3219, 3227, 25216, 113, 117, 97, 108, 59, 49152, 10927, 824, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 25312, 256, 101, 105, 3243, 3257, 118, 101, 114, 115, 101, 69, 108, 101, 109, 101, 110, 116, 59, 25100, 103, 104, 116, 84, 114, 105, 97, 110, 103, 108, 101, 384, 59, 66, 69, 3275, 3276, 3282, 25323, 97, 114, 59, 49152, 10704, 824, 113, 117, 97, 108, 59, 25325, 256, 113, 117, 3293, 3340, 117, 97, 114, 101, 83, 117, 256, 98, 112, 3304, 3321, 115, 101, 116, 256, 59, 69, 3312, 3315, 49152, 8847, 824, 113, 117, 97, 108, 59, 25314, 101, 114, 115, 101, 116, 256, 59, 69, 3331, 3334, 49152, 8848, 824, 113, 117, 97, 108, 59, 25315, 384, 98, 99, 112, 3347, 3364, 3406, 115, 101, 116, 256, 59, 69, 3355, 3358, 49152, 8834, 8402, 113, 117, 97, 108, 59, 25224, 99, 101, 101, 100, 115, 512, 59, 69, 83, 84, 3378, 3379, 3387, 3398, 25217, 113, 117, 97, 108, 59, 49152, 10928, 824, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 25313, 105, 108, 100, 101, 59, 49152, 8831, 824, 101, 114, 115, 101, 116, 256, 59, 69, 3416, 3419, 49152, 8835, 8402, 113, 117, 97, 108, 59, 25225, 105, 108, 100, 101, 512, 59, 69, 70, 84, 3438, 3439, 3445, 3455, 25153, 113, 117, 97, 108, 59, 25156, 117, 108, 108, 69, 113, 117, 97, 108, 59, 25159, 105, 108, 100, 101, 59, 25161, 101, 114, 116, 105, 99, 97, 108, 66, 97, 114, 59, 25124, 99, 114, 59, 49152, 55349, 56489, 105, 108, 100, 101, 32827, 209, 16593, 59, 17309, 1792, 69, 97, 99, 100, 102, 103, 109, 111, 112, 114, 115, 116, 117, 118, 3517, 3522, 3529, 3541, 3547, 3552, 3559, 3580, 3586, 3616, 3618, 3634, 3647, 3652, 108, 105, 103, 59, 16722, 99, 117, 116, 101, 32827, 211, 16595, 256, 105, 121, 3534, 3539, 114, 99, 32827, 212, 16596, 59, 17438, 98, 108, 97, 99, 59, 16720, 114, 59, 49152, 55349, 56594, 114, 97, 118, 101, 32827, 210, 16594, 384, 97, 101, 105, 3566, 3570, 3574, 99, 114, 59, 16716, 103, 97, 59, 17321, 99, 114, 111, 110, 59, 17311, 112, 102, 59, 49152, 55349, 56646, 101, 110, 67, 117, 114, 108, 121, 256, 68, 81, 3598, 3610, 111, 117, 98, 108, 101, 81, 117, 111, 116, 101, 59, 24604, 117, 111, 116, 101, 59, 24600, 59, 27220, 256, 99, 108, 3623, 3628, 114, 59, 49152, 55349, 56490, 97, 115, 104, 32827, 216, 16600, 105, 364, 3639, 3644, 100, 101, 32827, 213, 16597, 101, 115, 59, 27191, 109, 108, 32827, 214, 16598, 101, 114, 256, 66, 80, 3659, 3680, 256, 97, 114, 3664, 3667, 114, 59, 24638, 97, 99, 256, 101, 107, 3674, 3676, 59, 25566, 101, 116, 59, 25524, 97, 114, 101, 110, 116, 104, 101, 115, 105, 115, 59, 25564, 1152, 97, 99, 102, 104, 105, 108, 111, 114, 115, 3711, 3719, 3722, 3727, 3730, 3732, 3741, 3760, 3836, 114, 116, 105, 97, 108, 68, 59, 25090, 121, 59, 17439, 114, 59, 49152, 55349, 56595, 105, 59, 17318, 59, 17312, 117, 115, 77, 105, 110, 117, 115, 59, 16561, 256, 105, 112, 3746, 3757, 110, 99, 97, 114, 101, 112, 108, 97, 110, 229, 1693, 102, 59, 24857, 512, 59, 101, 105, 111, 3769, 3770, 3808, 3812, 27323, 99, 101, 100, 101, 115, 512, 59, 69, 83, 84, 3784, 3785, 3791, 3802, 25210, 113, 117, 97, 108, 59, 27311, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 25212, 105, 108, 100, 101, 59, 25214, 109, 101, 59, 24627, 256, 100, 112, 3817, 3822, 117, 99, 116, 59, 25103, 111, 114, 116, 105, 111, 110, 256, 59, 97, 549, 3833, 108, 59, 25117, 256, 99, 105, 3841, 3846, 114, 59, 49152, 55349, 56491, 59, 17320, 512, 85, 102, 111, 115, 3857, 3862, 3867, 3871, 79, 84, 32827, 34, 16418, 114, 59, 49152, 55349, 56596, 112, 102, 59, 24858, 99, 114, 59, 49152, 55349, 56492, 1536, 66, 69, 97, 99, 101, 102, 104, 105, 111, 114, 115, 117, 3902, 3907, 3911, 3936, 3955, 4007, 4010, 4013, 4246, 4265, 4276, 4286, 97, 114, 114, 59, 26896, 71, 32827, 174, 16558, 384, 99, 110, 114, 3918, 3923, 3926, 117, 116, 101, 59, 16724, 103, 59, 26603, 114, 256, 59, 116, 3932, 3933, 24992, 108, 59, 26902, 384, 97, 101, 121, 3943, 3948, 3953, 114, 111, 110, 59, 16728, 100, 105, 108, 59, 16726, 59, 17440, 256, 59, 118, 3960, 3961, 24860, 101, 114, 115, 101, 256, 69, 85, 3970, 3993, 256, 108, 113, 3975, 3982, 101, 109, 101, 110, 116, 59, 25099, 117, 105, 108, 105, 98, 114, 105, 117, 109, 59, 25035, 112, 69, 113, 117, 105, 108, 105, 98, 114, 105, 117, 109, 59, 26991, 114, 187, 3961, 111, 59, 17313, 103, 104, 116, 1024, 65, 67, 68, 70, 84, 85, 86, 97, 4033, 4075, 4083, 4130, 4136, 4187, 4231, 984, 256, 110, 114, 4038, 4050, 103, 108, 101, 66, 114, 97, 99, 107, 101, 116, 59, 26601, 114, 111, 119, 384, 59, 66, 76, 4060, 4061, 4065, 24978, 97, 114, 59, 25061, 101, 102, 116, 65, 114, 114, 111, 119, 59, 25028, 101, 105, 108, 105, 110, 103, 59, 25353, 111, 501, 4089, 0, 4101, 98, 108, 101, 66, 114, 97, 99, 107, 101, 116, 59, 26599, 110, 468, 4106, 0, 4116, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26973, 101, 99, 116, 111, 114, 256, 59, 66, 4125, 4126, 25026, 97, 114, 59, 26965, 108, 111, 111, 114, 59, 25355, 256, 101, 114, 4141, 4163, 101, 384, 59, 65, 86, 4149, 4150, 4156, 25250, 114, 114, 111, 119, 59, 24998, 101, 99, 116, 111, 114, 59, 26971, 105, 97, 110, 103, 108, 101, 384, 59, 66, 69, 4176, 4177, 4181, 25267, 97, 114, 59, 27088, 113, 117, 97, 108, 59, 25269, 112, 384, 68, 84, 86, 4195, 4206, 4216, 111, 119, 110, 86, 101, 99, 116, 111, 114, 59, 26959, 101, 101, 86, 101, 99, 116, 111, 114, 59, 26972, 101, 99, 116, 111, 114, 256, 59, 66, 4226, 4227, 25022, 97, 114, 59, 26964, 101, 99, 116, 111, 114, 256, 59, 66, 4241, 4242, 25024, 97, 114, 59, 26963, 256, 112, 117, 4251, 4254, 102, 59, 24861, 110, 100, 73, 109, 112, 108, 105, 101, 115, 59, 26992, 105, 103, 104, 116, 97, 114, 114, 111, 119, 59, 25051, 256, 99, 104, 4281, 4284, 114, 59, 24859, 59, 25009, 108, 101, 68, 101, 108, 97, 121, 101, 100, 59, 27124, 1664, 72, 79, 97, 99, 102, 104, 105, 109, 111, 113, 115, 116, 117, 4324, 4337, 4343, 4349, 4377, 4382, 4433, 4438, 4449, 4455, 4533, 4539, 4543, 256, 67, 99, 4329, 4334, 72, 99, 121, 59, 17449, 121, 59, 17448, 70, 84, 99, 121, 59, 17452, 99, 117, 116, 101, 59, 16730, 640, 59, 97, 101, 105, 121, 4360, 4361, 4366, 4371, 4375, 27324, 114, 111, 110, 59, 16736, 100, 105, 108, 59, 16734, 114, 99, 59, 16732, 59, 17441, 114, 59, 49152, 55349, 56598, 111, 114, 116, 512, 68, 76, 82, 85, 4394, 4404, 4414, 4425, 111, 119, 110, 65, 114, 114, 111, 119, 187, 1054, 101, 102, 116, 65, 114, 114, 111, 119, 187, 2202, 105, 103, 104, 116, 65, 114, 114, 111, 119, 187, 4061, 112, 65, 114, 114, 111, 119, 59, 24977, 103, 109, 97, 59, 17315, 97, 108, 108, 67, 105, 114, 99, 108, 101, 59, 25112, 112, 102, 59, 49152, 55349, 56650, 626, 4461, 0, 0, 4464, 116, 59, 25114, 97, 114, 101, 512, 59, 73, 83, 85, 4475, 4476, 4489, 4527, 26017, 110, 116, 101, 114, 115, 101, 99, 116, 105, 111, 110, 59, 25235, 117, 256, 98, 112, 4495, 4510, 115, 101, 116, 256, 59, 69, 4503, 4504, 25231, 113, 117, 97, 108, 59, 25233, 101, 114, 115, 101, 116, 256, 59, 69, 4520, 4521, 25232, 113, 117, 97, 108, 59, 25234, 110, 105, 111, 110, 59, 25236, 99, 114, 59, 49152, 55349, 56494, 97, 114, 59, 25286, 512, 98, 99, 109, 112, 4552, 4571, 4617, 4619, 256, 59, 115, 4557, 4558, 25296, 101, 116, 256, 59, 69, 4557, 4565, 113, 117, 97, 108, 59, 25222, 256, 99, 104, 4576, 4613, 101, 101, 100, 115, 512, 59, 69, 83, 84, 4589, 4590, 4596, 4607, 25211, 113, 117, 97, 108, 59, 27312, 108, 97, 110, 116, 69, 113, 117, 97, 108, 59, 25213, 105, 108, 100, 101, 59, 25215, 84, 104, 225, 3980, 59, 25105, 384, 59, 101, 115, 4626, 4627, 4643, 25297, 114, 115, 101, 116, 256, 59, 69, 4636, 4637, 25219, 113, 117, 97, 108, 59, 25223, 101, 116, 187, 4627, 1408, 72, 82, 83, 97, 99, 102, 104, 105, 111, 114, 115, 4670, 4676, 4681, 4693, 4702, 4721, 4726, 4767, 4802, 4808, 4817, 79, 82, 78, 32827, 222, 16606, 65, 68, 69, 59, 24866, 256, 72, 99, 4686, 4690, 99, 121, 59, 17419, 121, 59, 17446, 256, 98, 117, 4698, 4700, 59, 16393, 59, 17316, 384, 97, 101, 121, 4709, 4714, 4719, 114, 111, 110, 59, 16740, 100, 105, 108, 59, 16738, 59, 17442, 114, 59, 49152, 55349, 56599, 256, 101, 105, 4731, 4745, 498, 4736, 0, 4743, 101, 102, 111, 114, 101, 59, 25140, 97, 59, 17304, 256, 99, 110, 4750, 4760, 107, 83, 112, 97, 99, 101, 59, 49152, 8287, 8202, 83, 112, 97, 99, 101, 59, 24585, 108, 100, 101, 512, 59, 69, 70, 84, 4779, 4780, 4786, 4796, 25148, 113, 117, 97, 108, 59, 25155, 117, 108, 108, 69, 113, 117, 97, 108, 59, 25157, 105, 108, 100, 101, 59, 25160, 112, 102, 59, 49152, 55349, 56651, 105, 112, 108, 101, 68, 111, 116, 59, 24795, 256, 99, 116, 4822, 4827, 114, 59, 49152, 55349, 56495, 114, 111, 107, 59, 16742, 2785, 4855, 4878, 4890, 4902, 0, 4908, 4913, 0, 0, 0, 0, 0, 4920, 4925, 4983, 4997, 0, 5119, 5124, 5130, 5136, 256, 99, 114, 4859, 4865, 117, 116, 101, 32827, 218, 16602, 114, 256, 59, 111, 4871, 4872, 24991, 99, 105, 114, 59, 26953, 114, 483, 4883, 0, 4886, 121, 59, 17422, 118, 101, 59, 16748, 256, 105, 121, 4894, 4899, 114, 99, 32827, 219, 16603, 59, 17443, 98, 108, 97, 99, 59, 16752, 114, 59, 49152, 55349, 56600, 114, 97, 118, 101, 32827, 217, 16601, 97, 99, 114, 59, 16746, 256, 100, 105, 4929, 4969, 101, 114, 256, 66, 80, 4936, 4957, 256, 97, 114, 4941, 4944, 114, 59, 16479, 97, 99, 256, 101, 107, 4951, 4953, 59, 25567, 101, 116, 59, 25525, 97, 114, 101, 110, 116, 104, 101, 115, 105, 115, 59, 25565, 111, 110, 256, 59, 80, 4976, 4977, 25283, 108, 117, 115, 59, 25230, 256, 103, 112, 4987, 4991, 111, 110, 59, 16754, 102, 59, 49152, 55349, 56652, 1024, 65, 68, 69, 84, 97, 100, 112, 115, 5013, 5038, 5048, 5060, 1e3, 5074, 5079, 5107, 114, 114, 111, 119, 384, 59, 66, 68, 4432, 5024, 5028, 97, 114, 59, 26898, 111, 119, 110, 65, 114, 114, 111, 119, 59, 25029, 111, 119, 110, 65, 114, 114, 111, 119, 59, 24981, 113, 117, 105, 108, 105, 98, 114, 105, 117, 109, 59, 26990, 101, 101, 256, 59, 65, 5067, 5068, 25253, 114, 114, 111, 119, 59, 24997, 111, 119, 110, 225, 1011, 101, 114, 256, 76, 82, 5086, 5096, 101, 102, 116, 65, 114, 114, 111, 119, 59, 24982, 105, 103, 104, 116, 65, 114, 114, 111, 119, 59, 24983, 105, 256, 59, 108, 5113, 5114, 17362, 111, 110, 59, 17317, 105, 110, 103, 59, 16750, 99, 114, 59, 49152, 55349, 56496, 105, 108, 100, 101, 59, 16744, 109, 108, 32827, 220, 16604, 1152, 68, 98, 99, 100, 101, 102, 111, 115, 118, 5159, 5164, 5168, 5171, 5182, 5253, 5258, 5264, 5270, 97, 115, 104, 59, 25259, 97, 114, 59, 27371, 121, 59, 17426, 97, 115, 104, 256, 59, 108, 5179, 5180, 25257, 59, 27366, 256, 101, 114, 5187, 5189, 59, 25281, 384, 98, 116, 121, 5196, 5200, 5242, 97, 114, 59, 24598, 256, 59, 105, 5199, 5205, 99, 97, 108, 512, 66, 76, 83, 84, 5217, 5221, 5226, 5236, 97, 114, 59, 25123, 105, 110, 101, 59, 16508, 101, 112, 97, 114, 97, 116, 111, 114, 59, 26456, 105, 108, 100, 101, 59, 25152, 84, 104, 105, 110, 83, 112, 97, 99, 101, 59, 24586, 114, 59, 49152, 55349, 56601, 112, 102, 59, 49152, 55349, 56653, 99, 114, 59, 49152, 55349, 56497, 100, 97, 115, 104, 59, 25258, 640, 99, 101, 102, 111, 115, 5287, 5292, 5297, 5302, 5308, 105, 114, 99, 59, 16756, 100, 103, 101, 59, 25280, 114, 59, 49152, 55349, 56602, 112, 102, 59, 49152, 55349, 56654, 99, 114, 59, 49152, 55349, 56498, 512, 102, 105, 111, 115, 5323, 5328, 5330, 5336, 114, 59, 49152, 55349, 56603, 59, 17310, 112, 102, 59, 49152, 55349, 56655, 99, 114, 59, 49152, 55349, 56499, 1152, 65, 73, 85, 97, 99, 102, 111, 115, 117, 5361, 5365, 5369, 5373, 5380, 5391, 5396, 5402, 5408, 99, 121, 59, 17455, 99, 121, 59, 17415, 99, 121, 59, 17454, 99, 117, 116, 101, 32827, 221, 16605, 256, 105, 121, 5385, 5389, 114, 99, 59, 16758, 59, 17451, 114, 59, 49152, 55349, 56604, 112, 102, 59, 49152, 55349, 56656, 99, 114, 59, 49152, 55349, 56500, 109, 108, 59, 16760, 1024, 72, 97, 99, 100, 101, 102, 111, 115, 5429, 5433, 5439, 5451, 5455, 5469, 5472, 5476, 99, 121, 59, 17430, 99, 117, 116, 101, 59, 16761, 256, 97, 121, 5444, 5449, 114, 111, 110, 59, 16765, 59, 17431, 111, 116, 59, 16763, 498, 5460, 0, 5467, 111, 87, 105, 100, 116, 232, 2777, 97, 59, 17302, 114, 59, 24872, 112, 102, 59, 24868, 99, 114, 59, 49152, 55349, 56501, 3041, 5507, 5514, 5520, 0, 5552, 5558, 5567, 0, 0, 0, 0, 5574, 5595, 5611, 5727, 5741, 0, 5781, 5787, 5810, 5817, 0, 5822, 99, 117, 116, 101, 32827, 225, 16609, 114, 101, 118, 101, 59, 16643, 768, 59, 69, 100, 105, 117, 121, 5532, 5533, 5537, 5539, 5544, 5549, 25150, 59, 49152, 8766, 819, 59, 25151, 114, 99, 32827, 226, 16610, 116, 101, 32955, 180, 774, 59, 17456, 108, 105, 103, 32827, 230, 16614, 256, 59, 114, 178, 5562, 59, 49152, 55349, 56606, 114, 97, 118, 101, 32827, 224, 16608, 256, 101, 112, 5578, 5590, 256, 102, 112, 5583, 5588, 115, 121, 109, 59, 24885, 232, 5587, 104, 97, 59, 17329, 256, 97, 112, 5599, 99, 256, 99, 108, 5604, 5607, 114, 59, 16641, 103, 59, 27199, 612, 5616, 0, 0, 5642, 640, 59, 97, 100, 115, 118, 5626, 5627, 5631, 5633, 5639, 25127, 110, 100, 59, 27221, 59, 27228, 108, 111, 112, 101, 59, 27224, 59, 27226, 896, 59, 101, 108, 109, 114, 115, 122, 5656, 5657, 5659, 5662, 5695, 5711, 5721, 25120, 59, 27044, 101, 187, 5657, 115, 100, 256, 59, 97, 5669, 5670, 25121, 1121, 5680, 5682, 5684, 5686, 5688, 5690, 5692, 5694, 59, 27048, 59, 27049, 59, 27050, 59, 27051, 59, 27052, 59, 27053, 59, 27054, 59, 27055, 116, 256, 59, 118, 5701, 5702, 25119, 98, 256, 59, 100, 5708, 5709, 25278, 59, 27037, 256, 112, 116, 5716, 5719, 104, 59, 25122, 187, 185, 97, 114, 114, 59, 25468, 256, 103, 112, 5731, 5735, 111, 110, 59, 16645, 102, 59, 49152, 55349, 56658, 896, 59, 69, 97, 101, 105, 111, 112, 4801, 5755, 5757, 5762, 5764, 5767, 5770, 59, 27248, 99, 105, 114, 59, 27247, 59, 25162, 100, 59, 25163, 115, 59, 16423, 114, 111, 120, 256, 59, 101, 4801, 5778, 241, 5763, 105, 110, 103, 32827, 229, 16613, 384, 99, 116, 121, 5793, 5798, 5800, 114, 59, 49152, 55349, 56502, 59, 16426, 109, 112, 256, 59, 101, 4801, 5807, 241, 648, 105, 108, 100, 101, 32827, 227, 16611, 109, 108, 32827, 228, 16612, 256, 99, 105, 5826, 5832, 111, 110, 105, 110, 244, 626, 110, 116, 59, 27153, 2048, 78, 97, 98, 99, 100, 101, 102, 105, 107, 108, 110, 111, 112, 114, 115, 117, 5869, 5873, 5936, 5948, 5955, 5960, 6008, 6013, 6112, 6118, 6201, 6224, 5901, 6461, 6472, 6512, 111, 116, 59, 27373, 256, 99, 114, 5878, 5918, 107, 512, 99, 101, 112, 115, 5888, 5893, 5901, 5907, 111, 110, 103, 59, 25164, 112, 115, 105, 108, 111, 110, 59, 17398, 114, 105, 109, 101, 59, 24629, 105, 109, 256, 59, 101, 5914, 5915, 25149, 113, 59, 25293, 374, 5922, 5926, 101, 101, 59, 25277, 101, 100, 256, 59, 103, 5932, 5933, 25349, 101, 187, 5933, 114, 107, 256, 59, 116, 4956, 5943, 98, 114, 107, 59, 25526, 256, 111, 121, 5889, 5953, 59, 17457, 113, 117, 111, 59, 24606, 640, 99, 109, 112, 114, 116, 5971, 5979, 5985, 5988, 5992, 97, 117, 115, 256, 59, 101, 266, 265, 112, 116, 121, 118, 59, 27056, 115, 233, 5900, 110, 111, 245, 275, 384, 97, 104, 119, 5999, 6001, 6003, 59, 17330, 59, 24886, 101, 101, 110, 59, 25196, 114, 59, 49152, 55349, 56607, 103, 896, 99, 111, 115, 116, 117, 118, 119, 6029, 6045, 6067, 6081, 6101, 6107, 6110, 384, 97, 105, 117, 6036, 6038, 6042, 240, 1888, 114, 99, 59, 26095, 112, 187, 4977, 384, 100, 112, 116, 6052, 6056, 6061, 111, 116, 59, 27136, 108, 117, 115, 59, 27137, 105, 109, 101, 115, 59, 27138, 625, 6073, 0, 0, 6078, 99, 117, 112, 59, 27142, 97, 114, 59, 26117, 114, 105, 97, 110, 103, 108, 101, 256, 100, 117, 6093, 6098, 111, 119, 110, 59, 26045, 112, 59, 26035, 112, 108, 117, 115, 59, 27140, 101, 229, 5188, 229, 5293, 97, 114, 111, 119, 59, 26893, 384, 97, 107, 111, 6125, 6182, 6197, 256, 99, 110, 6130, 6179, 107, 384, 108, 115, 116, 6138, 1451, 6146, 111, 122, 101, 110, 103, 101, 59, 27115, 114, 105, 97, 110, 103, 108, 101, 512, 59, 100, 108, 114, 6162, 6163, 6168, 6173, 26036, 111, 119, 110, 59, 26046, 101, 102, 116, 59, 26050, 105, 103, 104, 116, 59, 26040, 107, 59, 25635, 433, 6187, 0, 6195, 434, 6191, 0, 6193, 59, 26002, 59, 26001, 52, 59, 26003, 99, 107, 59, 25992, 256, 101, 111, 6206, 6221, 256, 59, 113, 6211, 6214, 49152, 61, 8421, 117, 105, 118, 59, 49152, 8801, 8421, 116, 59, 25360, 512, 112, 116, 119, 120, 6233, 6238, 6247, 6252, 102, 59, 49152, 55349, 56659, 256, 59, 116, 5067, 6243, 111, 109, 187, 5068, 116, 105, 101, 59, 25288, 1536, 68, 72, 85, 86, 98, 100, 104, 109, 112, 116, 117, 118, 6277, 6294, 6314, 6331, 6359, 6363, 6380, 6399, 6405, 6410, 6416, 6433, 512, 76, 82, 108, 114, 6286, 6288, 6290, 6292, 59, 25943, 59, 25940, 59, 25942, 59, 25939, 640, 59, 68, 85, 100, 117, 6305, 6306, 6308, 6310, 6312, 25936, 59, 25958, 59, 25961, 59, 25956, 59, 25959, 512, 76, 82, 108, 114, 6323, 6325, 6327, 6329, 59, 25949, 59, 25946, 59, 25948, 59, 25945, 896, 59, 72, 76, 82, 104, 108, 114, 6346, 6347, 6349, 6351, 6353, 6355, 6357, 25937, 59, 25964, 59, 25955, 59, 25952, 59, 25963, 59, 25954, 59, 25951, 111, 120, 59, 27081, 512, 76, 82, 108, 114, 6372, 6374, 6376, 6378, 59, 25941, 59, 25938, 59, 25872, 59, 25868, 640, 59, 68, 85, 100, 117, 1725, 6391, 6393, 6395, 6397, 59, 25957, 59, 25960, 59, 25900, 59, 25908, 105, 110, 117, 115, 59, 25247, 108, 117, 115, 59, 25246, 105, 109, 101, 115, 59, 25248, 512, 76, 82, 108, 114, 6425, 6427, 6429, 6431, 59, 25947, 59, 25944, 59, 25880, 59, 25876, 896, 59, 72, 76, 82, 104, 108, 114, 6448, 6449, 6451, 6453, 6455, 6457, 6459, 25858, 59, 25962, 59, 25953, 59, 25950, 59, 25916, 59, 25892, 59, 25884, 256, 101, 118, 291, 6466, 98, 97, 114, 32827, 166, 16550, 512, 99, 101, 105, 111, 6481, 6486, 6490, 6496, 114, 59, 49152, 55349, 56503, 109, 105, 59, 24655, 109, 256, 59, 101, 5914, 5916, 108, 384, 59, 98, 104, 6504, 6505, 6507, 16476, 59, 27077, 115, 117, 98, 59, 26568, 364, 6516, 6526, 108, 256, 59, 101, 6521, 6522, 24610, 116, 187, 6522, 112, 384, 59, 69, 101, 303, 6533, 6535, 59, 27310, 256, 59, 113, 1756, 1755, 3297, 6567, 0, 6632, 6673, 6677, 6706, 0, 6711, 6736, 0, 0, 6836, 0, 0, 6849, 0, 0, 6945, 6958, 6989, 6994, 0, 7165, 0, 7180, 384, 99, 112, 114, 6573, 6578, 6621, 117, 116, 101, 59, 16647, 768, 59, 97, 98, 99, 100, 115, 6591, 6592, 6596, 6602, 6613, 6617, 25129, 110, 100, 59, 27204, 114, 99, 117, 112, 59, 27209, 256, 97, 117, 6607, 6610, 112, 59, 27211, 112, 59, 27207, 111, 116, 59, 27200, 59, 49152, 8745, 65024, 256, 101, 111, 6626, 6629, 116, 59, 24641, 238, 1683, 512, 97, 101, 105, 117, 6640, 6651, 6657, 6661, 496, 6645, 0, 6648, 115, 59, 27213, 111, 110, 59, 16653, 100, 105, 108, 32827, 231, 16615, 114, 99, 59, 16649, 112, 115, 256, 59, 115, 6668, 6669, 27212, 109, 59, 27216, 111, 116, 59, 16651, 384, 100, 109, 110, 6683, 6688, 6694, 105, 108, 32955, 184, 429, 112, 116, 121, 118, 59, 27058, 116, 33024, 162, 59, 101, 6701, 6702, 16546, 114, 228, 434, 114, 59, 49152, 55349, 56608, 384, 99, 101, 105, 6717, 6720, 6733, 121, 59, 17479, 99, 107, 256, 59, 109, 6727, 6728, 26387, 97, 114, 107, 187, 6728, 59, 17351, 114, 896, 59, 69, 99, 101, 102, 109, 115, 6751, 6752, 6754, 6763, 6820, 6826, 6830, 26059, 59, 27075, 384, 59, 101, 108, 6761, 6762, 6765, 17094, 113, 59, 25175, 101, 609, 6772, 0, 0, 6792, 114, 114, 111, 119, 256, 108, 114, 6780, 6785, 101, 102, 116, 59, 25018, 105, 103, 104, 116, 59, 25019, 640, 82, 83, 97, 99, 100, 6802, 6804, 6806, 6810, 6815, 187, 3911, 59, 25800, 115, 116, 59, 25243, 105, 114, 99, 59, 25242, 97, 115, 104, 59, 25245, 110, 105, 110, 116, 59, 27152, 105, 100, 59, 27375, 99, 105, 114, 59, 27074, 117, 98, 115, 256, 59, 117, 6843, 6844, 26211, 105, 116, 187, 6844, 748, 6855, 6868, 6906, 0, 6922, 111, 110, 256, 59, 101, 6861, 6862, 16442, 256, 59, 113, 199, 198, 621, 6873, 0, 0, 6882, 97, 256, 59, 116, 6878, 6879, 16428, 59, 16448, 384, 59, 102, 108, 6888, 6889, 6891, 25089, 238, 4448, 101, 256, 109, 120, 6897, 6902, 101, 110, 116, 187, 6889, 101, 243, 589, 487, 6910, 0, 6919, 256, 59, 100, 4795, 6914, 111, 116, 59, 27245, 110, 244, 582, 384, 102, 114, 121, 6928, 6932, 6935, 59, 49152, 55349, 56660, 111, 228, 596, 33024, 169, 59, 115, 341, 6941, 114, 59, 24855, 256, 97, 111, 6949, 6953, 114, 114, 59, 25013, 115, 115, 59, 26391, 256, 99, 117, 6962, 6967, 114, 59, 49152, 55349, 56504, 256, 98, 112, 6972, 6980, 256, 59, 101, 6977, 6978, 27343, 59, 27345, 256, 59, 101, 6985, 6986, 27344, 59, 27346, 100, 111, 116, 59, 25327, 896, 100, 101, 108, 112, 114, 118, 119, 7008, 7020, 7031, 7042, 7084, 7124, 7161, 97, 114, 114, 256, 108, 114, 7016, 7018, 59, 26936, 59, 26933, 624, 7026, 0, 0, 7029, 114, 59, 25310, 99, 59, 25311, 97, 114, 114, 256, 59, 112, 7039, 7040, 25014, 59, 26941, 768, 59, 98, 99, 100, 111, 115, 7055, 7056, 7062, 7073, 7077, 7080, 25130, 114, 99, 97, 112, 59, 27208, 256, 97, 117, 7067, 7070, 112, 59, 27206, 112, 59, 27210, 111, 116, 59, 25229, 114, 59, 27205, 59, 49152, 8746, 65024, 512, 97, 108, 114, 118, 7093, 7103, 7134, 7139, 114, 114, 256, 59, 109, 7100, 7101, 25015, 59, 26940, 121, 384, 101, 118, 119, 7111, 7124, 7128, 113, 624, 7118, 0, 0, 7122, 114, 101, 227, 7027, 117, 227, 7029, 101, 101, 59, 25294, 101, 100, 103, 101, 59, 25295, 101, 110, 32827, 164, 16548, 101, 97, 114, 114, 111, 119, 256, 108, 114, 7150, 7155, 101, 102, 116, 187, 7040, 105, 103, 104, 116, 187, 7101, 101, 228, 7133, 256, 99, 105, 7169, 7175, 111, 110, 105, 110, 244, 503, 110, 116, 59, 25137, 108, 99, 116, 121, 59, 25389, 2432, 65, 72, 97, 98, 99, 100, 101, 102, 104, 105, 106, 108, 111, 114, 115, 116, 117, 119, 122, 7224, 7227, 7231, 7261, 7273, 7285, 7306, 7326, 7340, 7351, 7419, 7423, 7437, 7547, 7569, 7595, 7611, 7622, 7629, 114, 242, 897, 97, 114, 59, 26981, 512, 103, 108, 114, 115, 7240, 7245, 7250, 7252, 103, 101, 114, 59, 24608, 101, 116, 104, 59, 24888, 242, 4403, 104, 256, 59, 118, 7258, 7259, 24592, 187, 2314, 363, 7265, 7271, 97, 114, 111, 119, 59, 26895, 97, 227, 789, 256, 97, 121, 7278, 7283, 114, 111, 110, 59, 16655, 59, 17460, 384, 59, 97, 111, 818, 7292, 7300, 256, 103, 114, 703, 7297, 114, 59, 25034, 116, 115, 101, 113, 59, 27255, 384, 103, 108, 109, 7313, 7316, 7320, 32827, 176, 16560, 116, 97, 59, 17332, 112, 116, 121, 118, 59, 27057, 256, 105, 114, 7331, 7336, 115, 104, 116, 59, 27007, 59, 49152, 55349, 56609, 97, 114, 256, 108, 114, 7347, 7349, 187, 2268, 187, 4126, 640, 97, 101, 103, 115, 118, 7362, 888, 7382, 7388, 7392, 109, 384, 59, 111, 115, 806, 7370, 7380, 110, 100, 256, 59, 115, 806, 7377, 117, 105, 116, 59, 26214, 97, 109, 109, 97, 59, 17373, 105, 110, 59, 25330, 384, 59, 105, 111, 7399, 7400, 7416, 16631, 100, 101, 33024, 247, 59, 111, 7399, 7408, 110, 116, 105, 109, 101, 115, 59, 25287, 110, 248, 7415, 99, 121, 59, 17490, 99, 623, 7430, 0, 0, 7434, 114, 110, 59, 25374, 111, 112, 59, 25357, 640, 108, 112, 116, 117, 119, 7448, 7453, 7458, 7497, 7509, 108, 97, 114, 59, 16420, 102, 59, 49152, 55349, 56661, 640, 59, 101, 109, 112, 115, 779, 7469, 7479, 7485, 7490, 113, 256, 59, 100, 850, 7475, 111, 116, 59, 25169, 105, 110, 117, 115, 59, 25144, 108, 117, 115, 59, 25108, 113, 117, 97, 114, 101, 59, 25249, 98, 108, 101, 98, 97, 114, 119, 101, 100, 103, 229, 250, 110, 384, 97, 100, 104, 4398, 7517, 7527, 111, 119, 110, 97, 114, 114, 111, 119, 243, 7299, 97, 114, 112, 111, 111, 110, 256, 108, 114, 7538, 7542, 101, 102, 244, 7348, 105, 103, 104, 244, 7350, 354, 7551, 7557, 107, 97, 114, 111, 247, 3906, 623, 7562, 0, 0, 7566, 114, 110, 59, 25375, 111, 112, 59, 25356, 384, 99, 111, 116, 7576, 7587, 7590, 256, 114, 121, 7581, 7585, 59, 49152, 55349, 56505, 59, 17493, 108, 59, 27126, 114, 111, 107, 59, 16657, 256, 100, 114, 7600, 7604, 111, 116, 59, 25329, 105, 256, 59, 102, 7610, 6166, 26047, 256, 97, 104, 7616, 7619, 114, 242, 1065, 97, 242, 4006, 97, 110, 103, 108, 101, 59, 27046, 256, 99, 105, 7634, 7637, 121, 59, 17503, 103, 114, 97, 114, 114, 59, 26623, 2304, 68, 97, 99, 100, 101, 102, 103, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 120, 7681, 7689, 7705, 7736, 1400, 7740, 7753, 7777, 7806, 7845, 7855, 7869, 7905, 7978, 7991, 8004, 8014, 8026, 256, 68, 111, 7686, 7476, 111, 244, 7305, 256, 99, 115, 7694, 7700, 117, 116, 101, 32827, 233, 16617, 116, 101, 114, 59, 27246, 512, 97, 105, 111, 121, 7714, 7719, 7729, 7734, 114, 111, 110, 59, 16667, 114, 256, 59, 99, 7725, 7726, 25174, 32827, 234, 16618, 108, 111, 110, 59, 25173, 59, 17485, 111, 116, 59, 16663, 256, 68, 114, 7745, 7749, 111, 116, 59, 25170, 59, 49152, 55349, 56610, 384, 59, 114, 115, 7760, 7761, 7767, 27290, 97, 118, 101, 32827, 232, 16616, 256, 59, 100, 7772, 7773, 27286, 111, 116, 59, 27288, 512, 59, 105, 108, 115, 7786, 7787, 7794, 7796, 27289, 110, 116, 101, 114, 115, 59, 25575, 59, 24851, 256, 59, 100, 7801, 7802, 27285, 111, 116, 59, 27287, 384, 97, 112, 115, 7813, 7817, 7831, 99, 114, 59, 16659, 116, 121, 384, 59, 115, 118, 7826, 7827, 7829, 25093, 101, 116, 187, 7827, 112, 256, 49, 59, 7837, 7844, 307, 7841, 7843, 59, 24580, 59, 24581, 24579, 256, 103, 115, 7850, 7852, 59, 16715, 112, 59, 24578, 256, 103, 112, 7860, 7864, 111, 110, 59, 16665, 102, 59, 49152, 55349, 56662, 384, 97, 108, 115, 7876, 7886, 7890, 114, 256, 59, 115, 7882, 7883, 25301, 108, 59, 27107, 117, 115, 59, 27249, 105, 384, 59, 108, 118, 7898, 7899, 7903, 17333, 111, 110, 187, 7899, 59, 17397, 512, 99, 115, 117, 118, 7914, 7923, 7947, 7971, 256, 105, 111, 7919, 7729, 114, 99, 187, 7726, 617, 7929, 0, 0, 7931, 237, 1352, 97, 110, 116, 256, 103, 108, 7938, 7942, 116, 114, 187, 7773, 101, 115, 115, 187, 7802, 384, 97, 101, 105, 7954, 7958, 7962, 108, 115, 59, 16445, 115, 116, 59, 25183, 118, 256, 59, 68, 565, 7968, 68, 59, 27256, 112, 97, 114, 115, 108, 59, 27109, 256, 68, 97, 7983, 7987, 111, 116, 59, 25171, 114, 114, 59, 26993, 384, 99, 100, 105, 7998, 8001, 7928, 114, 59, 24879, 111, 244, 850, 256, 97, 104, 8009, 8011, 59, 17335, 32827, 240, 16624, 256, 109, 114, 8019, 8023, 108, 32827, 235, 16619, 111, 59, 24748, 384, 99, 105, 112, 8033, 8036, 8039, 108, 59, 16417, 115, 244, 1390, 256, 101, 111, 8044, 8052, 99, 116, 97, 116, 105, 111, 238, 1369, 110, 101, 110, 116, 105, 97, 108, 229, 1401, 2529, 8082, 0, 8094, 0, 8097, 8103, 0, 0, 8134, 8140, 0, 8147, 0, 8166, 8170, 8192, 0, 8200, 8282, 108, 108, 105, 110, 103, 100, 111, 116, 115, 101, 241, 7748, 121, 59, 17476, 109, 97, 108, 101, 59, 26176, 384, 105, 108, 114, 8109, 8115, 8129, 108, 105, 103, 59, 32768, 64259, 617, 8121, 0, 0, 8125, 103, 59, 32768, 64256, 105, 103, 59, 32768, 64260, 59, 49152, 55349, 56611, 108, 105, 103, 59, 32768, 64257, 108, 105, 103, 59, 49152, 102, 106, 384, 97, 108, 116, 8153, 8156, 8161, 116, 59, 26221, 105, 103, 59, 32768, 64258, 110, 115, 59, 26033, 111, 102, 59, 16786, 496, 8174, 0, 8179, 102, 59, 49152, 55349, 56663, 256, 97, 107, 1471, 8183, 256, 59, 118, 8188, 8189, 25300, 59, 27353, 97, 114, 116, 105, 110, 116, 59, 27149, 256, 97, 111, 8204, 8277, 256, 99, 115, 8209, 8274, 945, 8218, 8240, 8248, 8261, 8264, 0, 8272, 946, 8226, 8229, 8231, 8234, 8236, 0, 8238, 32827, 189, 16573, 59, 24915, 32827, 188, 16572, 59, 24917, 59, 24921, 59, 24923, 435, 8244, 0, 8246, 59, 24916, 59, 24918, 692, 8254, 8257, 0, 0, 8259, 32827, 190, 16574, 59, 24919, 59, 24924, 53, 59, 24920, 438, 8268, 0, 8270, 59, 24922, 59, 24925, 56, 59, 24926, 108, 59, 24644, 119, 110, 59, 25378, 99, 114, 59, 49152, 55349, 56507, 2176, 69, 97, 98, 99, 100, 101, 102, 103, 105, 106, 108, 110, 111, 114, 115, 116, 118, 8322, 8329, 8351, 8357, 8368, 8372, 8432, 8437, 8442, 8447, 8451, 8466, 8504, 791, 8510, 8530, 8606, 256, 59, 108, 1613, 8327, 59, 27276, 384, 99, 109, 112, 8336, 8341, 8349, 117, 116, 101, 59, 16885, 109, 97, 256, 59, 100, 8348, 7386, 17331, 59, 27270, 114, 101, 118, 101, 59, 16671, 256, 105, 121, 8362, 8366, 114, 99, 59, 16669, 59, 17459, 111, 116, 59, 16673, 512, 59, 108, 113, 115, 1598, 1602, 8381, 8393, 384, 59, 113, 115, 1598, 1612, 8388, 108, 97, 110, 244, 1637, 512, 59, 99, 100, 108, 1637, 8402, 8405, 8421, 99, 59, 27305, 111, 116, 256, 59, 111, 8412, 8413, 27264, 256, 59, 108, 8418, 8419, 27266, 59, 27268, 256, 59, 101, 8426, 8429, 49152, 8923, 65024, 115, 59, 27284, 114, 59, 49152, 55349, 56612, 256, 59, 103, 1651, 1563, 109, 101, 108, 59, 24887, 99, 121, 59, 17491, 512, 59, 69, 97, 106, 1626, 8460, 8462, 8464, 59, 27282, 59, 27301, 59, 27300, 512, 69, 97, 101, 115, 8475, 8477, 8489, 8500, 59, 25193, 112, 256, 59, 112, 8483, 8484, 27274, 114, 111, 120, 187, 8484, 256, 59, 113, 8494, 8495, 27272, 256, 59, 113, 8494, 8475, 105, 109, 59, 25319, 112, 102, 59, 49152, 55349, 56664, 256, 99, 105, 8515, 8518, 114, 59, 24842, 109, 384, 59, 101, 108, 1643, 8526, 8528, 59, 27278, 59, 27280, 33536, 62, 59, 99, 100, 108, 113, 114, 1518, 8544, 8554, 8558, 8563, 8569, 256, 99, 105, 8549, 8551, 59, 27303, 114, 59, 27258, 111, 116, 59, 25303, 80, 97, 114, 59, 27029, 117, 101, 115, 116, 59, 27260, 640, 97, 100, 101, 108, 115, 8580, 8554, 8592, 1622, 8603, 496, 8585, 0, 8590, 112, 114, 111, 248, 8350, 114, 59, 27e3, 113, 256, 108, 113, 1599, 8598, 108, 101, 115, 243, 8328, 105, 237, 1643, 256, 101, 110, 8611, 8621, 114, 116, 110, 101, 113, 113, 59, 49152, 8809, 65024, 197, 8618, 1280, 65, 97, 98, 99, 101, 102, 107, 111, 115, 121, 8644, 8647, 8689, 8693, 8698, 8728, 8733, 8751, 8808, 8829, 114, 242, 928, 512, 105, 108, 109, 114, 8656, 8660, 8663, 8667, 114, 115, 240, 5252, 102, 187, 8228, 105, 108, 244, 1705, 256, 100, 114, 8672, 8676, 99, 121, 59, 17482, 384, 59, 99, 119, 2292, 8683, 8687, 105, 114, 59, 26952, 59, 25005, 97, 114, 59, 24847, 105, 114, 99, 59, 16677, 384, 97, 108, 114, 8705, 8718, 8723, 114, 116, 115, 256, 59, 117, 8713, 8714, 26213, 105, 116, 187, 8714, 108, 105, 112, 59, 24614, 99, 111, 110, 59, 25273, 114, 59, 49152, 55349, 56613, 115, 256, 101, 119, 8739, 8745, 97, 114, 111, 119, 59, 26917, 97, 114, 111, 119, 59, 26918, 640, 97, 109, 111, 112, 114, 8762, 8766, 8771, 8798, 8803, 114, 114, 59, 25087, 116, 104, 116, 59, 25147, 107, 256, 108, 114, 8777, 8787, 101, 102, 116, 97, 114, 114, 111, 119, 59, 25001, 105, 103, 104, 116, 97, 114, 114, 111, 119, 59, 25002, 102, 59, 49152, 55349, 56665, 98, 97, 114, 59, 24597, 384, 99, 108, 116, 8815, 8820, 8824, 114, 59, 49152, 55349, 56509, 97, 115, 232, 8692, 114, 111, 107, 59, 16679, 256, 98, 112, 8834, 8839, 117, 108, 108, 59, 24643, 104, 101, 110, 187, 7259, 2785, 8867, 0, 8874, 0, 8888, 8901, 8910, 0, 8917, 8947, 0, 0, 8952, 8994, 9063, 9058, 9087, 0, 9094, 9130, 9140, 99, 117, 116, 101, 32827, 237, 16621, 384, 59, 105, 121, 1905, 8880, 8885, 114, 99, 32827, 238, 16622, 59, 17464, 256, 99, 120, 8892, 8895, 121, 59, 17461, 99, 108, 32827, 161, 16545, 256, 102, 114, 927, 8905, 59, 49152, 55349, 56614, 114, 97, 118, 101, 32827, 236, 16620, 512, 59, 105, 110, 111, 1854, 8925, 8937, 8942, 256, 105, 110, 8930, 8934, 110, 116, 59, 27148, 116, 59, 25133, 102, 105, 110, 59, 27100, 116, 97, 59, 24873, 108, 105, 103, 59, 16691, 384, 97, 111, 112, 8958, 8986, 8989, 384, 99, 103, 116, 8965, 8968, 8983, 114, 59, 16683, 384, 101, 108, 112, 1823, 8975, 8979, 105, 110, 229, 1934, 97, 114, 244, 1824, 104, 59, 16689, 102, 59, 25271, 101, 100, 59, 16821, 640, 59, 99, 102, 111, 116, 1268, 9004, 9009, 9021, 9025, 97, 114, 101, 59, 24837, 105, 110, 256, 59, 116, 9016, 9017, 25118, 105, 101, 59, 27101, 100, 111, 244, 8985, 640, 59, 99, 101, 108, 112, 1879, 9036, 9040, 9051, 9057, 97, 108, 59, 25274, 256, 103, 114, 9045, 9049, 101, 114, 243, 5475, 227, 9037, 97, 114, 104, 107, 59, 27159, 114, 111, 100, 59, 27196, 512, 99, 103, 112, 116, 9071, 9074, 9078, 9083, 121, 59, 17489, 111, 110, 59, 16687, 102, 59, 49152, 55349, 56666, 97, 59, 17337, 117, 101, 115, 116, 32827, 191, 16575, 256, 99, 105, 9098, 9103, 114, 59, 49152, 55349, 56510, 110, 640, 59, 69, 100, 115, 118, 1268, 9115, 9117, 9121, 1267, 59, 25337, 111, 116, 59, 25333, 256, 59, 118, 9126, 9127, 25332, 59, 25331, 256, 59, 105, 1911, 9134, 108, 100, 101, 59, 16681, 491, 9144, 0, 9148, 99, 121, 59, 17494, 108, 32827, 239, 16623, 768, 99, 102, 109, 111, 115, 117, 9164, 9175, 9180, 9185, 9191, 9205, 256, 105, 121, 9169, 9173, 114, 99, 59, 16693, 59, 17465, 114, 59, 49152, 55349, 56615, 97, 116, 104, 59, 16951, 112, 102, 59, 49152, 55349, 56667, 483, 9196, 0, 9201, 114, 59, 49152, 55349, 56511, 114, 99, 121, 59, 17496, 107, 99, 121, 59, 17492, 1024, 97, 99, 102, 103, 104, 106, 111, 115, 9227, 9238, 9250, 9255, 9261, 9265, 9269, 9275, 112, 112, 97, 256, 59, 118, 9235, 9236, 17338, 59, 17392, 256, 101, 121, 9243, 9248, 100, 105, 108, 59, 16695, 59, 17466, 114, 59, 49152, 55349, 56616, 114, 101, 101, 110, 59, 16696, 99, 121, 59, 17477, 99, 121, 59, 17500, 112, 102, 59, 49152, 55349, 56668, 99, 114, 59, 49152, 55349, 56512, 2944, 65, 66, 69, 72, 97, 98, 99, 100, 101, 102, 103, 104, 106, 108, 109, 110, 111, 112, 114, 115, 116, 117, 118, 9328, 9345, 9350, 9357, 9361, 9486, 9533, 9562, 9600, 9806, 9822, 9829, 9849, 9853, 9882, 9906, 9944, 10077, 10088, 10123, 10176, 10241, 10258, 384, 97, 114, 116, 9335, 9338, 9340, 114, 242, 2502, 242, 917, 97, 105, 108, 59, 26907, 97, 114, 114, 59, 26894, 256, 59, 103, 2452, 9355, 59, 27275, 97, 114, 59, 26978, 2403, 9381, 0, 9386, 0, 9393, 0, 0, 0, 0, 0, 9397, 9402, 0, 9414, 9416, 9421, 0, 9465, 117, 116, 101, 59, 16698, 109, 112, 116, 121, 118, 59, 27060, 114, 97, 238, 2124, 98, 100, 97, 59, 17339, 103, 384, 59, 100, 108, 2190, 9409, 9411, 59, 27025, 229, 2190, 59, 27269, 117, 111, 32827, 171, 16555, 114, 1024, 59, 98, 102, 104, 108, 112, 115, 116, 2201, 9438, 9446, 9449, 9451, 9454, 9457, 9461, 256, 59, 102, 2205, 9443, 115, 59, 26911, 115, 59, 26909, 235, 8786, 112, 59, 25003, 108, 59, 26937, 105, 109, 59, 26995, 108, 59, 24994, 384, 59, 97, 101, 9471, 9472, 9476, 27307, 105, 108, 59, 26905, 256, 59, 115, 9481, 9482, 27309, 59, 49152, 10925, 65024, 384, 97, 98, 114, 9493, 9497, 9501, 114, 114, 59, 26892, 114, 107, 59, 26482, 256, 97, 107, 9506, 9516, 99, 256, 101, 107, 9512, 9514, 59, 16507, 59, 16475, 256, 101, 115, 9521, 9523, 59, 27019, 108, 256, 100, 117, 9529, 9531, 59, 27023, 59, 27021, 512, 97, 101, 117, 121, 9542, 9547, 9558, 9560, 114, 111, 110, 59, 16702, 256, 100, 105, 9552, 9556, 105, 108, 59, 16700, 236, 2224, 226, 9513, 59, 17467, 512, 99, 113, 114, 115, 9571, 9574, 9581, 9597, 97, 59, 26934, 117, 111, 256, 59, 114, 3609, 5958, 256, 100, 117, 9586, 9591, 104, 97, 114, 59, 26983, 115, 104, 97, 114, 59, 26955, 104, 59, 25010, 640, 59, 102, 103, 113, 115, 9611, 9612, 2441, 9715, 9727, 25188, 116, 640, 97, 104, 108, 114, 116, 9624, 9636, 9655, 9666, 9704, 114, 114, 111, 119, 256, 59, 116, 2201, 9633, 97, 233, 9462, 97, 114, 112, 111, 111, 110, 256, 100, 117, 9647, 9652, 111, 119, 110, 187, 1114, 112, 187, 2406, 101, 102, 116, 97, 114, 114, 111, 119, 115, 59, 25031, 105, 103, 104, 116, 384, 97, 104, 115, 9677, 9686, 9694, 114, 114, 111, 119, 256, 59, 115, 2292, 2215, 97, 114, 112, 111, 111, 110, 243, 3992, 113, 117, 105, 103, 97, 114, 114, 111, 247, 8688, 104, 114, 101, 101, 116, 105, 109, 101, 115, 59, 25291, 384, 59, 113, 115, 9611, 2451, 9722, 108, 97, 110, 244, 2476, 640, 59, 99, 100, 103, 115, 2476, 9738, 9741, 9757, 9768, 99, 59, 27304, 111, 116, 256, 59, 111, 9748, 9749, 27263, 256, 59, 114, 9754, 9755, 27265, 59, 27267, 256, 59, 101, 9762, 9765, 49152, 8922, 65024, 115, 59, 27283, 640, 97, 100, 101, 103, 115, 9779, 9785, 9789, 9801, 9803, 112, 112, 114, 111, 248, 9414, 111, 116, 59, 25302, 113, 256, 103, 113, 9795, 9797, 244, 2441, 103, 116, 242, 9356, 244, 2459, 105, 237, 2482, 384, 105, 108, 114, 9813, 2273, 9818, 115, 104, 116, 59, 27004, 59, 49152, 55349, 56617, 256, 59, 69, 2460, 9827, 59, 27281, 353, 9833, 9846, 114, 256, 100, 117, 9650, 9838, 256, 59, 108, 2405, 9843, 59, 26986, 108, 107, 59, 25988, 99, 121, 59, 17497, 640, 59, 97, 99, 104, 116, 2632, 9864, 9867, 9873, 9878, 114, 242, 9665, 111, 114, 110, 101, 242, 7432, 97, 114, 100, 59, 26987, 114, 105, 59, 26106, 256, 105, 111, 9887, 9892, 100, 111, 116, 59, 16704, 117, 115, 116, 256, 59, 97, 9900, 9901, 25520, 99, 104, 101, 187, 9901, 512, 69, 97, 101, 115, 9915, 9917, 9929, 9940, 59, 25192, 112, 256, 59, 112, 9923, 9924, 27273, 114, 111, 120, 187, 9924, 256, 59, 113, 9934, 9935, 27271, 256, 59, 113, 9934, 9915, 105, 109, 59, 25318, 1024, 97, 98, 110, 111, 112, 116, 119, 122, 9961, 9972, 9975, 10010, 10031, 10049, 10055, 10064, 256, 110, 114, 9966, 9969, 103, 59, 26604, 114, 59, 25085, 114, 235, 2241, 103, 384, 108, 109, 114, 9983, 9997, 10004, 101, 102, 116, 256, 97, 114, 2534, 9991, 105, 103, 104, 116, 225, 2546, 97, 112, 115, 116, 111, 59, 26620, 105, 103, 104, 116, 225, 2557, 112, 97, 114, 114, 111, 119, 256, 108, 114, 10021, 10025, 101, 102, 244, 9453, 105, 103, 104, 116, 59, 25004, 384, 97, 102, 108, 10038, 10041, 10045, 114, 59, 27013, 59, 49152, 55349, 56669, 117, 115, 59, 27181, 105, 109, 101, 115, 59, 27188, 353, 10059, 10063, 115, 116, 59, 25111, 225, 4942, 384, 59, 101, 102, 10071, 10072, 6144, 26058, 110, 103, 101, 187, 10072, 97, 114, 256, 59, 108, 10084, 10085, 16424, 116, 59, 27027, 640, 97, 99, 104, 109, 116, 10099, 10102, 10108, 10117, 10119, 114, 242, 2216, 111, 114, 110, 101, 242, 7564, 97, 114, 256, 59, 100, 3992, 10115, 59, 26989, 59, 24590, 114, 105, 59, 25279, 768, 97, 99, 104, 105, 113, 116, 10136, 10141, 2624, 10146, 10158, 10171, 113, 117, 111, 59, 24633, 114, 59, 49152, 55349, 56513, 109, 384, 59, 101, 103, 2482, 10154, 10156, 59, 27277, 59, 27279, 256, 98, 117, 9514, 10163, 111, 256, 59, 114, 3615, 10169, 59, 24602, 114, 111, 107, 59, 16706, 33792, 60, 59, 99, 100, 104, 105, 108, 113, 114, 2091, 10194, 9785, 10204, 10208, 10213, 10218, 10224, 256, 99, 105, 10199, 10201, 59, 27302, 114, 59, 27257, 114, 101, 229, 9714, 109, 101, 115, 59, 25289, 97, 114, 114, 59, 26998, 117, 101, 115, 116, 59, 27259, 256, 80, 105, 10229, 10233, 97, 114, 59, 27030, 384, 59, 101, 102, 10240, 2349, 6171, 26051, 114, 256, 100, 117, 10247, 10253, 115, 104, 97, 114, 59, 26954, 104, 97, 114, 59, 26982, 256, 101, 110, 10263, 10273, 114, 116, 110, 101, 113, 113, 59, 49152, 8808, 65024, 197, 10270, 1792, 68, 97, 99, 100, 101, 102, 104, 105, 108, 110, 111, 112, 115, 117, 10304, 10309, 10370, 10382, 10387, 10400, 10405, 10408, 10458, 10466, 10468, 2691, 10483, 10498, 68, 111, 116, 59, 25146, 512, 99, 108, 112, 114, 10318, 10322, 10339, 10365, 114, 32827, 175, 16559, 256, 101, 116, 10327, 10329, 59, 26178, 256, 59, 101, 10334, 10335, 26400, 115, 101, 187, 10335, 256, 59, 115, 4155, 10344, 116, 111, 512, 59, 100, 108, 117, 4155, 10355, 10359, 10363, 111, 119, 238, 1164, 101, 102, 244, 2319, 240, 5073, 107, 101, 114, 59, 26030, 256, 111, 121, 10375, 10380, 109, 109, 97, 59, 27177, 59, 17468, 97, 115, 104, 59, 24596, 97, 115, 117, 114, 101, 100, 97, 110, 103, 108, 101, 187, 5670, 114, 59, 49152, 55349, 56618, 111, 59, 24871, 384, 99, 100, 110, 10415, 10420, 10441, 114, 111, 32827, 181, 16565, 512, 59, 97, 99, 100, 5220, 10429, 10432, 10436, 115, 244, 5799, 105, 114, 59, 27376, 111, 116, 32955, 183, 437, 117, 115, 384, 59, 98, 100, 10450, 6403, 10451, 25106, 256, 59, 117, 7484, 10456, 59, 27178, 355, 10462, 10465, 112, 59, 27355, 242, 8722, 240, 2689, 256, 100, 112, 10473, 10478, 101, 108, 115, 59, 25255, 102, 59, 49152, 55349, 56670, 256, 99, 116, 10488, 10493, 114, 59, 49152, 55349, 56514, 112, 111, 115, 187, 5533, 384, 59, 108, 109, 10505, 10506, 10509, 17340, 116, 105, 109, 97, 112, 59, 25272, 3072, 71, 76, 82, 86, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 108, 109, 111, 112, 114, 115, 116, 117, 118, 119, 10562, 10579, 10622, 10633, 10648, 10714, 10729, 10773, 10778, 10840, 10845, 10883, 10901, 10916, 10920, 11012, 11015, 11076, 11135, 11182, 11316, 11367, 11388, 11497, 256, 103, 116, 10567, 10571, 59, 49152, 8921, 824, 256, 59, 118, 10576, 3023, 49152, 8811, 8402, 384, 101, 108, 116, 10586, 10610, 10614, 102, 116, 256, 97, 114, 10593, 10599, 114, 114, 111, 119, 59, 25037, 105, 103, 104, 116, 97, 114, 114, 111, 119, 59, 25038, 59, 49152, 8920, 824, 256, 59, 118, 10619, 3143, 49152, 8810, 8402, 105, 103, 104, 116, 97, 114, 114, 111, 119, 59, 25039, 256, 68, 100, 10638, 10643, 97, 115, 104, 59, 25263, 97, 115, 104, 59, 25262, 640, 98, 99, 110, 112, 116, 10659, 10663, 10668, 10673, 10700, 108, 97, 187, 734, 117, 116, 101, 59, 16708, 103, 59, 49152, 8736, 8402, 640, 59, 69, 105, 111, 112, 3460, 10684, 10688, 10693, 10696, 59, 49152, 10864, 824, 100, 59, 49152, 8779, 824, 115, 59, 16713, 114, 111, 248, 3460, 117, 114, 256, 59, 97, 10707, 10708, 26222, 108, 256, 59, 115, 10707, 2872, 499, 10719, 0, 10723, 112, 32955, 160, 2871, 109, 112, 256, 59, 101, 3065, 3072, 640, 97, 101, 111, 117, 121, 10740, 10750, 10755, 10768, 10771, 496, 10745, 0, 10747, 59, 27203, 111, 110, 59, 16712, 100, 105, 108, 59, 16710, 110, 103, 256, 59, 100, 3454, 10762, 111, 116, 59, 49152, 10861, 824, 112, 59, 27202, 59, 17469, 97, 115, 104, 59, 24595, 896, 59, 65, 97, 100, 113, 115, 120, 2962, 10793, 10797, 10811, 10817, 10821, 10832, 114, 114, 59, 25047, 114, 256, 104, 114, 10803, 10806, 107, 59, 26916, 256, 59, 111, 5106, 5104, 111, 116, 59, 49152, 8784, 824, 117, 105, 246, 2915, 256, 101, 105, 10826, 10830, 97, 114, 59, 26920, 237, 2968, 105, 115, 116, 256, 59, 115, 2976, 2975, 114, 59, 49152, 55349, 56619, 512, 69, 101, 115, 116, 3013, 10854, 10873, 10876, 384, 59, 113, 115, 3004, 10861, 3041, 384, 59, 113, 115, 3004, 3013, 10868, 108, 97, 110, 244, 3042, 105, 237, 3050, 256, 59, 114, 2998, 10881, 187, 2999, 384, 65, 97, 112, 10890, 10893, 10897, 114, 242, 10609, 114, 114, 59, 25006, 97, 114, 59, 27378, 384, 59, 115, 118, 3981, 10908, 3980, 256, 59, 100, 10913, 10914, 25340, 59, 25338, 99, 121, 59, 17498, 896, 65, 69, 97, 100, 101, 115, 116, 10935, 10938, 10942, 10946, 10949, 10998, 11001, 114, 242, 10598, 59, 49152, 8806, 824, 114, 114, 59, 24986, 114, 59, 24613, 512, 59, 102, 113, 115, 3131, 10958, 10979, 10991, 116, 256, 97, 114, 10964, 10969, 114, 114, 111, 247, 10945, 105, 103, 104, 116, 97, 114, 114, 111, 247, 10896, 384, 59, 113, 115, 3131, 10938, 10986, 108, 97, 110, 244, 3157, 256, 59, 115, 3157, 10996, 187, 3126, 105, 237, 3165, 256, 59, 114, 3125, 11006, 105, 256, 59, 101, 3098, 3109, 105, 228, 3472, 256, 112, 116, 11020, 11025, 102, 59, 49152, 55349, 56671, 33152, 172, 59, 105, 110, 11033, 11034, 11062, 16556, 110, 512, 59, 69, 100, 118, 2953, 11044, 11048, 11054, 59, 49152, 8953, 824, 111, 116, 59, 49152, 8949, 824, 481, 2953, 11059, 11061, 59, 25335, 59, 25334, 105, 256, 59, 118, 3256, 11068, 481, 3256, 11073, 11075, 59, 25342, 59, 25341, 384, 97, 111, 114, 11083, 11107, 11113, 114, 512, 59, 97, 115, 116, 2939, 11093, 11098, 11103, 108, 108, 101, 236, 2939, 108, 59, 49152, 11005, 8421, 59, 49152, 8706, 824, 108, 105, 110, 116, 59, 27156, 384, 59, 99, 101, 3218, 11120, 11123, 117, 229, 3237, 256, 59, 99, 3224, 11128, 256, 59, 101, 3218, 11133, 241, 3224, 512, 65, 97, 105, 116, 11144, 11147, 11165, 11175, 114, 242, 10632, 114, 114, 384, 59, 99, 119, 11156, 11157, 11161, 24987, 59, 49152, 10547, 824, 59, 49152, 8605, 824, 103, 104, 116, 97, 114, 114, 111, 119, 187, 11157, 114, 105, 256, 59, 101, 3275, 3286, 896, 99, 104, 105, 109, 112, 113, 117, 11197, 11213, 11225, 11012, 2936, 11236, 11247, 512, 59, 99, 101, 114, 3378, 11206, 3383, 11209, 117, 229, 3397, 59, 49152, 55349, 56515, 111, 114, 116, 621, 11013, 0, 0, 11222, 97, 114, 225, 11094, 109, 256, 59, 101, 3438, 11231, 256, 59, 113, 3444, 3443, 115, 117, 256, 98, 112, 11243, 11245, 229, 3320, 229, 3339, 384, 98, 99, 112, 11254, 11281, 11289, 512, 59, 69, 101, 115, 11263, 11264, 3362, 11268, 25220, 59, 49152, 10949, 824, 101, 116, 256, 59, 101, 3355, 11275, 113, 256, 59, 113, 3363, 11264, 99, 256, 59, 101, 3378, 11287, 241, 3384, 512, 59, 69, 101, 115, 11298, 11299, 3423, 11303, 25221, 59, 49152, 10950, 824, 101, 116, 256, 59, 101, 3416, 11310, 113, 256, 59, 113, 3424, 11299, 512, 103, 105, 108, 114, 11325, 11327, 11333, 11335, 236, 3031, 108, 100, 101, 32827, 241, 16625, 231, 3139, 105, 97, 110, 103, 108, 101, 256, 108, 114, 11346, 11356, 101, 102, 116, 256, 59, 101, 3098, 11354, 241, 3110, 105, 103, 104, 116, 256, 59, 101, 3275, 11365, 241, 3287, 256, 59, 109, 11372, 11373, 17341, 384, 59, 101, 115, 11380, 11381, 11385, 16419, 114, 111, 59, 24854, 112, 59, 24583, 1152, 68, 72, 97, 100, 103, 105, 108, 114, 115, 11407, 11412, 11417, 11422, 11427, 11440, 11446, 11475, 11491, 97, 115, 104, 59, 25261, 97, 114, 114, 59, 26884, 112, 59, 49152, 8781, 8402, 97, 115, 104, 59, 25260, 256, 101, 116, 11432, 11436, 59, 49152, 8805, 8402, 59, 49152, 62, 8402, 110, 102, 105, 110, 59, 27102, 384, 65, 101, 116, 11453, 11457, 11461, 114, 114, 59, 26882, 59, 49152, 8804, 8402, 256, 59, 114, 11466, 11469, 49152, 60, 8402, 105, 101, 59, 49152, 8884, 8402, 256, 65, 116, 11480, 11484, 114, 114, 59, 26883, 114, 105, 101, 59, 49152, 8885, 8402, 105, 109, 59, 49152, 8764, 8402, 384, 65, 97, 110, 11504, 11508, 11522, 114, 114, 59, 25046, 114, 256, 104, 114, 11514, 11517, 107, 59, 26915, 256, 59, 111, 5095, 5093, 101, 97, 114, 59, 26919, 4691, 6805, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11565, 0, 11576, 11592, 11616, 11621, 11634, 11652, 6919, 0, 0, 11661, 11691, 0, 11720, 11726, 0, 11740, 11801, 11819, 11838, 11843, 256, 99, 115, 11569, 6807, 117, 116, 101, 32827, 243, 16627, 256, 105, 121, 11580, 11589, 114, 256, 59, 99, 6814, 11586, 32827, 244, 16628, 59, 17470, 640, 97, 98, 105, 111, 115, 6816, 11602, 11607, 456, 11610, 108, 97, 99, 59, 16721, 118, 59, 27192, 111, 108, 100, 59, 27068, 108, 105, 103, 59, 16723, 256, 99, 114, 11625, 11629, 105, 114, 59, 27071, 59, 49152, 55349, 56620, 879, 11641, 0, 0, 11644, 0, 11650, 110, 59, 17115, 97, 118, 101, 32827, 242, 16626, 59, 27073, 256, 98, 109, 11656, 3572, 97, 114, 59, 27061, 512, 97, 99, 105, 116, 11669, 11672, 11685, 11688, 114, 242, 6784, 256, 105, 114, 11677, 11680, 114, 59, 27070, 111, 115, 115, 59, 27067, 110, 229, 3666, 59, 27072, 384, 97, 101, 105, 11697, 11701, 11705, 99, 114, 59, 16717, 103, 97, 59, 17353, 384, 99, 100, 110, 11712, 11717, 461, 114, 111, 110, 59, 17343, 59, 27062, 112, 102, 59, 49152, 55349, 56672, 384, 97, 101, 108, 11732, 11735, 466, 114, 59, 27063, 114, 112, 59, 27065, 896, 59, 97, 100, 105, 111, 115, 118, 11754, 11755, 11758, 11784, 11789, 11792, 11798, 25128, 114, 242, 6790, 512, 59, 101, 102, 109, 11767, 11768, 11778, 11781, 27229, 114, 256, 59, 111, 11774, 11775, 24884, 102, 187, 11775, 32827, 170, 16554, 32827, 186, 16570, 103, 111, 102, 59, 25270, 114, 59, 27222, 108, 111, 112, 101, 59, 27223, 59, 27227, 384, 99, 108, 111, 11807, 11809, 11815, 242, 11777, 97, 115, 104, 32827, 248, 16632, 108, 59, 25240, 105, 364, 11823, 11828, 100, 101, 32827, 245, 16629, 101, 115, 256, 59, 97, 475, 11834, 115, 59, 27190, 109, 108, 32827, 246, 16630, 98, 97, 114, 59, 25405, 2785, 11870, 0, 11901, 0, 11904, 11933, 0, 11938, 11961, 0, 0, 11979, 3740, 0, 12051, 0, 0, 12075, 12220, 0, 12232, 114, 512, 59, 97, 115, 116, 1027, 11879, 11890, 3717, 33024, 182, 59, 108, 11885, 11886, 16566, 108, 101, 236, 1027, 617, 11896, 0, 0, 11899, 109, 59, 27379, 59, 27389, 121, 59, 17471, 114, 640, 99, 105, 109, 112, 116, 11915, 11919, 11923, 6245, 11927, 110, 116, 59, 16421, 111, 100, 59, 16430, 105, 108, 59, 24624, 101, 110, 107, 59, 24625, 114, 59, 49152, 55349, 56621, 384, 105, 109, 111, 11944, 11952, 11956, 256, 59, 118, 11949, 11950, 17350, 59, 17365, 109, 97, 244, 2678, 110, 101, 59, 26126, 384, 59, 116, 118, 11967, 11968, 11976, 17344, 99, 104, 102, 111, 114, 107, 187, 8189, 59, 17366, 256, 97, 117, 11983, 11999, 110, 256, 99, 107, 11989, 11997, 107, 256, 59, 104, 8692, 11995, 59, 24846, 246, 8692, 115, 1152, 59, 97, 98, 99, 100, 101, 109, 115, 116, 12019, 12020, 6408, 12025, 12029, 12036, 12038, 12042, 12046, 16427, 99, 105, 114, 59, 27171, 105, 114, 59, 27170, 256, 111, 117, 7488, 12034, 59, 27173, 59, 27250, 110, 32955, 177, 3741, 105, 109, 59, 27174, 119, 111, 59, 27175, 384, 105, 112, 117, 12057, 12064, 12069, 110, 116, 105, 110, 116, 59, 27157, 102, 59, 49152, 55349, 56673, 110, 100, 32827, 163, 16547, 1280, 59, 69, 97, 99, 101, 105, 110, 111, 115, 117, 3784, 12095, 12097, 12100, 12103, 12161, 12169, 12178, 12158, 12214, 59, 27315, 112, 59, 27319, 117, 229, 3801, 256, 59, 99, 3790, 12108, 768, 59, 97, 99, 101, 110, 115, 3784, 12121, 12127, 12134, 12136, 12158, 112, 112, 114, 111, 248, 12099, 117, 114, 108, 121, 101, 241, 3801, 241, 3790, 384, 97, 101, 115, 12143, 12150, 12154, 112, 112, 114, 111, 120, 59, 27321, 113, 113, 59, 27317, 105, 109, 59, 25320, 105, 237, 3807, 109, 101, 256, 59, 115, 12168, 3758, 24626, 384, 69, 97, 115, 12152, 12176, 12154, 240, 12149, 384, 100, 102, 112, 3820, 12185, 12207, 384, 97, 108, 115, 12192, 12197, 12202, 108, 97, 114, 59, 25390, 105, 110, 101, 59, 25362, 117, 114, 102, 59, 25363, 256, 59, 116, 3835, 12212, 239, 3835, 114, 101, 108, 59, 25264, 256, 99, 105, 12224, 12229, 114, 59, 49152, 55349, 56517, 59, 17352, 110, 99, 115, 112, 59, 24584, 768, 102, 105, 111, 112, 115, 117, 12250, 8930, 12255, 12261, 12267, 12273, 114, 59, 49152, 55349, 56622, 112, 102, 59, 49152, 55349, 56674, 114, 105, 109, 101, 59, 24663, 99, 114, 59, 49152, 55349, 56518, 384, 97, 101, 111, 12280, 12297, 12307, 116, 256, 101, 105, 12286, 12293, 114, 110, 105, 111, 110, 243, 1712, 110, 116, 59, 27158, 115, 116, 256, 59, 101, 12304, 12305, 16447, 241, 7961, 244, 3860, 2688, 65, 66, 72, 97, 98, 99, 100, 101, 102, 104, 105, 108, 109, 110, 111, 112, 114, 115, 116, 117, 120, 12352, 12369, 12373, 12377, 12512, 12558, 12587, 12615, 12642, 12658, 12686, 12806, 12821, 12836, 12841, 12888, 12910, 12914, 12944, 12976, 12983, 384, 97, 114, 116, 12359, 12362, 12364, 114, 242, 4275, 242, 989, 97, 105, 108, 59, 26908, 97, 114, 242, 7269, 97, 114, 59, 26980, 896, 99, 100, 101, 110, 113, 114, 116, 12392, 12405, 12408, 12415, 12431, 12436, 12492, 256, 101, 117, 12397, 12401, 59, 49152, 8765, 817, 116, 101, 59, 16725, 105, 227, 4462, 109, 112, 116, 121, 118, 59, 27059, 103, 512, 59, 100, 101, 108, 4049, 12425, 12427, 12429, 59, 27026, 59, 27045, 229, 4049, 117, 111, 32827, 187, 16571, 114, 1408, 59, 97, 98, 99, 102, 104, 108, 112, 115, 116, 119, 4060, 12460, 12463, 12471, 12473, 12476, 12478, 12480, 12483, 12487, 12490, 112, 59, 26997, 256, 59, 102, 4064, 12468, 115, 59, 26912, 59, 26931, 115, 59, 26910, 235, 8797, 240, 10030, 108, 59, 26949, 105, 109, 59, 26996, 108, 59, 24995, 59, 24989, 256, 97, 105, 12497, 12501, 105, 108, 59, 26906, 111, 256, 59, 110, 12507, 12508, 25142, 97, 108, 243, 3870, 384, 97, 98, 114, 12519, 12522, 12526, 114, 242, 6117, 114, 107, 59, 26483, 256, 97, 107, 12531, 12541, 99, 256, 101, 107, 12537, 12539, 59, 16509, 59, 16477, 256, 101, 115, 12546, 12548, 59, 27020, 108, 256, 100, 117, 12554, 12556, 59, 27022, 59, 27024, 512, 97, 101, 117, 121, 12567, 12572, 12583, 12585, 114, 111, 110, 59, 16729, 256, 100, 105, 12577, 12581, 105, 108, 59, 16727, 236, 4082, 226, 12538, 59, 17472, 512, 99, 108, 113, 115, 12596, 12599, 12605, 12612, 97, 59, 26935, 100, 104, 97, 114, 59, 26985, 117, 111, 256, 59, 114, 526, 525, 104, 59, 25011, 384, 97, 99, 103, 12622, 12639, 3908, 108, 512, 59, 105, 112, 115, 3960, 12632, 12635, 4252, 110, 229, 4283, 97, 114, 244, 4009, 116, 59, 26029, 384, 105, 108, 114, 12649, 4131, 12654, 115, 104, 116, 59, 27005, 59, 49152, 55349, 56623, 256, 97, 111, 12663, 12678, 114, 256, 100, 117, 12669, 12671, 187, 1147, 256, 59, 108, 4241, 12676, 59, 26988, 256, 59, 118, 12683, 12684, 17345, 59, 17393, 384, 103, 110, 115, 12693, 12793, 12796, 104, 116, 768, 97, 104, 108, 114, 115, 116, 12708, 12720, 12738, 12760, 12772, 12782, 114, 114, 111, 119, 256, 59, 116, 4060, 12717, 97, 233, 12488, 97, 114, 112, 111, 111, 110, 256, 100, 117, 12731, 12735, 111, 119, 238, 12670, 112, 187, 4242, 101, 102, 116, 256, 97, 104, 12746, 12752, 114, 114, 111, 119, 243, 4074, 97, 114, 112, 111, 111, 110, 243, 1361, 105, 103, 104, 116, 97, 114, 114, 111, 119, 115, 59, 25033, 113, 117, 105, 103, 97, 114, 114, 111, 247, 12491, 104, 114, 101, 101, 116, 105, 109, 101, 115, 59, 25292, 103, 59, 17114, 105, 110, 103, 100, 111, 116, 115, 101, 241, 7986, 384, 97, 104, 109, 12813, 12816, 12819, 114, 242, 4074, 97, 242, 1361, 59, 24591, 111, 117, 115, 116, 256, 59, 97, 12830, 12831, 25521, 99, 104, 101, 187, 12831, 109, 105, 100, 59, 27374, 512, 97, 98, 112, 116, 12850, 12861, 12864, 12882, 256, 110, 114, 12855, 12858, 103, 59, 26605, 114, 59, 25086, 114, 235, 4099, 384, 97, 102, 108, 12871, 12874, 12878, 114, 59, 27014, 59, 49152, 55349, 56675, 117, 115, 59, 27182, 105, 109, 101, 115, 59, 27189, 256, 97, 112, 12893, 12903, 114, 256, 59, 103, 12899, 12900, 16425, 116, 59, 27028, 111, 108, 105, 110, 116, 59, 27154, 97, 114, 242, 12771, 512, 97, 99, 104, 113, 12923, 12928, 4284, 12933, 113, 117, 111, 59, 24634, 114, 59, 49152, 55349, 56519, 256, 98, 117, 12539, 12938, 111, 256, 59, 114, 532, 531, 384, 104, 105, 114, 12951, 12955, 12960, 114, 101, 229, 12792, 109, 101, 115, 59, 25290, 105, 512, 59, 101, 102, 108, 12970, 4185, 6177, 12971, 26041, 116, 114, 105, 59, 27086, 108, 117, 104, 97, 114, 59, 26984, 59, 24862, 3425, 13013, 13019, 13023, 13100, 13112, 13169, 0, 13178, 13220, 0, 0, 13292, 13296, 0, 13352, 13384, 13402, 13485, 13489, 13514, 13553, 0, 13846, 0, 0, 13875, 99, 117, 116, 101, 59, 16731, 113, 117, 239, 10170, 1280, 59, 69, 97, 99, 101, 105, 110, 112, 115, 121, 4589, 13043, 13045, 13055, 13058, 13067, 13071, 13087, 13094, 13097, 59, 27316, 496, 13050, 0, 13052, 59, 27320, 111, 110, 59, 16737, 117, 229, 4606, 256, 59, 100, 4595, 13063, 105, 108, 59, 16735, 114, 99, 59, 16733, 384, 69, 97, 115, 13078, 13080, 13083, 59, 27318, 112, 59, 27322, 105, 109, 59, 25321, 111, 108, 105, 110, 116, 59, 27155, 105, 237, 4612, 59, 17473, 111, 116, 384, 59, 98, 101, 13108, 7495, 13109, 25285, 59, 27238, 896, 65, 97, 99, 109, 115, 116, 120, 13126, 13130, 13143, 13147, 13150, 13155, 13165, 114, 114, 59, 25048, 114, 256, 104, 114, 13136, 13138, 235, 8744, 256, 59, 111, 2614, 2612, 116, 32827, 167, 16551, 105, 59, 16443, 119, 97, 114, 59, 26921, 109, 256, 105, 110, 13161, 240, 110, 117, 243, 241, 116, 59, 26422, 114, 256, 59, 111, 13174, 8277, 49152, 55349, 56624, 512, 97, 99, 111, 121, 13186, 13190, 13201, 13216, 114, 112, 59, 26223, 256, 104, 121, 13195, 13199, 99, 121, 59, 17481, 59, 17480, 114, 116, 621, 13209, 0, 0, 13212, 105, 228, 5220, 97, 114, 97, 236, 11887, 32827, 173, 16557, 256, 103, 109, 13224, 13236, 109, 97, 384, 59, 102, 118, 13233, 13234, 13234, 17347, 59, 17346, 1024, 59, 100, 101, 103, 108, 110, 112, 114, 4779, 13253, 13257, 13262, 13270, 13278, 13281, 13286, 111, 116, 59, 27242, 256, 59, 113, 4785, 4784, 256, 59, 69, 13267, 13268, 27294, 59, 27296, 256, 59, 69, 13275, 13276, 27293, 59, 27295, 101, 59, 25158, 108, 117, 115, 59, 27172, 97, 114, 114, 59, 26994, 97, 114, 242, 4413, 512, 97, 101, 105, 116, 13304, 13320, 13327, 13335, 256, 108, 115, 13309, 13316, 108, 115, 101, 116, 109, 233, 13162, 104, 112, 59, 27187, 112, 97, 114, 115, 108, 59, 27108, 256, 100, 108, 5219, 13332, 101, 59, 25379, 256, 59, 101, 13340, 13341, 27306, 256, 59, 115, 13346, 13347, 27308, 59, 49152, 10924, 65024, 384, 102, 108, 112, 13358, 13363, 13378, 116, 99, 121, 59, 17484, 256, 59, 98, 13368, 13369, 16431, 256, 59, 97, 13374, 13375, 27076, 114, 59, 25407, 102, 59, 49152, 55349, 56676, 97, 256, 100, 114, 13389, 1026, 101, 115, 256, 59, 117, 13396, 13397, 26208, 105, 116, 187, 13397, 384, 99, 115, 117, 13408, 13433, 13471, 256, 97, 117, 13413, 13423, 112, 256, 59, 115, 4488, 13419, 59, 49152, 8851, 65024, 112, 256, 59, 115, 4532, 13429, 59, 49152, 8852, 65024, 117, 256, 98, 112, 13439, 13455, 384, 59, 101, 115, 4503, 4508, 13446, 101, 116, 256, 59, 101, 4503, 13453, 241, 4509, 384, 59, 101, 115, 4520, 4525, 13462, 101, 116, 256, 59, 101, 4520, 13469, 241, 4526, 384, 59, 97, 102, 4475, 13478, 1456, 114, 357, 13483, 1457, 187, 4476, 97, 114, 242, 4424, 512, 99, 101, 109, 116, 13497, 13502, 13506, 13509, 114, 59, 49152, 55349, 56520, 116, 109, 238, 241, 105, 236, 13333, 97, 114, 230, 4542, 256, 97, 114, 13518, 13525, 114, 256, 59, 102, 13524, 6079, 26118, 256, 97, 110, 13530, 13549, 105, 103, 104, 116, 256, 101, 112, 13539, 13546, 112, 115, 105, 108, 111, 238, 7904, 104, 233, 11951, 115, 187, 10322, 640, 98, 99, 109, 110, 112, 13563, 13662, 4617, 13707, 13710, 1152, 59, 69, 100, 101, 109, 110, 112, 114, 115, 13582, 13583, 13585, 13589, 13598, 13603, 13612, 13617, 13622, 25218, 59, 27333, 111, 116, 59, 27325, 256, 59, 100, 4570, 13594, 111, 116, 59, 27331, 117, 108, 116, 59, 27329, 256, 69, 101, 13608, 13610, 59, 27339, 59, 25226, 108, 117, 115, 59, 27327, 97, 114, 114, 59, 27001, 384, 101, 105, 117, 13629, 13650, 13653, 116, 384, 59, 101, 110, 13582, 13637, 13643, 113, 256, 59, 113, 4570, 13583, 101, 113, 256, 59, 113, 13611, 13608, 109, 59, 27335, 256, 98, 112, 13658, 13660, 59, 27349, 59, 27347, 99, 768, 59, 97, 99, 101, 110, 115, 4589, 13676, 13682, 13689, 13691, 13094, 112, 112, 114, 111, 248, 13050, 117, 114, 108, 121, 101, 241, 4606, 241, 4595, 384, 97, 101, 115, 13698, 13704, 13083, 112, 112, 114, 111, 248, 13082, 113, 241, 13079, 103, 59, 26218, 1664, 49, 50, 51, 59, 69, 100, 101, 104, 108, 109, 110, 112, 115, 13737, 13740, 13743, 4636, 13746, 13748, 13760, 13769, 13781, 13786, 13791, 13800, 13805, 32827, 185, 16569, 32827, 178, 16562, 32827, 179, 16563, 59, 27334, 256, 111, 115, 13753, 13756, 116, 59, 27326, 117, 98, 59, 27352, 256, 59, 100, 4642, 13765, 111, 116, 59, 27332, 115, 256, 111, 117, 13775, 13778, 108, 59, 26569, 98, 59, 27351, 97, 114, 114, 59, 27003, 117, 108, 116, 59, 27330, 256, 69, 101, 13796, 13798, 59, 27340, 59, 25227, 108, 117, 115, 59, 27328, 384, 101, 105, 117, 13812, 13833, 13836, 116, 384, 59, 101, 110, 4636, 13820, 13826, 113, 256, 59, 113, 4642, 13746, 101, 113, 256, 59, 113, 13799, 13796, 109, 59, 27336, 256, 98, 112, 13841, 13843, 59, 27348, 59, 27350, 384, 65, 97, 110, 13852, 13856, 13869, 114, 114, 59, 25049, 114, 256, 104, 114, 13862, 13864, 235, 8750, 256, 59, 111, 2603, 2601, 119, 97, 114, 59, 26922, 108, 105, 103, 32827, 223, 16607, 3041, 13905, 13917, 13920, 4814, 13939, 13945, 0, 13950, 14018, 0, 0, 0, 0, 0, 14043, 14083, 0, 14089, 14188, 0, 0, 0, 14215, 626, 13910, 0, 0, 13915, 103, 101, 116, 59, 25366, 59, 17348, 114, 235, 3679, 384, 97, 101, 121, 13926, 13931, 13936, 114, 111, 110, 59, 16741, 100, 105, 108, 59, 16739, 59, 17474, 108, 114, 101, 99, 59, 25365, 114, 59, 49152, 55349, 56625, 512, 101, 105, 107, 111, 13958, 13981, 14005, 14012, 498, 13963, 0, 13969, 101, 256, 52, 102, 4740, 4737, 97, 384, 59, 115, 118, 13976, 13977, 13979, 17336, 121, 109, 59, 17361, 256, 99, 110, 13986, 14002, 107, 256, 97, 115, 13992, 13998, 112, 112, 114, 111, 248, 4801, 105, 109, 187, 4780, 115, 240, 4766, 256, 97, 115, 14010, 13998, 240, 4801, 114, 110, 32827, 254, 16638, 492, 799, 14022, 8935, 101, 115, 33152, 215, 59, 98, 100, 14031, 14032, 14040, 16599, 256, 59, 97, 6415, 14037, 114, 59, 27185, 59, 27184, 384, 101, 112, 115, 14049, 14051, 14080, 225, 10829, 512, 59, 98, 99, 102, 1158, 14060, 14064, 14068, 111, 116, 59, 25398, 105, 114, 59, 27377, 256, 59, 111, 14073, 14076, 49152, 55349, 56677, 114, 107, 59, 27354, 225, 13154, 114, 105, 109, 101, 59, 24628, 384, 97, 105, 112, 14095, 14098, 14180, 100, 229, 4680, 896, 97, 100, 101, 109, 112, 115, 116, 14113, 14157, 14144, 14161, 14167, 14172, 14175, 110, 103, 108, 101, 640, 59, 100, 108, 113, 114, 14128, 14129, 14134, 14144, 14146, 26037, 111, 119, 110, 187, 7611, 101, 102, 116, 256, 59, 101, 10240, 14142, 241, 2350, 59, 25180, 105, 103, 104, 116, 256, 59, 101, 12970, 14155, 241, 4186, 111, 116, 59, 26092, 105, 110, 117, 115, 59, 27194, 108, 117, 115, 59, 27193, 98, 59, 27085, 105, 109, 101, 59, 27195, 101, 122, 105, 117, 109, 59, 25570, 384, 99, 104, 116, 14194, 14205, 14209, 256, 114, 121, 14199, 14203, 59, 49152, 55349, 56521, 59, 17478, 99, 121, 59, 17499, 114, 111, 107, 59, 16743, 256, 105, 111, 14219, 14222, 120, 244, 6007, 104, 101, 97, 100, 256, 108, 114, 14231, 14240, 101, 102, 116, 97, 114, 114, 111, 247, 2127, 105, 103, 104, 116, 97, 114, 114, 111, 119, 187, 3933, 2304, 65, 72, 97, 98, 99, 100, 102, 103, 104, 108, 109, 111, 112, 114, 115, 116, 117, 119, 14288, 14291, 14295, 14308, 14320, 14332, 14350, 14364, 14371, 14388, 14417, 14429, 14443, 14505, 14540, 14546, 14570, 14582, 114, 242, 1005, 97, 114, 59, 26979, 256, 99, 114, 14300, 14306, 117, 116, 101, 32827, 250, 16634, 242, 4432, 114, 483, 14314, 0, 14317, 121, 59, 17502, 118, 101, 59, 16749, 256, 105, 121, 14325, 14330, 114, 99, 32827, 251, 16635, 59, 17475, 384, 97, 98, 104, 14339, 14342, 14347, 114, 242, 5037, 108, 97, 99, 59, 16753, 97, 242, 5059, 256, 105, 114, 14355, 14360, 115, 104, 116, 59, 27006, 59, 49152, 55349, 56626, 114, 97, 118, 101, 32827, 249, 16633, 353, 14375, 14385, 114, 256, 108, 114, 14380, 14382, 187, 2391, 187, 4227, 108, 107, 59, 25984, 256, 99, 116, 14393, 14413, 623, 14399, 0, 0, 14410, 114, 110, 256, 59, 101, 14405, 14406, 25372, 114, 187, 14406, 111, 112, 59, 25359, 114, 105, 59, 26104, 256, 97, 108, 14422, 14426, 99, 114, 59, 16747, 32955, 168, 841, 256, 103, 112, 14434, 14438, 111, 110, 59, 16755, 102, 59, 49152, 55349, 56678, 768, 97, 100, 104, 108, 115, 117, 4427, 14456, 14461, 4978, 14481, 14496, 111, 119, 110, 225, 5043, 97, 114, 112, 111, 111, 110, 256, 108, 114, 14472, 14476, 101, 102, 244, 14381, 105, 103, 104, 244, 14383, 105, 384, 59, 104, 108, 14489, 14490, 14492, 17349, 187, 5114, 111, 110, 187, 14490, 112, 97, 114, 114, 111, 119, 115, 59, 25032, 384, 99, 105, 116, 14512, 14532, 14536, 623, 14518, 0, 0, 14529, 114, 110, 256, 59, 101, 14524, 14525, 25373, 114, 187, 14525, 111, 112, 59, 25358, 110, 103, 59, 16751, 114, 105, 59, 26105, 99, 114, 59, 49152, 55349, 56522, 384, 100, 105, 114, 14553, 14557, 14562, 111, 116, 59, 25328, 108, 100, 101, 59, 16745, 105, 256, 59, 102, 14128, 14568, 187, 6163, 256, 97, 109, 14575, 14578, 114, 242, 14504, 108, 32827, 252, 16636, 97, 110, 103, 108, 101, 59, 27047, 1920, 65, 66, 68, 97, 99, 100, 101, 102, 108, 110, 111, 112, 114, 115, 122, 14620, 14623, 14633, 14637, 14773, 14776, 14781, 14815, 14820, 14824, 14835, 14841, 14845, 14849, 14880, 114, 242, 1015, 97, 114, 256, 59, 118, 14630, 14631, 27368, 59, 27369, 97, 115, 232, 993, 256, 110, 114, 14642, 14647, 103, 114, 116, 59, 27036, 896, 101, 107, 110, 112, 114, 115, 116, 13539, 14662, 14667, 14674, 14685, 14692, 14742, 97, 112, 112, 225, 9237, 111, 116, 104, 105, 110, 231, 7830, 384, 104, 105, 114, 13547, 11976, 14681, 111, 112, 244, 12213, 256, 59, 104, 5047, 14690, 239, 12685, 256, 105, 117, 14697, 14701, 103, 109, 225, 13235, 256, 98, 112, 14706, 14724, 115, 101, 116, 110, 101, 113, 256, 59, 113, 14717, 14720, 49152, 8842, 65024, 59, 49152, 10955, 65024, 115, 101, 116, 110, 101, 113, 256, 59, 113, 14735, 14738, 49152, 8843, 65024, 59, 49152, 10956, 65024, 256, 104, 114, 14747, 14751, 101, 116, 225, 13980, 105, 97, 110, 103, 108, 101, 256, 108, 114, 14762, 14767, 101, 102, 116, 187, 2341, 105, 103, 104, 116, 187, 4177, 121, 59, 17458, 97, 115, 104, 187, 4150, 384, 101, 108, 114, 14788, 14802, 14807, 384, 59, 98, 101, 11754, 14795, 14799, 97, 114, 59, 25275, 113, 59, 25178, 108, 105, 112, 59, 25326, 256, 98, 116, 14812, 5224, 97, 242, 5225, 114, 59, 49152, 55349, 56627, 116, 114, 233, 14766, 115, 117, 256, 98, 112, 14831, 14833, 187, 3356, 187, 3417, 112, 102, 59, 49152, 55349, 56679, 114, 111, 240, 3835, 116, 114, 233, 14772, 256, 99, 117, 14854, 14859, 114, 59, 49152, 55349, 56523, 256, 98, 112, 14864, 14872, 110, 256, 69, 101, 14720, 14870, 187, 14718, 110, 256, 69, 101, 14738, 14878, 187, 14736, 105, 103, 122, 97, 103, 59, 27034, 896, 99, 101, 102, 111, 112, 114, 115, 14902, 14907, 14934, 14939, 14932, 14945, 14954, 105, 114, 99, 59, 16757, 256, 100, 105, 14912, 14929, 256, 98, 103, 14917, 14921, 97, 114, 59, 27231, 101, 256, 59, 113, 5626, 14927, 59, 25177, 101, 114, 112, 59, 24856, 114, 59, 49152, 55349, 56628, 112, 102, 59, 49152, 55349, 56680, 256, 59, 101, 5241, 14950, 97, 116, 232, 5241, 99, 114, 59, 49152, 55349, 56524, 2787, 6030, 14983, 0, 14987, 0, 14992, 15003, 0, 0, 15005, 15016, 15019, 15023, 0, 0, 15043, 15054, 0, 15064, 6108, 6111, 116, 114, 233, 6097, 114, 59, 49152, 55349, 56629, 256, 65, 97, 14996, 14999, 114, 242, 963, 114, 242, 2550, 59, 17342, 256, 65, 97, 15009, 15012, 114, 242, 952, 114, 242, 2539, 97, 240, 10003, 105, 115, 59, 25339, 384, 100, 112, 116, 6052, 15029, 15038, 256, 102, 108, 15034, 6057, 59, 49152, 55349, 56681, 105, 109, 229, 6066, 256, 65, 97, 15047, 15050, 114, 242, 974, 114, 242, 2561, 256, 99, 113, 15058, 6072, 114, 59, 49152, 55349, 56525, 256, 112, 116, 6102, 15068, 114, 233, 6100, 1024, 97, 99, 101, 102, 105, 111, 115, 117, 15088, 15101, 15112, 15116, 15121, 15125, 15131, 15137, 99, 256, 117, 121, 15094, 15099, 116, 101, 32827, 253, 16637, 59, 17487, 256, 105, 121, 15106, 15110, 114, 99, 59, 16759, 59, 17483, 110, 32827, 165, 16549, 114, 59, 49152, 55349, 56630, 99, 121, 59, 17495, 112, 102, 59, 49152, 55349, 56682, 99, 114, 59, 49152, 55349, 56526, 256, 99, 109, 15142, 15145, 121, 59, 17486, 108, 32827, 255, 16639, 1280, 97, 99, 100, 101, 102, 104, 105, 111, 115, 119, 15170, 15176, 15188, 15192, 15204, 15209, 15213, 15220, 15226, 15232, 99, 117, 116, 101, 59, 16762, 256, 97, 121, 15181, 15186, 114, 111, 110, 59, 16766, 59, 17463, 111, 116, 59, 16764, 256, 101, 116, 15197, 15201, 116, 114, 230, 5471, 97, 59, 17334, 114, 59, 49152, 55349, 56631, 99, 121, 59, 17462, 103, 114, 97, 114, 114, 59, 25053, 112, 102, 59, 49152, 55349, 56683, 99, 114, 59, 49152, 55349, 56527, 256, 106, 110, 15237, 15239, 59, 24589, 106, 59, 24588]);
+var decode_data_html_default = new Uint16Array('\u1D41<\xD5\u0131\u028A\u049D\u057B\u05D0\u0675\u06DE\u07A2\u07D6\u080F\u0A4A\u0A91\u0DA1\u0E6D\u0F09\u0F26\u10CA\u1228\u12E1\u1415\u149D\u14C3\u14DF\u1525\0\0\0\0\0\0\u156B\u16CD\u198D\u1C12\u1DDD\u1F7E\u2060\u21B0\u228D\u23C0\u23FB\u2442\u2824\u2912\u2D08\u2E48\u2FCE\u3016\u32BA\u3639\u37AC\u38FE\u3A28\u3A71\u3AE0\u3B2E\u0800EMabcfglmnoprstu\\bfms\x7F\x84\x8B\x90\x95\x98\xA6\xB3\xB9\xC8\xCFlig\u803B\xC6\u40C6P\u803B&\u4026cute\u803B\xC1\u40C1reve;\u4102\u0100iyx}rc\u803B\xC2\u40C2;\u4410r;\uC000\u{1D504}rave\u803B\xC0\u40C0pha;\u4391acr;\u4100d;\u6A53\u0100gp\x9D\xA1on;\u4104f;\uC000\u{1D538}plyFunction;\u6061ing\u803B\xC5\u40C5\u0100cs\xBE\xC3r;\uC000\u{1D49C}ign;\u6254ilde\u803B\xC3\u40C3ml\u803B\xC4\u40C4\u0400aceforsu\xE5\xFB\xFE\u0117\u011C\u0122\u0127\u012A\u0100cr\xEA\xF2kslash;\u6216\u0176\xF6\xF8;\u6AE7ed;\u6306y;\u4411\u0180crt\u0105\u010B\u0114ause;\u6235noullis;\u612Ca;\u4392r;\uC000\u{1D505}pf;\uC000\u{1D539}eve;\u42D8c\xF2\u0113mpeq;\u624E\u0700HOacdefhilorsu\u014D\u0151\u0156\u0180\u019E\u01A2\u01B5\u01B7\u01BA\u01DC\u0215\u0273\u0278\u027Ecy;\u4427PY\u803B\xA9\u40A9\u0180cpy\u015D\u0162\u017Aute;\u4106\u0100;i\u0167\u0168\u62D2talDifferentialD;\u6145leys;\u612D\u0200aeio\u0189\u018E\u0194\u0198ron;\u410Cdil\u803B\xC7\u40C7rc;\u4108nint;\u6230ot;\u410A\u0100dn\u01A7\u01ADilla;\u40B8terDot;\u40B7\xF2\u017Fi;\u43A7rcle\u0200DMPT\u01C7\u01CB\u01D1\u01D6ot;\u6299inus;\u6296lus;\u6295imes;\u6297o\u0100cs\u01E2\u01F8kwiseContourIntegral;\u6232eCurly\u0100DQ\u0203\u020FoubleQuote;\u601Duote;\u6019\u0200lnpu\u021E\u0228\u0247\u0255on\u0100;e\u0225\u0226\u6237;\u6A74\u0180git\u022F\u0236\u023Aruent;\u6261nt;\u622FourIntegral;\u622E\u0100fr\u024C\u024E;\u6102oduct;\u6210nterClockwiseContourIntegral;\u6233oss;\u6A2Fcr;\uC000\u{1D49E}p\u0100;C\u0284\u0285\u62D3ap;\u624D\u0580DJSZacefios\u02A0\u02AC\u02B0\u02B4\u02B8\u02CB\u02D7\u02E1\u02E6\u0333\u048D\u0100;o\u0179\u02A5trahd;\u6911cy;\u4402cy;\u4405cy;\u440F\u0180grs\u02BF\u02C4\u02C7ger;\u6021r;\u61A1hv;\u6AE4\u0100ay\u02D0\u02D5ron;\u410E;\u4414l\u0100;t\u02DD\u02DE\u6207a;\u4394r;\uC000\u{1D507}\u0100af\u02EB\u0327\u0100cm\u02F0\u0322ritical\u0200ADGT\u0300\u0306\u0316\u031Ccute;\u40B4o\u0174\u030B\u030D;\u42D9bleAcute;\u42DDrave;\u4060ilde;\u42DCond;\u62C4ferentialD;\u6146\u0470\u033D\0\0\0\u0342\u0354\0\u0405f;\uC000\u{1D53B}\u0180;DE\u0348\u0349\u034D\u40A8ot;\u60DCqual;\u6250ble\u0300CDLRUV\u0363\u0372\u0382\u03CF\u03E2\u03F8ontourIntegra\xEC\u0239o\u0274\u0379\0\0\u037B\xBB\u0349nArrow;\u61D3\u0100eo\u0387\u03A4ft\u0180ART\u0390\u0396\u03A1rrow;\u61D0ightArrow;\u61D4e\xE5\u02CAng\u0100LR\u03AB\u03C4eft\u0100AR\u03B3\u03B9rrow;\u67F8ightArrow;\u67FAightArrow;\u67F9ight\u0100AT\u03D8\u03DErrow;\u61D2ee;\u62A8p\u0241\u03E9\0\0\u03EFrrow;\u61D1ownArrow;\u61D5erticalBar;\u6225n\u0300ABLRTa\u0412\u042A\u0430\u045E\u047F\u037Crrow\u0180;BU\u041D\u041E\u0422\u6193ar;\u6913pArrow;\u61F5reve;\u4311eft\u02D2\u043A\0\u0446\0\u0450ightVector;\u6950eeVector;\u695Eector\u0100;B\u0459\u045A\u61BDar;\u6956ight\u01D4\u0467\0\u0471eeVector;\u695Fector\u0100;B\u047A\u047B\u61C1ar;\u6957ee\u0100;A\u0486\u0487\u62A4rrow;\u61A7\u0100ct\u0492\u0497r;\uC000\u{1D49F}rok;\u4110\u0800NTacdfglmopqstux\u04BD\u04C0\u04C4\u04CB\u04DE\u04E2\u04E7\u04EE\u04F5\u0521\u052F\u0536\u0552\u055D\u0560\u0565G;\u414AH\u803B\xD0\u40D0cute\u803B\xC9\u40C9\u0180aiy\u04D2\u04D7\u04DCron;\u411Arc\u803B\xCA\u40CA;\u442Dot;\u4116r;\uC000\u{1D508}rave\u803B\xC8\u40C8ement;\u6208\u0100ap\u04FA\u04FEcr;\u4112ty\u0253\u0506\0\0\u0512mallSquare;\u65FBerySmallSquare;\u65AB\u0100gp\u0526\u052Aon;\u4118f;\uC000\u{1D53C}silon;\u4395u\u0100ai\u053C\u0549l\u0100;T\u0542\u0543\u6A75ilde;\u6242librium;\u61CC\u0100ci\u0557\u055Ar;\u6130m;\u6A73a;\u4397ml\u803B\xCB\u40CB\u0100ip\u056A\u056Fsts;\u6203onentialE;\u6147\u0280cfios\u0585\u0588\u058D\u05B2\u05CCy;\u4424r;\uC000\u{1D509}lled\u0253\u0597\0\0\u05A3mallSquare;\u65FCerySmallSquare;\u65AA\u0370\u05BA\0\u05BF\0\0\u05C4f;\uC000\u{1D53D}All;\u6200riertrf;\u6131c\xF2\u05CB\u0600JTabcdfgorst\u05E8\u05EC\u05EF\u05FA\u0600\u0612\u0616\u061B\u061D\u0623\u066C\u0672cy;\u4403\u803B>\u403Emma\u0100;d\u05F7\u05F8\u4393;\u43DCreve;\u411E\u0180eiy\u0607\u060C\u0610dil;\u4122rc;\u411C;\u4413ot;\u4120r;\uC000\u{1D50A};\u62D9pf;\uC000\u{1D53E}eater\u0300EFGLST\u0635\u0644\u064E\u0656\u065B\u0666qual\u0100;L\u063E\u063F\u6265ess;\u62DBullEqual;\u6267reater;\u6AA2ess;\u6277lantEqual;\u6A7Eilde;\u6273cr;\uC000\u{1D4A2};\u626B\u0400Aacfiosu\u0685\u068B\u0696\u069B\u069E\u06AA\u06BE\u06CARDcy;\u442A\u0100ct\u0690\u0694ek;\u42C7;\u405Eirc;\u4124r;\u610ClbertSpace;\u610B\u01F0\u06AF\0\u06B2f;\u610DizontalLine;\u6500\u0100ct\u06C3\u06C5\xF2\u06A9rok;\u4126mp\u0144\u06D0\u06D8ownHum\xF0\u012Fqual;\u624F\u0700EJOacdfgmnostu\u06FA\u06FE\u0703\u0707\u070E\u071A\u071E\u0721\u0728\u0744\u0778\u078B\u078F\u0795cy;\u4415lig;\u4132cy;\u4401cute\u803B\xCD\u40CD\u0100iy\u0713\u0718rc\u803B\xCE\u40CE;\u4418ot;\u4130r;\u6111rave\u803B\xCC\u40CC\u0180;ap\u0720\u072F\u073F\u0100cg\u0734\u0737r;\u412AinaryI;\u6148lie\xF3\u03DD\u01F4\u0749\0\u0762\u0100;e\u074D\u074E\u622C\u0100gr\u0753\u0758ral;\u622Bsection;\u62C2isible\u0100CT\u076C\u0772omma;\u6063imes;\u6062\u0180gpt\u077F\u0783\u0788on;\u412Ef;\uC000\u{1D540}a;\u4399cr;\u6110ilde;\u4128\u01EB\u079A\0\u079Ecy;\u4406l\u803B\xCF\u40CF\u0280cfosu\u07AC\u07B7\u07BC\u07C2\u07D0\u0100iy\u07B1\u07B5rc;\u4134;\u4419r;\uC000\u{1D50D}pf;\uC000\u{1D541}\u01E3\u07C7\0\u07CCr;\uC000\u{1D4A5}rcy;\u4408kcy;\u4404\u0380HJacfos\u07E4\u07E8\u07EC\u07F1\u07FD\u0802\u0808cy;\u4425cy;\u440Cppa;\u439A\u0100ey\u07F6\u07FBdil;\u4136;\u441Ar;\uC000\u{1D50E}pf;\uC000\u{1D542}cr;\uC000\u{1D4A6}\u0580JTaceflmost\u0825\u0829\u082C\u0850\u0863\u09B3\u09B8\u09C7\u09CD\u0A37\u0A47cy;\u4409\u803B<\u403C\u0280cmnpr\u0837\u083C\u0841\u0844\u084Dute;\u4139bda;\u439Bg;\u67EAlacetrf;\u6112r;\u619E\u0180aey\u0857\u085C\u0861ron;\u413Ddil;\u413B;\u441B\u0100fs\u0868\u0970t\u0500ACDFRTUVar\u087E\u08A9\u08B1\u08E0\u08E6\u08FC\u092F\u095B\u0390\u096A\u0100nr\u0883\u088FgleBracket;\u67E8row\u0180;BR\u0899\u089A\u089E\u6190ar;\u61E4ightArrow;\u61C6eiling;\u6308o\u01F5\u08B7\0\u08C3bleBracket;\u67E6n\u01D4\u08C8\0\u08D2eeVector;\u6961ector\u0100;B\u08DB\u08DC\u61C3ar;\u6959loor;\u630Aight\u0100AV\u08EF\u08F5rrow;\u6194ector;\u694E\u0100er\u0901\u0917e\u0180;AV\u0909\u090A\u0910\u62A3rrow;\u61A4ector;\u695Aiangle\u0180;BE\u0924\u0925\u0929\u62B2ar;\u69CFqual;\u62B4p\u0180DTV\u0937\u0942\u094CownVector;\u6951eeVector;\u6960ector\u0100;B\u0956\u0957\u61BFar;\u6958ector\u0100;B\u0965\u0966\u61BCar;\u6952ight\xE1\u039Cs\u0300EFGLST\u097E\u098B\u0995\u099D\u09A2\u09ADqualGreater;\u62DAullEqual;\u6266reater;\u6276ess;\u6AA1lantEqual;\u6A7Dilde;\u6272r;\uC000\u{1D50F}\u0100;e\u09BD\u09BE\u62D8ftarrow;\u61DAidot;\u413F\u0180npw\u09D4\u0A16\u0A1Bg\u0200LRlr\u09DE\u09F7\u0A02\u0A10eft\u0100AR\u09E6\u09ECrrow;\u67F5ightArrow;\u67F7ightArrow;\u67F6eft\u0100ar\u03B3\u0A0Aight\xE1\u03BFight\xE1\u03CAf;\uC000\u{1D543}er\u0100LR\u0A22\u0A2CeftArrow;\u6199ightArrow;\u6198\u0180cht\u0A3E\u0A40\u0A42\xF2\u084C;\u61B0rok;\u4141;\u626A\u0400acefiosu\u0A5A\u0A5D\u0A60\u0A77\u0A7C\u0A85\u0A8B\u0A8Ep;\u6905y;\u441C\u0100dl\u0A65\u0A6FiumSpace;\u605Flintrf;\u6133r;\uC000\u{1D510}nusPlus;\u6213pf;\uC000\u{1D544}c\xF2\u0A76;\u439C\u0480Jacefostu\u0AA3\u0AA7\u0AAD\u0AC0\u0B14\u0B19\u0D91\u0D97\u0D9Ecy;\u440Acute;\u4143\u0180aey\u0AB4\u0AB9\u0ABEron;\u4147dil;\u4145;\u441D\u0180gsw\u0AC7\u0AF0\u0B0Eative\u0180MTV\u0AD3\u0ADF\u0AE8ediumSpace;\u600Bhi\u0100cn\u0AE6\u0AD8\xEB\u0AD9eryThi\xEE\u0AD9ted\u0100GL\u0AF8\u0B06reaterGreate\xF2\u0673essLes\xF3\u0A48Line;\u400Ar;\uC000\u{1D511}\u0200Bnpt\u0B22\u0B28\u0B37\u0B3Areak;\u6060BreakingSpace;\u40A0f;\u6115\u0680;CDEGHLNPRSTV\u0B55\u0B56\u0B6A\u0B7C\u0BA1\u0BEB\u0C04\u0C5E\u0C84\u0CA6\u0CD8\u0D61\u0D85\u6AEC\u0100ou\u0B5B\u0B64ngruent;\u6262pCap;\u626DoubleVerticalBar;\u6226\u0180lqx\u0B83\u0B8A\u0B9Bement;\u6209ual\u0100;T\u0B92\u0B93\u6260ilde;\uC000\u2242\u0338ists;\u6204reater\u0380;EFGLST\u0BB6\u0BB7\u0BBD\u0BC9\u0BD3\u0BD8\u0BE5\u626Fqual;\u6271ullEqual;\uC000\u2267\u0338reater;\uC000\u226B\u0338ess;\u6279lantEqual;\uC000\u2A7E\u0338ilde;\u6275ump\u0144\u0BF2\u0BFDownHump;\uC000\u224E\u0338qual;\uC000\u224F\u0338e\u0100fs\u0C0A\u0C27tTriangle\u0180;BE\u0C1A\u0C1B\u0C21\u62EAar;\uC000\u29CF\u0338qual;\u62ECs\u0300;EGLST\u0C35\u0C36\u0C3C\u0C44\u0C4B\u0C58\u626Equal;\u6270reater;\u6278ess;\uC000\u226A\u0338lantEqual;\uC000\u2A7D\u0338ilde;\u6274ested\u0100GL\u0C68\u0C79reaterGreater;\uC000\u2AA2\u0338essLess;\uC000\u2AA1\u0338recedes\u0180;ES\u0C92\u0C93\u0C9B\u6280qual;\uC000\u2AAF\u0338lantEqual;\u62E0\u0100ei\u0CAB\u0CB9verseElement;\u620CghtTriangle\u0180;BE\u0CCB\u0CCC\u0CD2\u62EBar;\uC000\u29D0\u0338qual;\u62ED\u0100qu\u0CDD\u0D0CuareSu\u0100bp\u0CE8\u0CF9set\u0100;E\u0CF0\u0CF3\uC000\u228F\u0338qual;\u62E2erset\u0100;E\u0D03\u0D06\uC000\u2290\u0338qual;\u62E3\u0180bcp\u0D13\u0D24\u0D4Eset\u0100;E\u0D1B\u0D1E\uC000\u2282\u20D2qual;\u6288ceeds\u0200;EST\u0D32\u0D33\u0D3B\u0D46\u6281qual;\uC000\u2AB0\u0338lantEqual;\u62E1ilde;\uC000\u227F\u0338erset\u0100;E\u0D58\u0D5B\uC000\u2283\u20D2qual;\u6289ilde\u0200;EFT\u0D6E\u0D6F\u0D75\u0D7F\u6241qual;\u6244ullEqual;\u6247ilde;\u6249erticalBar;\u6224cr;\uC000\u{1D4A9}ilde\u803B\xD1\u40D1;\u439D\u0700Eacdfgmoprstuv\u0DBD\u0DC2\u0DC9\u0DD5\u0DDB\u0DE0\u0DE7\u0DFC\u0E02\u0E20\u0E22\u0E32\u0E3F\u0E44lig;\u4152cute\u803B\xD3\u40D3\u0100iy\u0DCE\u0DD3rc\u803B\xD4\u40D4;\u441Eblac;\u4150r;\uC000\u{1D512}rave\u803B\xD2\u40D2\u0180aei\u0DEE\u0DF2\u0DF6cr;\u414Cga;\u43A9cron;\u439Fpf;\uC000\u{1D546}enCurly\u0100DQ\u0E0E\u0E1AoubleQuote;\u601Cuote;\u6018;\u6A54\u0100cl\u0E27\u0E2Cr;\uC000\u{1D4AA}ash\u803B\xD8\u40D8i\u016C\u0E37\u0E3Cde\u803B\xD5\u40D5es;\u6A37ml\u803B\xD6\u40D6er\u0100BP\u0E4B\u0E60\u0100ar\u0E50\u0E53r;\u603Eac\u0100ek\u0E5A\u0E5C;\u63DEet;\u63B4arenthesis;\u63DC\u0480acfhilors\u0E7F\u0E87\u0E8A\u0E8F\u0E92\u0E94\u0E9D\u0EB0\u0EFCrtialD;\u6202y;\u441Fr;\uC000\u{1D513}i;\u43A6;\u43A0usMinus;\u40B1\u0100ip\u0EA2\u0EADncareplan\xE5\u069Df;\u6119\u0200;eio\u0EB9\u0EBA\u0EE0\u0EE4\u6ABBcedes\u0200;EST\u0EC8\u0EC9\u0ECF\u0EDA\u627Aqual;\u6AAFlantEqual;\u627Cilde;\u627Eme;\u6033\u0100dp\u0EE9\u0EEEuct;\u620Fortion\u0100;a\u0225\u0EF9l;\u621D\u0100ci\u0F01\u0F06r;\uC000\u{1D4AB};\u43A8\u0200Ufos\u0F11\u0F16\u0F1B\u0F1FOT\u803B"\u4022r;\uC000\u{1D514}pf;\u611Acr;\uC000\u{1D4AC}\u0600BEacefhiorsu\u0F3E\u0F43\u0F47\u0F60\u0F73\u0FA7\u0FAA\u0FAD\u1096\u10A9\u10B4\u10BEarr;\u6910G\u803B\xAE\u40AE\u0180cnr\u0F4E\u0F53\u0F56ute;\u4154g;\u67EBr\u0100;t\u0F5C\u0F5D\u61A0l;\u6916\u0180aey\u0F67\u0F6C\u0F71ron;\u4158dil;\u4156;\u4420\u0100;v\u0F78\u0F79\u611Cerse\u0100EU\u0F82\u0F99\u0100lq\u0F87\u0F8Eement;\u620Builibrium;\u61CBpEquilibrium;\u696Fr\xBB\u0F79o;\u43A1ght\u0400ACDFTUVa\u0FC1\u0FEB\u0FF3\u1022\u1028\u105B\u1087\u03D8\u0100nr\u0FC6\u0FD2gleBracket;\u67E9row\u0180;BL\u0FDC\u0FDD\u0FE1\u6192ar;\u61E5eftArrow;\u61C4eiling;\u6309o\u01F5\u0FF9\0\u1005bleBracket;\u67E7n\u01D4\u100A\0\u1014eeVector;\u695Dector\u0100;B\u101D\u101E\u61C2ar;\u6955loor;\u630B\u0100er\u102D\u1043e\u0180;AV\u1035\u1036\u103C\u62A2rrow;\u61A6ector;\u695Biangle\u0180;BE\u1050\u1051\u1055\u62B3ar;\u69D0qual;\u62B5p\u0180DTV\u1063\u106E\u1078ownVector;\u694FeeVector;\u695Cector\u0100;B\u1082\u1083\u61BEar;\u6954ector\u0100;B\u1091\u1092\u61C0ar;\u6953\u0100pu\u109B\u109Ef;\u611DndImplies;\u6970ightarrow;\u61DB\u0100ch\u10B9\u10BCr;\u611B;\u61B1leDelayed;\u69F4\u0680HOacfhimoqstu\u10E4\u10F1\u10F7\u10FD\u1119\u111E\u1151\u1156\u1161\u1167\u11B5\u11BB\u11BF\u0100Cc\u10E9\u10EEHcy;\u4429y;\u4428FTcy;\u442Ccute;\u415A\u0280;aeiy\u1108\u1109\u110E\u1113\u1117\u6ABCron;\u4160dil;\u415Erc;\u415C;\u4421r;\uC000\u{1D516}ort\u0200DLRU\u112A\u1134\u113E\u1149ownArrow\xBB\u041EeftArrow\xBB\u089AightArrow\xBB\u0FDDpArrow;\u6191gma;\u43A3allCircle;\u6218pf;\uC000\u{1D54A}\u0272\u116D\0\0\u1170t;\u621Aare\u0200;ISU\u117B\u117C\u1189\u11AF\u65A1ntersection;\u6293u\u0100bp\u118F\u119Eset\u0100;E\u1197\u1198\u628Fqual;\u6291erset\u0100;E\u11A8\u11A9\u6290qual;\u6292nion;\u6294cr;\uC000\u{1D4AE}ar;\u62C6\u0200bcmp\u11C8\u11DB\u1209\u120B\u0100;s\u11CD\u11CE\u62D0et\u0100;E\u11CD\u11D5qual;\u6286\u0100ch\u11E0\u1205eeds\u0200;EST\u11ED\u11EE\u11F4\u11FF\u627Bqual;\u6AB0lantEqual;\u627Dilde;\u627FTh\xE1\u0F8C;\u6211\u0180;es\u1212\u1213\u1223\u62D1rset\u0100;E\u121C\u121D\u6283qual;\u6287et\xBB\u1213\u0580HRSacfhiors\u123E\u1244\u1249\u1255\u125E\u1271\u1276\u129F\u12C2\u12C8\u12D1ORN\u803B\xDE\u40DEADE;\u6122\u0100Hc\u124E\u1252cy;\u440By;\u4426\u0100bu\u125A\u125C;\u4009;\u43A4\u0180aey\u1265\u126A\u126Fron;\u4164dil;\u4162;\u4422r;\uC000\u{1D517}\u0100ei\u127B\u1289\u01F2\u1280\0\u1287efore;\u6234a;\u4398\u0100cn\u128E\u1298kSpace;\uC000\u205F\u200ASpace;\u6009lde\u0200;EFT\u12AB\u12AC\u12B2\u12BC\u623Cqual;\u6243ullEqual;\u6245ilde;\u6248pf;\uC000\u{1D54B}ipleDot;\u60DB\u0100ct\u12D6\u12DBr;\uC000\u{1D4AF}rok;\u4166\u0AE1\u12F7\u130E\u131A\u1326\0\u132C\u1331\0\0\0\0\0\u1338\u133D\u1377\u1385\0\u13FF\u1404\u140A\u1410\u0100cr\u12FB\u1301ute\u803B\xDA\u40DAr\u0100;o\u1307\u1308\u619Fcir;\u6949r\u01E3\u1313\0\u1316y;\u440Eve;\u416C\u0100iy\u131E\u1323rc\u803B\xDB\u40DB;\u4423blac;\u4170r;\uC000\u{1D518}rave\u803B\xD9\u40D9acr;\u416A\u0100di\u1341\u1369er\u0100BP\u1348\u135D\u0100ar\u134D\u1350r;\u405Fac\u0100ek\u1357\u1359;\u63DFet;\u63B5arenthesis;\u63DDon\u0100;P\u1370\u1371\u62C3lus;\u628E\u0100gp\u137B\u137Fon;\u4172f;\uC000\u{1D54C}\u0400ADETadps\u1395\u13AE\u13B8\u13C4\u03E8\u13D2\u13D7\u13F3rrow\u0180;BD\u1150\u13A0\u13A4ar;\u6912ownArrow;\u61C5ownArrow;\u6195quilibrium;\u696Eee\u0100;A\u13CB\u13CC\u62A5rrow;\u61A5own\xE1\u03F3er\u0100LR\u13DE\u13E8eftArrow;\u6196ightArrow;\u6197i\u0100;l\u13F9\u13FA\u43D2on;\u43A5ing;\u416Ecr;\uC000\u{1D4B0}ilde;\u4168ml\u803B\xDC\u40DC\u0480Dbcdefosv\u1427\u142C\u1430\u1433\u143E\u1485\u148A\u1490\u1496ash;\u62ABar;\u6AEBy;\u4412ash\u0100;l\u143B\u143C\u62A9;\u6AE6\u0100er\u1443\u1445;\u62C1\u0180bty\u144C\u1450\u147Aar;\u6016\u0100;i\u144F\u1455cal\u0200BLST\u1461\u1465\u146A\u1474ar;\u6223ine;\u407Ceparator;\u6758ilde;\u6240ThinSpace;\u600Ar;\uC000\u{1D519}pf;\uC000\u{1D54D}cr;\uC000\u{1D4B1}dash;\u62AA\u0280cefos\u14A7\u14AC\u14B1\u14B6\u14BCirc;\u4174dge;\u62C0r;\uC000\u{1D51A}pf;\uC000\u{1D54E}cr;\uC000\u{1D4B2}\u0200fios\u14CB\u14D0\u14D2\u14D8r;\uC000\u{1D51B};\u439Epf;\uC000\u{1D54F}cr;\uC000\u{1D4B3}\u0480AIUacfosu\u14F1\u14F5\u14F9\u14FD\u1504\u150F\u1514\u151A\u1520cy;\u442Fcy;\u4407cy;\u442Ecute\u803B\xDD\u40DD\u0100iy\u1509\u150Drc;\u4176;\u442Br;\uC000\u{1D51C}pf;\uC000\u{1D550}cr;\uC000\u{1D4B4}ml;\u4178\u0400Hacdefos\u1535\u1539\u153F\u154B\u154F\u155D\u1560\u1564cy;\u4416cute;\u4179\u0100ay\u1544\u1549ron;\u417D;\u4417ot;\u417B\u01F2\u1554\0\u155BoWidt\xE8\u0AD9a;\u4396r;\u6128pf;\u6124cr;\uC000\u{1D4B5}\u0BE1\u1583\u158A\u1590\0\u15B0\u15B6\u15BF\0\0\0\0\u15C6\u15DB\u15EB\u165F\u166D\0\u1695\u169B\u16B2\u16B9\0\u16BEcute\u803B\xE1\u40E1reve;\u4103\u0300;Ediuy\u159C\u159D\u15A1\u15A3\u15A8\u15AD\u623E;\uC000\u223E\u0333;\u623Frc\u803B\xE2\u40E2te\u80BB\xB4\u0306;\u4430lig\u803B\xE6\u40E6\u0100;r\xB2\u15BA;\uC000\u{1D51E}rave\u803B\xE0\u40E0\u0100ep\u15CA\u15D6\u0100fp\u15CF\u15D4sym;\u6135\xE8\u15D3ha;\u43B1\u0100ap\u15DFc\u0100cl\u15E4\u15E7r;\u4101g;\u6A3F\u0264\u15F0\0\0\u160A\u0280;adsv\u15FA\u15FB\u15FF\u1601\u1607\u6227nd;\u6A55;\u6A5Clope;\u6A58;\u6A5A\u0380;elmrsz\u1618\u1619\u161B\u161E\u163F\u164F\u1659\u6220;\u69A4e\xBB\u1619sd\u0100;a\u1625\u1626\u6221\u0461\u1630\u1632\u1634\u1636\u1638\u163A\u163C\u163E;\u69A8;\u69A9;\u69AA;\u69AB;\u69AC;\u69AD;\u69AE;\u69AFt\u0100;v\u1645\u1646\u621Fb\u0100;d\u164C\u164D\u62BE;\u699D\u0100pt\u1654\u1657h;\u6222\xBB\xB9arr;\u637C\u0100gp\u1663\u1667on;\u4105f;\uC000\u{1D552}\u0380;Eaeiop\u12C1\u167B\u167D\u1682\u1684\u1687\u168A;\u6A70cir;\u6A6F;\u624Ad;\u624Bs;\u4027rox\u0100;e\u12C1\u1692\xF1\u1683ing\u803B\xE5\u40E5\u0180cty\u16A1\u16A6\u16A8r;\uC000\u{1D4B6};\u402Amp\u0100;e\u12C1\u16AF\xF1\u0288ilde\u803B\xE3\u40E3ml\u803B\xE4\u40E4\u0100ci\u16C2\u16C8onin\xF4\u0272nt;\u6A11\u0800Nabcdefiklnoprsu\u16ED\u16F1\u1730\u173C\u1743\u1748\u1778\u177D\u17E0\u17E6\u1839\u1850\u170D\u193D\u1948\u1970ot;\u6AED\u0100cr\u16F6\u171Ek\u0200ceps\u1700\u1705\u170D\u1713ong;\u624Cpsilon;\u43F6rime;\u6035im\u0100;e\u171A\u171B\u623Dq;\u62CD\u0176\u1722\u1726ee;\u62BDed\u0100;g\u172C\u172D\u6305e\xBB\u172Drk\u0100;t\u135C\u1737brk;\u63B6\u0100oy\u1701\u1741;\u4431quo;\u601E\u0280cmprt\u1753\u175B\u1761\u1764\u1768aus\u0100;e\u010A\u0109ptyv;\u69B0s\xE9\u170Cno\xF5\u0113\u0180ahw\u176F\u1771\u1773;\u43B2;\u6136een;\u626Cr;\uC000\u{1D51F}g\u0380costuvw\u178D\u179D\u17B3\u17C1\u17D5\u17DB\u17DE\u0180aiu\u1794\u1796\u179A\xF0\u0760rc;\u65EFp\xBB\u1371\u0180dpt\u17A4\u17A8\u17ADot;\u6A00lus;\u6A01imes;\u6A02\u0271\u17B9\0\0\u17BEcup;\u6A06ar;\u6605riangle\u0100du\u17CD\u17D2own;\u65BDp;\u65B3plus;\u6A04e\xE5\u1444\xE5\u14ADarow;\u690D\u0180ako\u17ED\u1826\u1835\u0100cn\u17F2\u1823k\u0180lst\u17FA\u05AB\u1802ozenge;\u69EBriangle\u0200;dlr\u1812\u1813\u1818\u181D\u65B4own;\u65BEeft;\u65C2ight;\u65B8k;\u6423\u01B1\u182B\0\u1833\u01B2\u182F\0\u1831;\u6592;\u65914;\u6593ck;\u6588\u0100eo\u183E\u184D\u0100;q\u1843\u1846\uC000=\u20E5uiv;\uC000\u2261\u20E5t;\u6310\u0200ptwx\u1859\u185E\u1867\u186Cf;\uC000\u{1D553}\u0100;t\u13CB\u1863om\xBB\u13CCtie;\u62C8\u0600DHUVbdhmptuv\u1885\u1896\u18AA\u18BB\u18D7\u18DB\u18EC\u18FF\u1905\u190A\u1910\u1921\u0200LRlr\u188E\u1890\u1892\u1894;\u6557;\u6554;\u6556;\u6553\u0280;DUdu\u18A1\u18A2\u18A4\u18A6\u18A8\u6550;\u6566;\u6569;\u6564;\u6567\u0200LRlr\u18B3\u18B5\u18B7\u18B9;\u655D;\u655A;\u655C;\u6559\u0380;HLRhlr\u18CA\u18CB\u18CD\u18CF\u18D1\u18D3\u18D5\u6551;\u656C;\u6563;\u6560;\u656B;\u6562;\u655Fox;\u69C9\u0200LRlr\u18E4\u18E6\u18E8\u18EA;\u6555;\u6552;\u6510;\u650C\u0280;DUdu\u06BD\u18F7\u18F9\u18FB\u18FD;\u6565;\u6568;\u652C;\u6534inus;\u629Flus;\u629Eimes;\u62A0\u0200LRlr\u1919\u191B\u191D\u191F;\u655B;\u6558;\u6518;\u6514\u0380;HLRhlr\u1930\u1931\u1933\u1935\u1937\u1939\u193B\u6502;\u656A;\u6561;\u655E;\u653C;\u6524;\u651C\u0100ev\u0123\u1942bar\u803B\xA6\u40A6\u0200ceio\u1951\u1956\u195A\u1960r;\uC000\u{1D4B7}mi;\u604Fm\u0100;e\u171A\u171Cl\u0180;bh\u1968\u1969\u196B\u405C;\u69C5sub;\u67C8\u016C\u1974\u197El\u0100;e\u1979\u197A\u6022t\xBB\u197Ap\u0180;Ee\u012F\u1985\u1987;\u6AAE\u0100;q\u06DC\u06DB\u0CE1\u19A7\0\u19E8\u1A11\u1A15\u1A32\0\u1A37\u1A50\0\0\u1AB4\0\0\u1AC1\0\0\u1B21\u1B2E\u1B4D\u1B52\0\u1BFD\0\u1C0C\u0180cpr\u19AD\u19B2\u19DDute;\u4107\u0300;abcds\u19BF\u19C0\u19C4\u19CA\u19D5\u19D9\u6229nd;\u6A44rcup;\u6A49\u0100au\u19CF\u19D2p;\u6A4Bp;\u6A47ot;\u6A40;\uC000\u2229\uFE00\u0100eo\u19E2\u19E5t;\u6041\xEE\u0693\u0200aeiu\u19F0\u19FB\u1A01\u1A05\u01F0\u19F5\0\u19F8s;\u6A4Don;\u410Ddil\u803B\xE7\u40E7rc;\u4109ps\u0100;s\u1A0C\u1A0D\u6A4Cm;\u6A50ot;\u410B\u0180dmn\u1A1B\u1A20\u1A26il\u80BB\xB8\u01ADptyv;\u69B2t\u8100\xA2;e\u1A2D\u1A2E\u40A2r\xE4\u01B2r;\uC000\u{1D520}\u0180cei\u1A3D\u1A40\u1A4Dy;\u4447ck\u0100;m\u1A47\u1A48\u6713ark\xBB\u1A48;\u43C7r\u0380;Ecefms\u1A5F\u1A60\u1A62\u1A6B\u1AA4\u1AAA\u1AAE\u65CB;\u69C3\u0180;el\u1A69\u1A6A\u1A6D\u42C6q;\u6257e\u0261\u1A74\0\0\u1A88rrow\u0100lr\u1A7C\u1A81eft;\u61BAight;\u61BB\u0280RSacd\u1A92\u1A94\u1A96\u1A9A\u1A9F\xBB\u0F47;\u64C8st;\u629Birc;\u629Aash;\u629Dnint;\u6A10id;\u6AEFcir;\u69C2ubs\u0100;u\u1ABB\u1ABC\u6663it\xBB\u1ABC\u02EC\u1AC7\u1AD4\u1AFA\0\u1B0Aon\u0100;e\u1ACD\u1ACE\u403A\u0100;q\xC7\xC6\u026D\u1AD9\0\0\u1AE2a\u0100;t\u1ADE\u1ADF\u402C;\u4040\u0180;fl\u1AE8\u1AE9\u1AEB\u6201\xEE\u1160e\u0100mx\u1AF1\u1AF6ent\xBB\u1AE9e\xF3\u024D\u01E7\u1AFE\0\u1B07\u0100;d\u12BB\u1B02ot;\u6A6Dn\xF4\u0246\u0180fry\u1B10\u1B14\u1B17;\uC000\u{1D554}o\xE4\u0254\u8100\xA9;s\u0155\u1B1Dr;\u6117\u0100ao\u1B25\u1B29rr;\u61B5ss;\u6717\u0100cu\u1B32\u1B37r;\uC000\u{1D4B8}\u0100bp\u1B3C\u1B44\u0100;e\u1B41\u1B42\u6ACF;\u6AD1\u0100;e\u1B49\u1B4A\u6AD0;\u6AD2dot;\u62EF\u0380delprvw\u1B60\u1B6C\u1B77\u1B82\u1BAC\u1BD4\u1BF9arr\u0100lr\u1B68\u1B6A;\u6938;\u6935\u0270\u1B72\0\0\u1B75r;\u62DEc;\u62DFarr\u0100;p\u1B7F\u1B80\u61B6;\u693D\u0300;bcdos\u1B8F\u1B90\u1B96\u1BA1\u1BA5\u1BA8\u622Arcap;\u6A48\u0100au\u1B9B\u1B9Ep;\u6A46p;\u6A4Aot;\u628Dr;\u6A45;\uC000\u222A\uFE00\u0200alrv\u1BB5\u1BBF\u1BDE\u1BE3rr\u0100;m\u1BBC\u1BBD\u61B7;\u693Cy\u0180evw\u1BC7\u1BD4\u1BD8q\u0270\u1BCE\0\0\u1BD2re\xE3\u1B73u\xE3\u1B75ee;\u62CEedge;\u62CFen\u803B\xA4\u40A4earrow\u0100lr\u1BEE\u1BF3eft\xBB\u1B80ight\xBB\u1BBDe\xE4\u1BDD\u0100ci\u1C01\u1C07onin\xF4\u01F7nt;\u6231lcty;\u632D\u0980AHabcdefhijlorstuwz\u1C38\u1C3B\u1C3F\u1C5D\u1C69\u1C75\u1C8A\u1C9E\u1CAC\u1CB7\u1CFB\u1CFF\u1D0D\u1D7B\u1D91\u1DAB\u1DBB\u1DC6\u1DCDr\xF2\u0381ar;\u6965\u0200glrs\u1C48\u1C4D\u1C52\u1C54ger;\u6020eth;\u6138\xF2\u1133h\u0100;v\u1C5A\u1C5B\u6010\xBB\u090A\u016B\u1C61\u1C67arow;\u690Fa\xE3\u0315\u0100ay\u1C6E\u1C73ron;\u410F;\u4434\u0180;ao\u0332\u1C7C\u1C84\u0100gr\u02BF\u1C81r;\u61CAtseq;\u6A77\u0180glm\u1C91\u1C94\u1C98\u803B\xB0\u40B0ta;\u43B4ptyv;\u69B1\u0100ir\u1CA3\u1CA8sht;\u697F;\uC000\u{1D521}ar\u0100lr\u1CB3\u1CB5\xBB\u08DC\xBB\u101E\u0280aegsv\u1CC2\u0378\u1CD6\u1CDC\u1CE0m\u0180;os\u0326\u1CCA\u1CD4nd\u0100;s\u0326\u1CD1uit;\u6666amma;\u43DDin;\u62F2\u0180;io\u1CE7\u1CE8\u1CF8\u40F7de\u8100\xF7;o\u1CE7\u1CF0ntimes;\u62C7n\xF8\u1CF7cy;\u4452c\u026F\u1D06\0\0\u1D0Arn;\u631Eop;\u630D\u0280lptuw\u1D18\u1D1D\u1D22\u1D49\u1D55lar;\u4024f;\uC000\u{1D555}\u0280;emps\u030B\u1D2D\u1D37\u1D3D\u1D42q\u0100;d\u0352\u1D33ot;\u6251inus;\u6238lus;\u6214quare;\u62A1blebarwedg\xE5\xFAn\u0180adh\u112E\u1D5D\u1D67ownarrow\xF3\u1C83arpoon\u0100lr\u1D72\u1D76ef\xF4\u1CB4igh\xF4\u1CB6\u0162\u1D7F\u1D85karo\xF7\u0F42\u026F\u1D8A\0\0\u1D8Ern;\u631Fop;\u630C\u0180cot\u1D98\u1DA3\u1DA6\u0100ry\u1D9D\u1DA1;\uC000\u{1D4B9};\u4455l;\u69F6rok;\u4111\u0100dr\u1DB0\u1DB4ot;\u62F1i\u0100;f\u1DBA\u1816\u65BF\u0100ah\u1DC0\u1DC3r\xF2\u0429a\xF2\u0FA6angle;\u69A6\u0100ci\u1DD2\u1DD5y;\u445Fgrarr;\u67FF\u0900Dacdefglmnopqrstux\u1E01\u1E09\u1E19\u1E38\u0578\u1E3C\u1E49\u1E61\u1E7E\u1EA5\u1EAF\u1EBD\u1EE1\u1F2A\u1F37\u1F44\u1F4E\u1F5A\u0100Do\u1E06\u1D34o\xF4\u1C89\u0100cs\u1E0E\u1E14ute\u803B\xE9\u40E9ter;\u6A6E\u0200aioy\u1E22\u1E27\u1E31\u1E36ron;\u411Br\u0100;c\u1E2D\u1E2E\u6256\u803B\xEA\u40EAlon;\u6255;\u444Dot;\u4117\u0100Dr\u1E41\u1E45ot;\u6252;\uC000\u{1D522}\u0180;rs\u1E50\u1E51\u1E57\u6A9Aave\u803B\xE8\u40E8\u0100;d\u1E5C\u1E5D\u6A96ot;\u6A98\u0200;ils\u1E6A\u1E6B\u1E72\u1E74\u6A99nters;\u63E7;\u6113\u0100;d\u1E79\u1E7A\u6A95ot;\u6A97\u0180aps\u1E85\u1E89\u1E97cr;\u4113ty\u0180;sv\u1E92\u1E93\u1E95\u6205et\xBB\u1E93p\u01001;\u1E9D\u1EA4\u0133\u1EA1\u1EA3;\u6004;\u6005\u6003\u0100gs\u1EAA\u1EAC;\u414Bp;\u6002\u0100gp\u1EB4\u1EB8on;\u4119f;\uC000\u{1D556}\u0180als\u1EC4\u1ECE\u1ED2r\u0100;s\u1ECA\u1ECB\u62D5l;\u69E3us;\u6A71i\u0180;lv\u1EDA\u1EDB\u1EDF\u43B5on\xBB\u1EDB;\u43F5\u0200csuv\u1EEA\u1EF3\u1F0B\u1F23\u0100io\u1EEF\u1E31rc\xBB\u1E2E\u0269\u1EF9\0\0\u1EFB\xED\u0548ant\u0100gl\u1F02\u1F06tr\xBB\u1E5Dess\xBB\u1E7A\u0180aei\u1F12\u1F16\u1F1Als;\u403Dst;\u625Fv\u0100;D\u0235\u1F20D;\u6A78parsl;\u69E5\u0100Da\u1F2F\u1F33ot;\u6253rr;\u6971\u0180cdi\u1F3E\u1F41\u1EF8r;\u612Fo\xF4\u0352\u0100ah\u1F49\u1F4B;\u43B7\u803B\xF0\u40F0\u0100mr\u1F53\u1F57l\u803B\xEB\u40EBo;\u60AC\u0180cip\u1F61\u1F64\u1F67l;\u4021s\xF4\u056E\u0100eo\u1F6C\u1F74ctatio\xEE\u0559nential\xE5\u0579\u09E1\u1F92\0\u1F9E\0\u1FA1\u1FA7\0\0\u1FC6\u1FCC\0\u1FD3\0\u1FE6\u1FEA\u2000\0\u2008\u205Allingdotse\xF1\u1E44y;\u4444male;\u6640\u0180ilr\u1FAD\u1FB3\u1FC1lig;\u8000\uFB03\u0269\u1FB9\0\0\u1FBDg;\u8000\uFB00ig;\u8000\uFB04;\uC000\u{1D523}lig;\u8000\uFB01lig;\uC000fj\u0180alt\u1FD9\u1FDC\u1FE1t;\u666Dig;\u8000\uFB02ns;\u65B1of;\u4192\u01F0\u1FEE\0\u1FF3f;\uC000\u{1D557}\u0100ak\u05BF\u1FF7\u0100;v\u1FFC\u1FFD\u62D4;\u6AD9artint;\u6A0D\u0100ao\u200C\u2055\u0100cs\u2011\u2052\u03B1\u201A\u2030\u2038\u2045\u2048\0\u2050\u03B2\u2022\u2025\u2027\u202A\u202C\0\u202E\u803B\xBD\u40BD;\u6153\u803B\xBC\u40BC;\u6155;\u6159;\u615B\u01B3\u2034\0\u2036;\u6154;\u6156\u02B4\u203E\u2041\0\0\u2043\u803B\xBE\u40BE;\u6157;\u615C5;\u6158\u01B6\u204C\0\u204E;\u615A;\u615D8;\u615El;\u6044wn;\u6322cr;\uC000\u{1D4BB}\u0880Eabcdefgijlnorstv\u2082\u2089\u209F\u20A5\u20B0\u20B4\u20F0\u20F5\u20FA\u20FF\u2103\u2112\u2138\u0317\u213E\u2152\u219E\u0100;l\u064D\u2087;\u6A8C\u0180cmp\u2090\u2095\u209Dute;\u41F5ma\u0100;d\u209C\u1CDA\u43B3;\u6A86reve;\u411F\u0100iy\u20AA\u20AErc;\u411D;\u4433ot;\u4121\u0200;lqs\u063E\u0642\u20BD\u20C9\u0180;qs\u063E\u064C\u20C4lan\xF4\u0665\u0200;cdl\u0665\u20D2\u20D5\u20E5c;\u6AA9ot\u0100;o\u20DC\u20DD\u6A80\u0100;l\u20E2\u20E3\u6A82;\u6A84\u0100;e\u20EA\u20ED\uC000\u22DB\uFE00s;\u6A94r;\uC000\u{1D524}\u0100;g\u0673\u061Bmel;\u6137cy;\u4453\u0200;Eaj\u065A\u210C\u210E\u2110;\u6A92;\u6AA5;\u6AA4\u0200Eaes\u211B\u211D\u2129\u2134;\u6269p\u0100;p\u2123\u2124\u6A8Arox\xBB\u2124\u0100;q\u212E\u212F\u6A88\u0100;q\u212E\u211Bim;\u62E7pf;\uC000\u{1D558}\u0100ci\u2143\u2146r;\u610Am\u0180;el\u066B\u214E\u2150;\u6A8E;\u6A90\u8300>;cdlqr\u05EE\u2160\u216A\u216E\u2173\u2179\u0100ci\u2165\u2167;\u6AA7r;\u6A7Aot;\u62D7Par;\u6995uest;\u6A7C\u0280adels\u2184\u216A\u2190\u0656\u219B\u01F0\u2189\0\u218Epro\xF8\u209Er;\u6978q\u0100lq\u063F\u2196les\xF3\u2088i\xED\u066B\u0100en\u21A3\u21ADrtneqq;\uC000\u2269\uFE00\xC5\u21AA\u0500Aabcefkosy\u21C4\u21C7\u21F1\u21F5\u21FA\u2218\u221D\u222F\u2268\u227Dr\xF2\u03A0\u0200ilmr\u21D0\u21D4\u21D7\u21DBrs\xF0\u1484f\xBB\u2024il\xF4\u06A9\u0100dr\u21E0\u21E4cy;\u444A\u0180;cw\u08F4\u21EB\u21EFir;\u6948;\u61ADar;\u610Firc;\u4125\u0180alr\u2201\u220E\u2213rts\u0100;u\u2209\u220A\u6665it\xBB\u220Alip;\u6026con;\u62B9r;\uC000\u{1D525}s\u0100ew\u2223\u2229arow;\u6925arow;\u6926\u0280amopr\u223A\u223E\u2243\u225E\u2263rr;\u61FFtht;\u623Bk\u0100lr\u2249\u2253eftarrow;\u61A9ightarrow;\u61AAf;\uC000\u{1D559}bar;\u6015\u0180clt\u226F\u2274\u2278r;\uC000\u{1D4BD}as\xE8\u21F4rok;\u4127\u0100bp\u2282\u2287ull;\u6043hen\xBB\u1C5B\u0AE1\u22A3\0\u22AA\0\u22B8\u22C5\u22CE\0\u22D5\u22F3\0\0\u22F8\u2322\u2367\u2362\u237F\0\u2386\u23AA\u23B4cute\u803B\xED\u40ED\u0180;iy\u0771\u22B0\u22B5rc\u803B\xEE\u40EE;\u4438\u0100cx\u22BC\u22BFy;\u4435cl\u803B\xA1\u40A1\u0100fr\u039F\u22C9;\uC000\u{1D526}rave\u803B\xEC\u40EC\u0200;ino\u073E\u22DD\u22E9\u22EE\u0100in\u22E2\u22E6nt;\u6A0Ct;\u622Dfin;\u69DCta;\u6129lig;\u4133\u0180aop\u22FE\u231A\u231D\u0180cgt\u2305\u2308\u2317r;\u412B\u0180elp\u071F\u230F\u2313in\xE5\u078Ear\xF4\u0720h;\u4131f;\u62B7ed;\u41B5\u0280;cfot\u04F4\u232C\u2331\u233D\u2341are;\u6105in\u0100;t\u2338\u2339\u621Eie;\u69DDdo\xF4\u2319\u0280;celp\u0757\u234C\u2350\u235B\u2361al;\u62BA\u0100gr\u2355\u2359er\xF3\u1563\xE3\u234Darhk;\u6A17rod;\u6A3C\u0200cgpt\u236F\u2372\u2376\u237By;\u4451on;\u412Ff;\uC000\u{1D55A}a;\u43B9uest\u803B\xBF\u40BF\u0100ci\u238A\u238Fr;\uC000\u{1D4BE}n\u0280;Edsv\u04F4\u239B\u239D\u23A1\u04F3;\u62F9ot;\u62F5\u0100;v\u23A6\u23A7\u62F4;\u62F3\u0100;i\u0777\u23AElde;\u4129\u01EB\u23B8\0\u23BCcy;\u4456l\u803B\xEF\u40EF\u0300cfmosu\u23CC\u23D7\u23DC\u23E1\u23E7\u23F5\u0100iy\u23D1\u23D5rc;\u4135;\u4439r;\uC000\u{1D527}ath;\u4237pf;\uC000\u{1D55B}\u01E3\u23EC\0\u23F1r;\uC000\u{1D4BF}rcy;\u4458kcy;\u4454\u0400acfghjos\u240B\u2416\u2422\u2427\u242D\u2431\u2435\u243Bppa\u0100;v\u2413\u2414\u43BA;\u43F0\u0100ey\u241B\u2420dil;\u4137;\u443Ar;\uC000\u{1D528}reen;\u4138cy;\u4445cy;\u445Cpf;\uC000\u{1D55C}cr;\uC000\u{1D4C0}\u0B80ABEHabcdefghjlmnoprstuv\u2470\u2481\u2486\u248D\u2491\u250E\u253D\u255A\u2580\u264E\u265E\u2665\u2679\u267D\u269A\u26B2\u26D8\u275D\u2768\u278B\u27C0\u2801\u2812\u0180art\u2477\u247A\u247Cr\xF2\u09C6\xF2\u0395ail;\u691Barr;\u690E\u0100;g\u0994\u248B;\u6A8Bar;\u6962\u0963\u24A5\0\u24AA\0\u24B1\0\0\0\0\0\u24B5\u24BA\0\u24C6\u24C8\u24CD\0\u24F9ute;\u413Amptyv;\u69B4ra\xEE\u084Cbda;\u43BBg\u0180;dl\u088E\u24C1\u24C3;\u6991\xE5\u088E;\u6A85uo\u803B\xAB\u40ABr\u0400;bfhlpst\u0899\u24DE\u24E6\u24E9\u24EB\u24EE\u24F1\u24F5\u0100;f\u089D\u24E3s;\u691Fs;\u691D\xEB\u2252p;\u61ABl;\u6939im;\u6973l;\u61A2\u0180;ae\u24FF\u2500\u2504\u6AABil;\u6919\u0100;s\u2509\u250A\u6AAD;\uC000\u2AAD\uFE00\u0180abr\u2515\u2519\u251Drr;\u690Crk;\u6772\u0100ak\u2522\u252Cc\u0100ek\u2528\u252A;\u407B;\u405B\u0100es\u2531\u2533;\u698Bl\u0100du\u2539\u253B;\u698F;\u698D\u0200aeuy\u2546\u254B\u2556\u2558ron;\u413E\u0100di\u2550\u2554il;\u413C\xEC\u08B0\xE2\u2529;\u443B\u0200cqrs\u2563\u2566\u256D\u257Da;\u6936uo\u0100;r\u0E19\u1746\u0100du\u2572\u2577har;\u6967shar;\u694Bh;\u61B2\u0280;fgqs\u258B\u258C\u0989\u25F3\u25FF\u6264t\u0280ahlrt\u2598\u25A4\u25B7\u25C2\u25E8rrow\u0100;t\u0899\u25A1a\xE9\u24F6arpoon\u0100du\u25AF\u25B4own\xBB\u045Ap\xBB\u0966eftarrows;\u61C7ight\u0180ahs\u25CD\u25D6\u25DErrow\u0100;s\u08F4\u08A7arpoon\xF3\u0F98quigarro\xF7\u21F0hreetimes;\u62CB\u0180;qs\u258B\u0993\u25FAlan\xF4\u09AC\u0280;cdgs\u09AC\u260A\u260D\u261D\u2628c;\u6AA8ot\u0100;o\u2614\u2615\u6A7F\u0100;r\u261A\u261B\u6A81;\u6A83\u0100;e\u2622\u2625\uC000\u22DA\uFE00s;\u6A93\u0280adegs\u2633\u2639\u263D\u2649\u264Bppro\xF8\u24C6ot;\u62D6q\u0100gq\u2643\u2645\xF4\u0989gt\xF2\u248C\xF4\u099Bi\xED\u09B2\u0180ilr\u2655\u08E1\u265Asht;\u697C;\uC000\u{1D529}\u0100;E\u099C\u2663;\u6A91\u0161\u2669\u2676r\u0100du\u25B2\u266E\u0100;l\u0965\u2673;\u696Alk;\u6584cy;\u4459\u0280;acht\u0A48\u2688\u268B\u2691\u2696r\xF2\u25C1orne\xF2\u1D08ard;\u696Bri;\u65FA\u0100io\u269F\u26A4dot;\u4140ust\u0100;a\u26AC\u26AD\u63B0che\xBB\u26AD\u0200Eaes\u26BB\u26BD\u26C9\u26D4;\u6268p\u0100;p\u26C3\u26C4\u6A89rox\xBB\u26C4\u0100;q\u26CE\u26CF\u6A87\u0100;q\u26CE\u26BBim;\u62E6\u0400abnoptwz\u26E9\u26F4\u26F7\u271A\u272F\u2741\u2747\u2750\u0100nr\u26EE\u26F1g;\u67ECr;\u61FDr\xEB\u08C1g\u0180lmr\u26FF\u270D\u2714eft\u0100ar\u09E6\u2707ight\xE1\u09F2apsto;\u67FCight\xE1\u09FDparrow\u0100lr\u2725\u2729ef\xF4\u24EDight;\u61AC\u0180afl\u2736\u2739\u273Dr;\u6985;\uC000\u{1D55D}us;\u6A2Dimes;\u6A34\u0161\u274B\u274Fst;\u6217\xE1\u134E\u0180;ef\u2757\u2758\u1800\u65CAnge\xBB\u2758ar\u0100;l\u2764\u2765\u4028t;\u6993\u0280achmt\u2773\u2776\u277C\u2785\u2787r\xF2\u08A8orne\xF2\u1D8Car\u0100;d\u0F98\u2783;\u696D;\u600Eri;\u62BF\u0300achiqt\u2798\u279D\u0A40\u27A2\u27AE\u27BBquo;\u6039r;\uC000\u{1D4C1}m\u0180;eg\u09B2\u27AA\u27AC;\u6A8D;\u6A8F\u0100bu\u252A\u27B3o\u0100;r\u0E1F\u27B9;\u601Arok;\u4142\u8400<;cdhilqr\u082B\u27D2\u2639\u27DC\u27E0\u27E5\u27EA\u27F0\u0100ci\u27D7\u27D9;\u6AA6r;\u6A79re\xE5\u25F2mes;\u62C9arr;\u6976uest;\u6A7B\u0100Pi\u27F5\u27F9ar;\u6996\u0180;ef\u2800\u092D\u181B\u65C3r\u0100du\u2807\u280Dshar;\u694Ahar;\u6966\u0100en\u2817\u2821rtneqq;\uC000\u2268\uFE00\xC5\u281E\u0700Dacdefhilnopsu\u2840\u2845\u2882\u288E\u2893\u28A0\u28A5\u28A8\u28DA\u28E2\u28E4\u0A83\u28F3\u2902Dot;\u623A\u0200clpr\u284E\u2852\u2863\u287Dr\u803B\xAF\u40AF\u0100et\u2857\u2859;\u6642\u0100;e\u285E\u285F\u6720se\xBB\u285F\u0100;s\u103B\u2868to\u0200;dlu\u103B\u2873\u2877\u287Bow\xEE\u048Cef\xF4\u090F\xF0\u13D1ker;\u65AE\u0100oy\u2887\u288Cmma;\u6A29;\u443Cash;\u6014asuredangle\xBB\u1626r;\uC000\u{1D52A}o;\u6127\u0180cdn\u28AF\u28B4\u28C9ro\u803B\xB5\u40B5\u0200;acd\u1464\u28BD\u28C0\u28C4s\xF4\u16A7ir;\u6AF0ot\u80BB\xB7\u01B5us\u0180;bd\u28D2\u1903\u28D3\u6212\u0100;u\u1D3C\u28D8;\u6A2A\u0163\u28DE\u28E1p;\u6ADB\xF2\u2212\xF0\u0A81\u0100dp\u28E9\u28EEels;\u62A7f;\uC000\u{1D55E}\u0100ct\u28F8\u28FDr;\uC000\u{1D4C2}pos\xBB\u159D\u0180;lm\u2909\u290A\u290D\u43BCtimap;\u62B8\u0C00GLRVabcdefghijlmoprstuvw\u2942\u2953\u297E\u2989\u2998\u29DA\u29E9\u2A15\u2A1A\u2A58\u2A5D\u2A83\u2A95\u2AA4\u2AA8\u2B04\u2B07\u2B44\u2B7F\u2BAE\u2C34\u2C67\u2C7C\u2CE9\u0100gt\u2947\u294B;\uC000\u22D9\u0338\u0100;v\u2950\u0BCF\uC000\u226B\u20D2\u0180elt\u295A\u2972\u2976ft\u0100ar\u2961\u2967rrow;\u61CDightarrow;\u61CE;\uC000\u22D8\u0338\u0100;v\u297B\u0C47\uC000\u226A\u20D2ightarrow;\u61CF\u0100Dd\u298E\u2993ash;\u62AFash;\u62AE\u0280bcnpt\u29A3\u29A7\u29AC\u29B1\u29CCla\xBB\u02DEute;\u4144g;\uC000\u2220\u20D2\u0280;Eiop\u0D84\u29BC\u29C0\u29C5\u29C8;\uC000\u2A70\u0338d;\uC000\u224B\u0338s;\u4149ro\xF8\u0D84ur\u0100;a\u29D3\u29D4\u666El\u0100;s\u29D3\u0B38\u01F3\u29DF\0\u29E3p\u80BB\xA0\u0B37mp\u0100;e\u0BF9\u0C00\u0280aeouy\u29F4\u29FE\u2A03\u2A10\u2A13\u01F0\u29F9\0\u29FB;\u6A43on;\u4148dil;\u4146ng\u0100;d\u0D7E\u2A0Aot;\uC000\u2A6D\u0338p;\u6A42;\u443Dash;\u6013\u0380;Aadqsx\u0B92\u2A29\u2A2D\u2A3B\u2A41\u2A45\u2A50rr;\u61D7r\u0100hr\u2A33\u2A36k;\u6924\u0100;o\u13F2\u13F0ot;\uC000\u2250\u0338ui\xF6\u0B63\u0100ei\u2A4A\u2A4Ear;\u6928\xED\u0B98ist\u0100;s\u0BA0\u0B9Fr;\uC000\u{1D52B}\u0200Eest\u0BC5\u2A66\u2A79\u2A7C\u0180;qs\u0BBC\u2A6D\u0BE1\u0180;qs\u0BBC\u0BC5\u2A74lan\xF4\u0BE2i\xED\u0BEA\u0100;r\u0BB6\u2A81\xBB\u0BB7\u0180Aap\u2A8A\u2A8D\u2A91r\xF2\u2971rr;\u61AEar;\u6AF2\u0180;sv\u0F8D\u2A9C\u0F8C\u0100;d\u2AA1\u2AA2\u62FC;\u62FAcy;\u445A\u0380AEadest\u2AB7\u2ABA\u2ABE\u2AC2\u2AC5\u2AF6\u2AF9r\xF2\u2966;\uC000\u2266\u0338rr;\u619Ar;\u6025\u0200;fqs\u0C3B\u2ACE\u2AE3\u2AEFt\u0100ar\u2AD4\u2AD9rro\xF7\u2AC1ightarro\xF7\u2A90\u0180;qs\u0C3B\u2ABA\u2AEAlan\xF4\u0C55\u0100;s\u0C55\u2AF4\xBB\u0C36i\xED\u0C5D\u0100;r\u0C35\u2AFEi\u0100;e\u0C1A\u0C25i\xE4\u0D90\u0100pt\u2B0C\u2B11f;\uC000\u{1D55F}\u8180\xAC;in\u2B19\u2B1A\u2B36\u40ACn\u0200;Edv\u0B89\u2B24\u2B28\u2B2E;\uC000\u22F9\u0338ot;\uC000\u22F5\u0338\u01E1\u0B89\u2B33\u2B35;\u62F7;\u62F6i\u0100;v\u0CB8\u2B3C\u01E1\u0CB8\u2B41\u2B43;\u62FE;\u62FD\u0180aor\u2B4B\u2B63\u2B69r\u0200;ast\u0B7B\u2B55\u2B5A\u2B5Flle\xEC\u0B7Bl;\uC000\u2AFD\u20E5;\uC000\u2202\u0338lint;\u6A14\u0180;ce\u0C92\u2B70\u2B73u\xE5\u0CA5\u0100;c\u0C98\u2B78\u0100;e\u0C92\u2B7D\xF1\u0C98\u0200Aait\u2B88\u2B8B\u2B9D\u2BA7r\xF2\u2988rr\u0180;cw\u2B94\u2B95\u2B99\u619B;\uC000\u2933\u0338;\uC000\u219D\u0338ghtarrow\xBB\u2B95ri\u0100;e\u0CCB\u0CD6\u0380chimpqu\u2BBD\u2BCD\u2BD9\u2B04\u0B78\u2BE4\u2BEF\u0200;cer\u0D32\u2BC6\u0D37\u2BC9u\xE5\u0D45;\uC000\u{1D4C3}ort\u026D\u2B05\0\0\u2BD6ar\xE1\u2B56m\u0100;e\u0D6E\u2BDF\u0100;q\u0D74\u0D73su\u0100bp\u2BEB\u2BED\xE5\u0CF8\xE5\u0D0B\u0180bcp\u2BF6\u2C11\u2C19\u0200;Ees\u2BFF\u2C00\u0D22\u2C04\u6284;\uC000\u2AC5\u0338et\u0100;e\u0D1B\u2C0Bq\u0100;q\u0D23\u2C00c\u0100;e\u0D32\u2C17\xF1\u0D38\u0200;Ees\u2C22\u2C23\u0D5F\u2C27\u6285;\uC000\u2AC6\u0338et\u0100;e\u0D58\u2C2Eq\u0100;q\u0D60\u2C23\u0200gilr\u2C3D\u2C3F\u2C45\u2C47\xEC\u0BD7lde\u803B\xF1\u40F1\xE7\u0C43iangle\u0100lr\u2C52\u2C5Ceft\u0100;e\u0C1A\u2C5A\xF1\u0C26ight\u0100;e\u0CCB\u2C65\xF1\u0CD7\u0100;m\u2C6C\u2C6D\u43BD\u0180;es\u2C74\u2C75\u2C79\u4023ro;\u6116p;\u6007\u0480DHadgilrs\u2C8F\u2C94\u2C99\u2C9E\u2CA3\u2CB0\u2CB6\u2CD3\u2CE3ash;\u62ADarr;\u6904p;\uC000\u224D\u20D2ash;\u62AC\u0100et\u2CA8\u2CAC;\uC000\u2265\u20D2;\uC000>\u20D2nfin;\u69DE\u0180Aet\u2CBD\u2CC1\u2CC5rr;\u6902;\uC000\u2264\u20D2\u0100;r\u2CCA\u2CCD\uC000<\u20D2ie;\uC000\u22B4\u20D2\u0100At\u2CD8\u2CDCrr;\u6903rie;\uC000\u22B5\u20D2im;\uC000\u223C\u20D2\u0180Aan\u2CF0\u2CF4\u2D02rr;\u61D6r\u0100hr\u2CFA\u2CFDk;\u6923\u0100;o\u13E7\u13E5ear;\u6927\u1253\u1A95\0\0\0\0\0\0\0\0\0\0\0\0\0\u2D2D\0\u2D38\u2D48\u2D60\u2D65\u2D72\u2D84\u1B07\0\0\u2D8D\u2DAB\0\u2DC8\u2DCE\0\u2DDC\u2E19\u2E2B\u2E3E\u2E43\u0100cs\u2D31\u1A97ute\u803B\xF3\u40F3\u0100iy\u2D3C\u2D45r\u0100;c\u1A9E\u2D42\u803B\xF4\u40F4;\u443E\u0280abios\u1AA0\u2D52\u2D57\u01C8\u2D5Alac;\u4151v;\u6A38old;\u69BClig;\u4153\u0100cr\u2D69\u2D6Dir;\u69BF;\uC000\u{1D52C}\u036F\u2D79\0\0\u2D7C\0\u2D82n;\u42DBave\u803B\xF2\u40F2;\u69C1\u0100bm\u2D88\u0DF4ar;\u69B5\u0200acit\u2D95\u2D98\u2DA5\u2DA8r\xF2\u1A80\u0100ir\u2D9D\u2DA0r;\u69BEoss;\u69BBn\xE5\u0E52;\u69C0\u0180aei\u2DB1\u2DB5\u2DB9cr;\u414Dga;\u43C9\u0180cdn\u2DC0\u2DC5\u01CDron;\u43BF;\u69B6pf;\uC000\u{1D560}\u0180ael\u2DD4\u2DD7\u01D2r;\u69B7rp;\u69B9\u0380;adiosv\u2DEA\u2DEB\u2DEE\u2E08\u2E0D\u2E10\u2E16\u6228r\xF2\u1A86\u0200;efm\u2DF7\u2DF8\u2E02\u2E05\u6A5Dr\u0100;o\u2DFE\u2DFF\u6134f\xBB\u2DFF\u803B\xAA\u40AA\u803B\xBA\u40BAgof;\u62B6r;\u6A56lope;\u6A57;\u6A5B\u0180clo\u2E1F\u2E21\u2E27\xF2\u2E01ash\u803B\xF8\u40F8l;\u6298i\u016C\u2E2F\u2E34de\u803B\xF5\u40F5es\u0100;a\u01DB\u2E3As;\u6A36ml\u803B\xF6\u40F6bar;\u633D\u0AE1\u2E5E\0\u2E7D\0\u2E80\u2E9D\0\u2EA2\u2EB9\0\0\u2ECB\u0E9C\0\u2F13\0\0\u2F2B\u2FBC\0\u2FC8r\u0200;ast\u0403\u2E67\u2E72\u0E85\u8100\xB6;l\u2E6D\u2E6E\u40B6le\xEC\u0403\u0269\u2E78\0\0\u2E7Bm;\u6AF3;\u6AFDy;\u443Fr\u0280cimpt\u2E8B\u2E8F\u2E93\u1865\u2E97nt;\u4025od;\u402Eil;\u6030enk;\u6031r;\uC000\u{1D52D}\u0180imo\u2EA8\u2EB0\u2EB4\u0100;v\u2EAD\u2EAE\u43C6;\u43D5ma\xF4\u0A76ne;\u660E\u0180;tv\u2EBF\u2EC0\u2EC8\u43C0chfork\xBB\u1FFD;\u43D6\u0100au\u2ECF\u2EDFn\u0100ck\u2ED5\u2EDDk\u0100;h\u21F4\u2EDB;\u610E\xF6\u21F4s\u0480;abcdemst\u2EF3\u2EF4\u1908\u2EF9\u2EFD\u2F04\u2F06\u2F0A\u2F0E\u402Bcir;\u6A23ir;\u6A22\u0100ou\u1D40\u2F02;\u6A25;\u6A72n\u80BB\xB1\u0E9Dim;\u6A26wo;\u6A27\u0180ipu\u2F19\u2F20\u2F25ntint;\u6A15f;\uC000\u{1D561}nd\u803B\xA3\u40A3\u0500;Eaceinosu\u0EC8\u2F3F\u2F41\u2F44\u2F47\u2F81\u2F89\u2F92\u2F7E\u2FB6;\u6AB3p;\u6AB7u\xE5\u0ED9\u0100;c\u0ECE\u2F4C\u0300;acens\u0EC8\u2F59\u2F5F\u2F66\u2F68\u2F7Eppro\xF8\u2F43urlye\xF1\u0ED9\xF1\u0ECE\u0180aes\u2F6F\u2F76\u2F7Approx;\u6AB9qq;\u6AB5im;\u62E8i\xED\u0EDFme\u0100;s\u2F88\u0EAE\u6032\u0180Eas\u2F78\u2F90\u2F7A\xF0\u2F75\u0180dfp\u0EEC\u2F99\u2FAF\u0180als\u2FA0\u2FA5\u2FAAlar;\u632Eine;\u6312urf;\u6313\u0100;t\u0EFB\u2FB4\xEF\u0EFBrel;\u62B0\u0100ci\u2FC0\u2FC5r;\uC000\u{1D4C5};\u43C8ncsp;\u6008\u0300fiopsu\u2FDA\u22E2\u2FDF\u2FE5\u2FEB\u2FF1r;\uC000\u{1D52E}pf;\uC000\u{1D562}rime;\u6057cr;\uC000\u{1D4C6}\u0180aeo\u2FF8\u3009\u3013t\u0100ei\u2FFE\u3005rnion\xF3\u06B0nt;\u6A16st\u0100;e\u3010\u3011\u403F\xF1\u1F19\xF4\u0F14\u0A80ABHabcdefhilmnoprstux\u3040\u3051\u3055\u3059\u30E0\u310E\u312B\u3147\u3162\u3172\u318E\u3206\u3215\u3224\u3229\u3258\u326E\u3272\u3290\u32B0\u32B7\u0180art\u3047\u304A\u304Cr\xF2\u10B3\xF2\u03DDail;\u691Car\xF2\u1C65ar;\u6964\u0380cdenqrt\u3068\u3075\u3078\u307F\u308F\u3094\u30CC\u0100eu\u306D\u3071;\uC000\u223D\u0331te;\u4155i\xE3\u116Emptyv;\u69B3g\u0200;del\u0FD1\u3089\u308B\u308D;\u6992;\u69A5\xE5\u0FD1uo\u803B\xBB\u40BBr\u0580;abcfhlpstw\u0FDC\u30AC\u30AF\u30B7\u30B9\u30BC\u30BE\u30C0\u30C3\u30C7\u30CAp;\u6975\u0100;f\u0FE0\u30B4s;\u6920;\u6933s;\u691E\xEB\u225D\xF0\u272El;\u6945im;\u6974l;\u61A3;\u619D\u0100ai\u30D1\u30D5il;\u691Ao\u0100;n\u30DB\u30DC\u6236al\xF3\u0F1E\u0180abr\u30E7\u30EA\u30EEr\xF2\u17E5rk;\u6773\u0100ak\u30F3\u30FDc\u0100ek\u30F9\u30FB;\u407D;\u405D\u0100es\u3102\u3104;\u698Cl\u0100du\u310A\u310C;\u698E;\u6990\u0200aeuy\u3117\u311C\u3127\u3129ron;\u4159\u0100di\u3121\u3125il;\u4157\xEC\u0FF2\xE2\u30FA;\u4440\u0200clqs\u3134\u3137\u313D\u3144a;\u6937dhar;\u6969uo\u0100;r\u020E\u020Dh;\u61B3\u0180acg\u314E\u315F\u0F44l\u0200;ips\u0F78\u3158\u315B\u109Cn\xE5\u10BBar\xF4\u0FA9t;\u65AD\u0180ilr\u3169\u1023\u316Esht;\u697D;\uC000\u{1D52F}\u0100ao\u3177\u3186r\u0100du\u317D\u317F\xBB\u047B\u0100;l\u1091\u3184;\u696C\u0100;v\u318B\u318C\u43C1;\u43F1\u0180gns\u3195\u31F9\u31FCht\u0300ahlrst\u31A4\u31B0\u31C2\u31D8\u31E4\u31EErrow\u0100;t\u0FDC\u31ADa\xE9\u30C8arpoon\u0100du\u31BB\u31BFow\xEE\u317Ep\xBB\u1092eft\u0100ah\u31CA\u31D0rrow\xF3\u0FEAarpoon\xF3\u0551ightarrows;\u61C9quigarro\xF7\u30CBhreetimes;\u62CCg;\u42DAingdotse\xF1\u1F32\u0180ahm\u320D\u3210\u3213r\xF2\u0FEAa\xF2\u0551;\u600Foust\u0100;a\u321E\u321F\u63B1che\xBB\u321Fmid;\u6AEE\u0200abpt\u3232\u323D\u3240\u3252\u0100nr\u3237\u323Ag;\u67EDr;\u61FEr\xEB\u1003\u0180afl\u3247\u324A\u324Er;\u6986;\uC000\u{1D563}us;\u6A2Eimes;\u6A35\u0100ap\u325D\u3267r\u0100;g\u3263\u3264\u4029t;\u6994olint;\u6A12ar\xF2\u31E3\u0200achq\u327B\u3280\u10BC\u3285quo;\u603Ar;\uC000\u{1D4C7}\u0100bu\u30FB\u328Ao\u0100;r\u0214\u0213\u0180hir\u3297\u329B\u32A0re\xE5\u31F8mes;\u62CAi\u0200;efl\u32AA\u1059\u1821\u32AB\u65B9tri;\u69CEluhar;\u6968;\u611E\u0D61\u32D5\u32DB\u32DF\u332C\u3338\u3371\0\u337A\u33A4\0\0\u33EC\u33F0\0\u3428\u3448\u345A\u34AD\u34B1\u34CA\u34F1\0\u3616\0\0\u3633cute;\u415Bqu\xEF\u27BA\u0500;Eaceinpsy\u11ED\u32F3\u32F5\u32FF\u3302\u330B\u330F\u331F\u3326\u3329;\u6AB4\u01F0\u32FA\0\u32FC;\u6AB8on;\u4161u\xE5\u11FE\u0100;d\u11F3\u3307il;\u415Frc;\u415D\u0180Eas\u3316\u3318\u331B;\u6AB6p;\u6ABAim;\u62E9olint;\u6A13i\xED\u1204;\u4441ot\u0180;be\u3334\u1D47\u3335\u62C5;\u6A66\u0380Aacmstx\u3346\u334A\u3357\u335B\u335E\u3363\u336Drr;\u61D8r\u0100hr\u3350\u3352\xEB\u2228\u0100;o\u0A36\u0A34t\u803B\xA7\u40A7i;\u403Bwar;\u6929m\u0100in\u3369\xF0nu\xF3\xF1t;\u6736r\u0100;o\u3376\u2055\uC000\u{1D530}\u0200acoy\u3382\u3386\u3391\u33A0rp;\u666F\u0100hy\u338B\u338Fcy;\u4449;\u4448rt\u026D\u3399\0\0\u339Ci\xE4\u1464ara\xEC\u2E6F\u803B\xAD\u40AD\u0100gm\u33A8\u33B4ma\u0180;fv\u33B1\u33B2\u33B2\u43C3;\u43C2\u0400;deglnpr\u12AB\u33C5\u33C9\u33CE\u33D6\u33DE\u33E1\u33E6ot;\u6A6A\u0100;q\u12B1\u12B0\u0100;E\u33D3\u33D4\u6A9E;\u6AA0\u0100;E\u33DB\u33DC\u6A9D;\u6A9Fe;\u6246lus;\u6A24arr;\u6972ar\xF2\u113D\u0200aeit\u33F8\u3408\u340F\u3417\u0100ls\u33FD\u3404lsetm\xE9\u336Ahp;\u6A33parsl;\u69E4\u0100dl\u1463\u3414e;\u6323\u0100;e\u341C\u341D\u6AAA\u0100;s\u3422\u3423\u6AAC;\uC000\u2AAC\uFE00\u0180flp\u342E\u3433\u3442tcy;\u444C\u0100;b\u3438\u3439\u402F\u0100;a\u343E\u343F\u69C4r;\u633Ff;\uC000\u{1D564}a\u0100dr\u344D\u0402es\u0100;u\u3454\u3455\u6660it\xBB\u3455\u0180csu\u3460\u3479\u349F\u0100au\u3465\u346Fp\u0100;s\u1188\u346B;\uC000\u2293\uFE00p\u0100;s\u11B4\u3475;\uC000\u2294\uFE00u\u0100bp\u347F\u348F\u0180;es\u1197\u119C\u3486et\u0100;e\u1197\u348D\xF1\u119D\u0180;es\u11A8\u11AD\u3496et\u0100;e\u11A8\u349D\xF1\u11AE\u0180;af\u117B\u34A6\u05B0r\u0165\u34AB\u05B1\xBB\u117Car\xF2\u1148\u0200cemt\u34B9\u34BE\u34C2\u34C5r;\uC000\u{1D4C8}tm\xEE\xF1i\xEC\u3415ar\xE6\u11BE\u0100ar\u34CE\u34D5r\u0100;f\u34D4\u17BF\u6606\u0100an\u34DA\u34EDight\u0100ep\u34E3\u34EApsilo\xEE\u1EE0h\xE9\u2EAFs\xBB\u2852\u0280bcmnp\u34FB\u355E\u1209\u358B\u358E\u0480;Edemnprs\u350E\u350F\u3511\u3515\u351E\u3523\u352C\u3531\u3536\u6282;\u6AC5ot;\u6ABD\u0100;d\u11DA\u351Aot;\u6AC3ult;\u6AC1\u0100Ee\u3528\u352A;\u6ACB;\u628Alus;\u6ABFarr;\u6979\u0180eiu\u353D\u3552\u3555t\u0180;en\u350E\u3545\u354Bq\u0100;q\u11DA\u350Feq\u0100;q\u352B\u3528m;\u6AC7\u0100bp\u355A\u355C;\u6AD5;\u6AD3c\u0300;acens\u11ED\u356C\u3572\u3579\u357B\u3326ppro\xF8\u32FAurlye\xF1\u11FE\xF1\u11F3\u0180aes\u3582\u3588\u331Bppro\xF8\u331Aq\xF1\u3317g;\u666A\u0680123;Edehlmnps\u35A9\u35AC\u35AF\u121C\u35B2\u35B4\u35C0\u35C9\u35D5\u35DA\u35DF\u35E8\u35ED\u803B\xB9\u40B9\u803B\xB2\u40B2\u803B\xB3\u40B3;\u6AC6\u0100os\u35B9\u35BCt;\u6ABEub;\u6AD8\u0100;d\u1222\u35C5ot;\u6AC4s\u0100ou\u35CF\u35D2l;\u67C9b;\u6AD7arr;\u697Bult;\u6AC2\u0100Ee\u35E4\u35E6;\u6ACC;\u628Blus;\u6AC0\u0180eiu\u35F4\u3609\u360Ct\u0180;en\u121C\u35FC\u3602q\u0100;q\u1222\u35B2eq\u0100;q\u35E7\u35E4m;\u6AC8\u0100bp\u3611\u3613;\u6AD4;\u6AD6\u0180Aan\u361C\u3620\u362Drr;\u61D9r\u0100hr\u3626\u3628\xEB\u222E\u0100;o\u0A2B\u0A29war;\u692Alig\u803B\xDF\u40DF\u0BE1\u3651\u365D\u3660\u12CE\u3673\u3679\0\u367E\u36C2\0\0\0\0\0\u36DB\u3703\0\u3709\u376C\0\0\0\u3787\u0272\u3656\0\0\u365Bget;\u6316;\u43C4r\xEB\u0E5F\u0180aey\u3666\u366B\u3670ron;\u4165dil;\u4163;\u4442lrec;\u6315r;\uC000\u{1D531}\u0200eiko\u3686\u369D\u36B5\u36BC\u01F2\u368B\0\u3691e\u01004f\u1284\u1281a\u0180;sv\u3698\u3699\u369B\u43B8ym;\u43D1\u0100cn\u36A2\u36B2k\u0100as\u36A8\u36AEppro\xF8\u12C1im\xBB\u12ACs\xF0\u129E\u0100as\u36BA\u36AE\xF0\u12C1rn\u803B\xFE\u40FE\u01EC\u031F\u36C6\u22E7es\u8180\xD7;bd\u36CF\u36D0\u36D8\u40D7\u0100;a\u190F\u36D5r;\u6A31;\u6A30\u0180eps\u36E1\u36E3\u3700\xE1\u2A4D\u0200;bcf\u0486\u36EC\u36F0\u36F4ot;\u6336ir;\u6AF1\u0100;o\u36F9\u36FC\uC000\u{1D565}rk;\u6ADA\xE1\u3362rime;\u6034\u0180aip\u370F\u3712\u3764d\xE5\u1248\u0380adempst\u3721\u374D\u3740\u3751\u3757\u375C\u375Fngle\u0280;dlqr\u3730\u3731\u3736\u3740\u3742\u65B5own\xBB\u1DBBeft\u0100;e\u2800\u373E\xF1\u092E;\u625Cight\u0100;e\u32AA\u374B\xF1\u105Aot;\u65ECinus;\u6A3Alus;\u6A39b;\u69CDime;\u6A3Bezium;\u63E2\u0180cht\u3772\u377D\u3781\u0100ry\u3777\u377B;\uC000\u{1D4C9};\u4446cy;\u445Brok;\u4167\u0100io\u378B\u378Ex\xF4\u1777head\u0100lr\u3797\u37A0eftarro\xF7\u084Fightarrow\xBB\u0F5D\u0900AHabcdfghlmoprstuw\u37D0\u37D3\u37D7\u37E4\u37F0\u37FC\u380E\u381C\u3823\u3834\u3851\u385D\u386B\u38A9\u38CC\u38D2\u38EA\u38F6r\xF2\u03EDar;\u6963\u0100cr\u37DC\u37E2ute\u803B\xFA\u40FA\xF2\u1150r\u01E3\u37EA\0\u37EDy;\u445Eve;\u416D\u0100iy\u37F5\u37FArc\u803B\xFB\u40FB;\u4443\u0180abh\u3803\u3806\u380Br\xF2\u13ADlac;\u4171a\xF2\u13C3\u0100ir\u3813\u3818sht;\u697E;\uC000\u{1D532}rave\u803B\xF9\u40F9\u0161\u3827\u3831r\u0100lr\u382C\u382E\xBB\u0957\xBB\u1083lk;\u6580\u0100ct\u3839\u384D\u026F\u383F\0\0\u384Arn\u0100;e\u3845\u3846\u631Cr\xBB\u3846op;\u630Fri;\u65F8\u0100al\u3856\u385Acr;\u416B\u80BB\xA8\u0349\u0100gp\u3862\u3866on;\u4173f;\uC000\u{1D566}\u0300adhlsu\u114B\u3878\u387D\u1372\u3891\u38A0own\xE1\u13B3arpoon\u0100lr\u3888\u388Cef\xF4\u382Digh\xF4\u382Fi\u0180;hl\u3899\u389A\u389C\u43C5\xBB\u13FAon\xBB\u389Aparrows;\u61C8\u0180cit\u38B0\u38C4\u38C8\u026F\u38B6\0\0\u38C1rn\u0100;e\u38BC\u38BD\u631Dr\xBB\u38BDop;\u630Eng;\u416Fri;\u65F9cr;\uC000\u{1D4CA}\u0180dir\u38D9\u38DD\u38E2ot;\u62F0lde;\u4169i\u0100;f\u3730\u38E8\xBB\u1813\u0100am\u38EF\u38F2r\xF2\u38A8l\u803B\xFC\u40FCangle;\u69A7\u0780ABDacdeflnoprsz\u391C\u391F\u3929\u392D\u39B5\u39B8\u39BD\u39DF\u39E4\u39E8\u39F3\u39F9\u39FD\u3A01\u3A20r\xF2\u03F7ar\u0100;v\u3926\u3927\u6AE8;\u6AE9as\xE8\u03E1\u0100nr\u3932\u3937grt;\u699C\u0380eknprst\u34E3\u3946\u394B\u3952\u395D\u3964\u3996app\xE1\u2415othin\xE7\u1E96\u0180hir\u34EB\u2EC8\u3959op\xF4\u2FB5\u0100;h\u13B7\u3962\xEF\u318D\u0100iu\u3969\u396Dgm\xE1\u33B3\u0100bp\u3972\u3984setneq\u0100;q\u397D\u3980\uC000\u228A\uFE00;\uC000\u2ACB\uFE00setneq\u0100;q\u398F\u3992\uC000\u228B\uFE00;\uC000\u2ACC\uFE00\u0100hr\u399B\u399Fet\xE1\u369Ciangle\u0100lr\u39AA\u39AFeft\xBB\u0925ight\xBB\u1051y;\u4432ash\xBB\u1036\u0180elr\u39C4\u39D2\u39D7\u0180;be\u2DEA\u39CB\u39CFar;\u62BBq;\u625Alip;\u62EE\u0100bt\u39DC\u1468a\xF2\u1469r;\uC000\u{1D533}tr\xE9\u39AEsu\u0100bp\u39EF\u39F1\xBB\u0D1C\xBB\u0D59pf;\uC000\u{1D567}ro\xF0\u0EFBtr\xE9\u39B4\u0100cu\u3A06\u3A0Br;\uC000\u{1D4CB}\u0100bp\u3A10\u3A18n\u0100Ee\u3980\u3A16\xBB\u397En\u0100Ee\u3992\u3A1E\xBB\u3990igzag;\u699A\u0380cefoprs\u3A36\u3A3B\u3A56\u3A5B\u3A54\u3A61\u3A6Airc;\u4175\u0100di\u3A40\u3A51\u0100bg\u3A45\u3A49ar;\u6A5Fe\u0100;q\u15FA\u3A4F;\u6259erp;\u6118r;\uC000\u{1D534}pf;\uC000\u{1D568}\u0100;e\u1479\u3A66at\xE8\u1479cr;\uC000\u{1D4CC}\u0AE3\u178E\u3A87\0\u3A8B\0\u3A90\u3A9B\0\0\u3A9D\u3AA8\u3AAB\u3AAF\0\0\u3AC3\u3ACE\0\u3AD8\u17DC\u17DFtr\xE9\u17D1r;\uC000\u{1D535}\u0100Aa\u3A94\u3A97r\xF2\u03C3r\xF2\u09F6;\u43BE\u0100Aa\u3AA1\u3AA4r\xF2\u03B8r\xF2\u09EBa\xF0\u2713is;\u62FB\u0180dpt\u17A4\u3AB5\u3ABE\u0100fl\u3ABA\u17A9;\uC000\u{1D569}im\xE5\u17B2\u0100Aa\u3AC7\u3ACAr\xF2\u03CEr\xF2\u0A01\u0100cq\u3AD2\u17B8r;\uC000\u{1D4CD}\u0100pt\u17D6\u3ADCr\xE9\u17D4\u0400acefiosu\u3AF0\u3AFD\u3B08\u3B0C\u3B11\u3B15\u3B1B\u3B21c\u0100uy\u3AF6\u3AFBte\u803B\xFD\u40FD;\u444F\u0100iy\u3B02\u3B06rc;\u4177;\u444Bn\u803B\xA5\u40A5r;\uC000\u{1D536}cy;\u4457pf;\uC000\u{1D56A}cr;\uC000\u{1D4CE}\u0100cm\u3B26\u3B29y;\u444El\u803B\xFF\u40FF\u0500acdefhiosw\u3B42\u3B48\u3B54\u3B58\u3B64\u3B69\u3B6D\u3B74\u3B7A\u3B80cute;\u417A\u0100ay\u3B4D\u3B52ron;\u417E;\u4437ot;\u417C\u0100et\u3B5D\u3B61tr\xE6\u155Fa;\u43B6r;\uC000\u{1D537}cy;\u4436grarr;\u61DDpf;\uC000\u{1D56B}cr;\uC000\u{1D4CF}\u0100jn\u3B85\u3B87;\u600Dj;\u600C'.split("").map((c) => c.charCodeAt(0)));
 
 // node_modules/entities/lib/esm/generated/decode-data-xml.js
-var decode_data_xml_default = new Uint16Array([512, 97, 103, 108, 113, 9, 21, 24, 27, 621, 15, 0, 0, 18, 112, 59, 16422, 111, 115, 59, 16423, 116, 59, 16446, 116, 59, 16444, 117, 111, 116, 59, 16418]);
+var decode_data_xml_default = new Uint16Array("\u0200aglq	\u026D\0\0p;\u4026os;\u4027t;\u403Et;\u403Cuot;\u4022".split("").map((c) => c.charCodeAt(0)));
 
 // node_modules/entities/lib/esm/decode_codepoint.js
 var _a;
@@ -2918,90 +4583,251 @@ function replaceCodePoint(codePoint) {
   }
   return (_a2 = decodeMap.get(codePoint)) !== null && _a2 !== void 0 ? _a2 : codePoint;
 }
-function decodeCodePoint(codePoint) {
-  return fromCodePoint(replaceCodePoint(codePoint));
-}
 
 // node_modules/entities/lib/esm/decode.js
 var CharCodes;
 (function(CharCodes3) {
   CharCodes3[CharCodes3["NUM"] = 35] = "NUM";
   CharCodes3[CharCodes3["SEMI"] = 59] = "SEMI";
+  CharCodes3[CharCodes3["EQUALS"] = 61] = "EQUALS";
   CharCodes3[CharCodes3["ZERO"] = 48] = "ZERO";
   CharCodes3[CharCodes3["NINE"] = 57] = "NINE";
   CharCodes3[CharCodes3["LOWER_A"] = 97] = "LOWER_A";
   CharCodes3[CharCodes3["LOWER_F"] = 102] = "LOWER_F";
   CharCodes3[CharCodes3["LOWER_X"] = 120] = "LOWER_X";
-  CharCodes3[CharCodes3["To_LOWER_BIT"] = 32] = "To_LOWER_BIT";
+  CharCodes3[CharCodes3["LOWER_Z"] = 122] = "LOWER_Z";
+  CharCodes3[CharCodes3["UPPER_A"] = 65] = "UPPER_A";
+  CharCodes3[CharCodes3["UPPER_F"] = 70] = "UPPER_F";
+  CharCodes3[CharCodes3["UPPER_Z"] = 90] = "UPPER_Z";
 })(CharCodes || (CharCodes = {}));
+var TO_LOWER_BIT = 32;
 var BinTrieFlags;
 (function(BinTrieFlags2) {
   BinTrieFlags2[BinTrieFlags2["VALUE_LENGTH"] = 49152] = "VALUE_LENGTH";
   BinTrieFlags2[BinTrieFlags2["BRANCH_LENGTH"] = 16256] = "BRANCH_LENGTH";
   BinTrieFlags2[BinTrieFlags2["JUMP_TABLE"] = 127] = "JUMP_TABLE";
 })(BinTrieFlags || (BinTrieFlags = {}));
-function getDecoder(decodeTree) {
-  return function decodeHTMLBinary(str, strict) {
-    let ret = "";
-    let lastIdx = 0;
-    let strIdx = 0;
-    while ((strIdx = str.indexOf("&", strIdx)) >= 0) {
-      ret += str.slice(lastIdx, strIdx);
-      lastIdx = strIdx;
-      strIdx += 1;
-      if (str.charCodeAt(strIdx) === CharCodes.NUM) {
-        let start2 = strIdx + 1;
-        let base = 10;
-        let cp = str.charCodeAt(start2);
-        if ((cp | CharCodes.To_LOWER_BIT) === CharCodes.LOWER_X) {
-          base = 16;
-          strIdx += 1;
-          start2 += 1;
+function isNumber(code) {
+  return code >= CharCodes.ZERO && code <= CharCodes.NINE;
+}
+function isHexadecimalCharacter(code) {
+  return code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_F || code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_F;
+}
+function isAsciiAlphaNumeric(code) {
+  return code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_Z || code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_Z || isNumber(code);
+}
+function isEntityInAttributeInvalidEnd(code) {
+  return code === CharCodes.EQUALS || isAsciiAlphaNumeric(code);
+}
+var EntityDecoderState;
+(function(EntityDecoderState2) {
+  EntityDecoderState2[EntityDecoderState2["EntityStart"] = 0] = "EntityStart";
+  EntityDecoderState2[EntityDecoderState2["NumericStart"] = 1] = "NumericStart";
+  EntityDecoderState2[EntityDecoderState2["NumericDecimal"] = 2] = "NumericDecimal";
+  EntityDecoderState2[EntityDecoderState2["NumericHex"] = 3] = "NumericHex";
+  EntityDecoderState2[EntityDecoderState2["NamedEntity"] = 4] = "NamedEntity";
+})(EntityDecoderState || (EntityDecoderState = {}));
+var DecodingMode;
+(function(DecodingMode2) {
+  DecodingMode2[DecodingMode2["Legacy"] = 0] = "Legacy";
+  DecodingMode2[DecodingMode2["Strict"] = 1] = "Strict";
+  DecodingMode2[DecodingMode2["Attribute"] = 2] = "Attribute";
+})(DecodingMode || (DecodingMode = {}));
+var EntityDecoder = class {
+  constructor(decodeTree, emitCodePoint, errors) {
+    this.decodeTree = decodeTree;
+    this.emitCodePoint = emitCodePoint;
+    this.errors = errors;
+    this.state = EntityDecoderState.EntityStart;
+    this.consumed = 1;
+    this.result = 0;
+    this.treeIndex = 0;
+    this.excess = 1;
+    this.decodeMode = DecodingMode.Strict;
+  }
+  startEntity(decodeMode) {
+    this.decodeMode = decodeMode;
+    this.state = EntityDecoderState.EntityStart;
+    this.result = 0;
+    this.treeIndex = 0;
+    this.excess = 1;
+    this.consumed = 1;
+  }
+  write(str, offset2) {
+    switch (this.state) {
+      case EntityDecoderState.EntityStart: {
+        if (str.charCodeAt(offset2) === CharCodes.NUM) {
+          this.state = EntityDecoderState.NumericStart;
+          this.consumed += 1;
+          return this.stateNumericStart(str, offset2 + 1);
         }
-        do
-          cp = str.charCodeAt(++strIdx);
-        while (cp >= CharCodes.ZERO && cp <= CharCodes.NINE || base === 16 && (cp | CharCodes.To_LOWER_BIT) >= CharCodes.LOWER_A && (cp | CharCodes.To_LOWER_BIT) <= CharCodes.LOWER_F);
-        if (start2 !== strIdx) {
-          const entity = str.substring(start2, strIdx);
-          const parsed = parseInt(entity, base);
-          if (str.charCodeAt(strIdx) === CharCodes.SEMI) {
-            strIdx += 1;
-          } else if (strict) {
-            continue;
-          }
-          ret += decodeCodePoint(parsed);
-          lastIdx = strIdx;
-        }
-        continue;
+        this.state = EntityDecoderState.NamedEntity;
+        return this.stateNamedEntity(str, offset2);
       }
-      let resultIdx = 0;
-      let excess = 1;
-      let treeIdx = 0;
-      let current = decodeTree[treeIdx];
-      for (; strIdx < str.length; strIdx++, excess++) {
-        treeIdx = determineBranch(decodeTree, current, treeIdx + 1, str.charCodeAt(strIdx));
-        if (treeIdx < 0)
-          break;
-        current = decodeTree[treeIdx];
-        const masked = current & BinTrieFlags.VALUE_LENGTH;
-        if (masked) {
-          if (!strict || str.charCodeAt(strIdx) === CharCodes.SEMI) {
-            resultIdx = treeIdx;
-            excess = 0;
-          }
-          const valueLength = (masked >> 14) - 1;
-          if (valueLength === 0)
-            break;
-          treeIdx += valueLength;
-        }
+      case EntityDecoderState.NumericStart: {
+        return this.stateNumericStart(str, offset2);
       }
-      if (resultIdx !== 0) {
-        const valueLength = (decodeTree[resultIdx] & BinTrieFlags.VALUE_LENGTH) >> 14;
-        ret += valueLength === 1 ? String.fromCharCode(decodeTree[resultIdx] & ~BinTrieFlags.VALUE_LENGTH) : valueLength === 2 ? String.fromCharCode(decodeTree[resultIdx + 1]) : String.fromCharCode(decodeTree[resultIdx + 1], decodeTree[resultIdx + 2]);
-        lastIdx = strIdx - excess + 1;
+      case EntityDecoderState.NumericDecimal: {
+        return this.stateNumericDecimal(str, offset2);
+      }
+      case EntityDecoderState.NumericHex: {
+        return this.stateNumericHex(str, offset2);
+      }
+      case EntityDecoderState.NamedEntity: {
+        return this.stateNamedEntity(str, offset2);
       }
     }
-    return ret + str.slice(lastIdx);
+  }
+  stateNumericStart(str, offset2) {
+    if (offset2 >= str.length) {
+      return -1;
+    }
+    if ((str.charCodeAt(offset2) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
+      this.state = EntityDecoderState.NumericHex;
+      this.consumed += 1;
+      return this.stateNumericHex(str, offset2 + 1);
+    }
+    this.state = EntityDecoderState.NumericDecimal;
+    return this.stateNumericDecimal(str, offset2);
+  }
+  addToNumericResult(str, start2, end3, base) {
+    if (start2 !== end3) {
+      const digitCount = end3 - start2;
+      this.result = this.result * Math.pow(base, digitCount) + parseInt(str.substr(start2, digitCount), base);
+      this.consumed += digitCount;
+    }
+  }
+  stateNumericHex(str, offset2) {
+    const startIdx = offset2;
+    while (offset2 < str.length) {
+      const char = str.charCodeAt(offset2);
+      if (isNumber(char) || isHexadecimalCharacter(char)) {
+        offset2 += 1;
+      } else {
+        this.addToNumericResult(str, startIdx, offset2, 16);
+        return this.emitNumericEntity(char, 3);
+      }
+    }
+    this.addToNumericResult(str, startIdx, offset2, 16);
+    return -1;
+  }
+  stateNumericDecimal(str, offset2) {
+    const startIdx = offset2;
+    while (offset2 < str.length) {
+      const char = str.charCodeAt(offset2);
+      if (isNumber(char)) {
+        offset2 += 1;
+      } else {
+        this.addToNumericResult(str, startIdx, offset2, 10);
+        return this.emitNumericEntity(char, 2);
+      }
+    }
+    this.addToNumericResult(str, startIdx, offset2, 10);
+    return -1;
+  }
+  emitNumericEntity(lastCp, expectedLength) {
+    var _a2;
+    if (this.consumed <= expectedLength) {
+      (_a2 = this.errors) === null || _a2 === void 0 ? void 0 : _a2.absenceOfDigitsInNumericCharacterReference(this.consumed);
+      return 0;
+    }
+    if (lastCp === CharCodes.SEMI) {
+      this.consumed += 1;
+    } else if (this.decodeMode === DecodingMode.Strict) {
+      return 0;
+    }
+    this.emitCodePoint(replaceCodePoint(this.result), this.consumed);
+    if (this.errors) {
+      if (lastCp !== CharCodes.SEMI) {
+        this.errors.missingSemicolonAfterCharacterReference();
+      }
+      this.errors.validateNumericCharacterReference(this.result);
+    }
+    return this.consumed;
+  }
+  stateNamedEntity(str, offset2) {
+    const { decodeTree } = this;
+    let current = decodeTree[this.treeIndex];
+    let valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+    for (; offset2 < str.length; offset2++, this.excess++) {
+      const char = str.charCodeAt(offset2);
+      this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
+      if (this.treeIndex < 0) {
+        return this.result === 0 || this.decodeMode === DecodingMode.Attribute && (valueLength === 0 || isEntityInAttributeInvalidEnd(char)) ? 0 : this.emitNotTerminatedNamedEntity();
+      }
+      current = decodeTree[this.treeIndex];
+      valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+      if (valueLength !== 0) {
+        if (char === CharCodes.SEMI) {
+          return this.emitNamedEntityData(this.treeIndex, valueLength, this.consumed + this.excess);
+        }
+        if (this.decodeMode !== DecodingMode.Strict) {
+          this.result = this.treeIndex;
+          this.consumed += this.excess;
+          this.excess = 0;
+        }
+      }
+    }
+    return -1;
+  }
+  emitNotTerminatedNamedEntity() {
+    var _a2;
+    const { result, decodeTree } = this;
+    const valueLength = (decodeTree[result] & BinTrieFlags.VALUE_LENGTH) >> 14;
+    this.emitNamedEntityData(result, valueLength, this.consumed);
+    (_a2 = this.errors) === null || _a2 === void 0 ? void 0 : _a2.missingSemicolonAfterCharacterReference();
+    return this.consumed;
+  }
+  emitNamedEntityData(result, valueLength, consumed) {
+    const { decodeTree } = this;
+    this.emitCodePoint(valueLength === 1 ? decodeTree[result] & ~BinTrieFlags.VALUE_LENGTH : decodeTree[result + 1], consumed);
+    if (valueLength === 3) {
+      this.emitCodePoint(decodeTree[result + 2], consumed);
+    }
+    return consumed;
+  }
+  end() {
+    var _a2;
+    switch (this.state) {
+      case EntityDecoderState.NamedEntity: {
+        return this.result !== 0 && (this.decodeMode !== DecodingMode.Attribute || this.result === this.treeIndex) ? this.emitNotTerminatedNamedEntity() : 0;
+      }
+      case EntityDecoderState.NumericDecimal: {
+        return this.emitNumericEntity(0, 2);
+      }
+      case EntityDecoderState.NumericHex: {
+        return this.emitNumericEntity(0, 3);
+      }
+      case EntityDecoderState.NumericStart: {
+        (_a2 = this.errors) === null || _a2 === void 0 ? void 0 : _a2.absenceOfDigitsInNumericCharacterReference(this.consumed);
+        return 0;
+      }
+      case EntityDecoderState.EntityStart: {
+        return 0;
+      }
+    }
+  }
+};
+function getDecoder(decodeTree) {
+  let ret = "";
+  const decoder = new EntityDecoder(decodeTree, (str) => ret += fromCodePoint(str));
+  return function decodeWithTrie(str, decodeMode) {
+    let lastIndex = 0;
+    let offset2 = 0;
+    while ((offset2 = str.indexOf("&", offset2)) >= 0) {
+      ret += str.slice(lastIndex, offset2);
+      decoder.startEntity(decodeMode);
+      const len = decoder.write(str, offset2 + 1);
+      if (len < 0) {
+        lastIndex = offset2 + decoder.end();
+        break;
+      }
+      lastIndex = offset2 + len;
+      offset2 = len === 0 ? lastIndex + 1 : lastIndex;
+    }
+    const result = ret + str.slice(lastIndex);
+    ret = "";
+    return result;
   };
 }
 function determineBranch(decodeTree, current, nodeIdx, char) {
@@ -3012,7 +4838,7 @@ function determineBranch(decodeTree, current, nodeIdx, char) {
   }
   if (jumpOffset) {
     const value = char - jumpOffset;
-    return value < 0 || value > branchCount ? -1 : decodeTree[nodeIdx + value] - 1;
+    return value < 0 || value >= branchCount ? -1 : decodeTree[nodeIdx + value] - 1;
   }
   let lo = nodeIdx;
   let hi = lo + branchCount - 1;
@@ -3033,7 +4859,13 @@ var htmlDecoder = getDecoder(decode_data_html_default);
 var xmlDecoder = getDecoder(decode_data_xml_default);
 
 // node_modules/entities/lib/esm/generated/encode-html.js
-var encode_html_default = new Map([[9, "&Tab;"], [10, "&NewLine;"], [33, "&excl;"], [34, "&quot;"], [35, "&num;"], [36, "&dollar;"], [37, "&percnt;"], [38, "&amp;"], [39, "&apos;"], [40, "&lpar;"], [41, "&rpar;"], [42, "&ast;"], [43, "&plus;"], [44, "&comma;"], [46, "&period;"], [47, "&sol;"], [58, "&colon;"], [59, "&semi;"], [60, { v: "&lt;", n: 8402, o: "&nvlt;" }], [61, { v: "&equals;", n: 8421, o: "&bne;" }], [62, { v: "&gt;", n: 8402, o: "&nvgt;" }], [63, "&quest;"], [64, "&commat;"], [91, "&lbrack;"], [92, "&bsol;"], [93, "&rbrack;"], [94, "&Hat;"], [95, "&lowbar;"], [96, "&DiacriticalGrave;"], [102, { n: 106, o: "&fjlig;" }], [123, "&lbrace;"], [124, "&verbar;"], [125, "&rbrace;"], [160, "&nbsp;"], [161, "&iexcl;"], [162, "&cent;"], [163, "&pound;"], [164, "&curren;"], [165, "&yen;"], [166, "&brvbar;"], [167, "&sect;"], [168, "&die;"], [169, "&copy;"], [170, "&ordf;"], [171, "&laquo;"], [172, "&not;"], [173, "&shy;"], [174, "&circledR;"], [175, "&macr;"], [176, "&deg;"], [177, "&PlusMinus;"], [178, "&sup2;"], [179, "&sup3;"], [180, "&acute;"], [181, "&micro;"], [182, "&para;"], [183, "&centerdot;"], [184, "&cedil;"], [185, "&sup1;"], [186, "&ordm;"], [187, "&raquo;"], [188, "&frac14;"], [189, "&frac12;"], [190, "&frac34;"], [191, "&iquest;"], [192, "&Agrave;"], [193, "&Aacute;"], [194, "&Acirc;"], [195, "&Atilde;"], [196, "&Auml;"], [197, "&angst;"], [198, "&AElig;"], [199, "&Ccedil;"], [200, "&Egrave;"], [201, "&Eacute;"], [202, "&Ecirc;"], [203, "&Euml;"], [204, "&Igrave;"], [205, "&Iacute;"], [206, "&Icirc;"], [207, "&Iuml;"], [208, "&ETH;"], [209, "&Ntilde;"], [210, "&Ograve;"], [211, "&Oacute;"], [212, "&Ocirc;"], [213, "&Otilde;"], [214, "&Ouml;"], [215, "&times;"], [216, "&Oslash;"], [217, "&Ugrave;"], [218, "&Uacute;"], [219, "&Ucirc;"], [220, "&Uuml;"], [221, "&Yacute;"], [222, "&THORN;"], [223, "&szlig;"], [224, "&agrave;"], [225, "&aacute;"], [226, "&acirc;"], [227, "&atilde;"], [228, "&auml;"], [229, "&aring;"], [230, "&aelig;"], [231, "&ccedil;"], [232, "&egrave;"], [233, "&eacute;"], [234, "&ecirc;"], [235, "&euml;"], [236, "&igrave;"], [237, "&iacute;"], [238, "&icirc;"], [239, "&iuml;"], [240, "&eth;"], [241, "&ntilde;"], [242, "&ograve;"], [243, "&oacute;"], [244, "&ocirc;"], [245, "&otilde;"], [246, "&ouml;"], [247, "&div;"], [248, "&oslash;"], [249, "&ugrave;"], [250, "&uacute;"], [251, "&ucirc;"], [252, "&uuml;"], [253, "&yacute;"], [254, "&thorn;"], [255, "&yuml;"], [256, "&Amacr;"], [257, "&amacr;"], [258, "&Abreve;"], [259, "&abreve;"], [260, "&Aogon;"], [261, "&aogon;"], [262, "&Cacute;"], [263, "&cacute;"], [264, "&Ccirc;"], [265, "&ccirc;"], [266, "&Cdot;"], [267, "&cdot;"], [268, "&Ccaron;"], [269, "&ccaron;"], [270, "&Dcaron;"], [271, "&dcaron;"], [272, "&Dstrok;"], [273, "&dstrok;"], [274, "&Emacr;"], [275, "&emacr;"], [278, "&Edot;"], [279, "&edot;"], [280, "&Eogon;"], [281, "&eogon;"], [282, "&Ecaron;"], [283, "&ecaron;"], [284, "&Gcirc;"], [285, "&gcirc;"], [286, "&Gbreve;"], [287, "&gbreve;"], [288, "&Gdot;"], [289, "&gdot;"], [290, "&Gcedil;"], [292, "&Hcirc;"], [293, "&hcirc;"], [294, "&Hstrok;"], [295, "&hstrok;"], [296, "&Itilde;"], [297, "&itilde;"], [298, "&Imacr;"], [299, "&imacr;"], [302, "&Iogon;"], [303, "&iogon;"], [304, "&Idot;"], [305, "&imath;"], [306, "&IJlig;"], [307, "&ijlig;"], [308, "&Jcirc;"], [309, "&jcirc;"], [310, "&Kcedil;"], [311, "&kcedil;"], [312, "&kgreen;"], [313, "&Lacute;"], [314, "&lacute;"], [315, "&Lcedil;"], [316, "&lcedil;"], [317, "&Lcaron;"], [318, "&lcaron;"], [319, "&Lmidot;"], [320, "&lmidot;"], [321, "&Lstrok;"], [322, "&lstrok;"], [323, "&Nacute;"], [324, "&nacute;"], [325, "&Ncedil;"], [326, "&ncedil;"], [327, "&Ncaron;"], [328, "&ncaron;"], [329, "&napos;"], [330, "&ENG;"], [331, "&eng;"], [332, "&Omacr;"], [333, "&omacr;"], [336, "&Odblac;"], [337, "&odblac;"], [338, "&OElig;"], [339, "&oelig;"], [340, "&Racute;"], [341, "&racute;"], [342, "&Rcedil;"], [343, "&rcedil;"], [344, "&Rcaron;"], [345, "&rcaron;"], [346, "&Sacute;"], [347, "&sacute;"], [348, "&Scirc;"], [349, "&scirc;"], [350, "&Scedil;"], [351, "&scedil;"], [352, "&Scaron;"], [353, "&scaron;"], [354, "&Tcedil;"], [355, "&tcedil;"], [356, "&Tcaron;"], [357, "&tcaron;"], [358, "&Tstrok;"], [359, "&tstrok;"], [360, "&Utilde;"], [361, "&utilde;"], [362, "&Umacr;"], [363, "&umacr;"], [364, "&Ubreve;"], [365, "&ubreve;"], [366, "&Uring;"], [367, "&uring;"], [368, "&Udblac;"], [369, "&udblac;"], [370, "&Uogon;"], [371, "&uogon;"], [372, "&Wcirc;"], [373, "&wcirc;"], [374, "&Ycirc;"], [375, "&ycirc;"], [376, "&Yuml;"], [377, "&Zacute;"], [378, "&zacute;"], [379, "&Zdot;"], [380, "&zdot;"], [381, "&Zcaron;"], [382, "&zcaron;"], [402, "&fnof;"], [437, "&imped;"], [501, "&gacute;"], [567, "&jmath;"], [710, "&circ;"], [711, "&caron;"], [728, "&breve;"], [729, "&DiacriticalDot;"], [730, "&ring;"], [731, "&ogon;"], [732, "&DiacriticalTilde;"], [733, "&dblac;"], [785, "&DownBreve;"], [913, "&Alpha;"], [914, "&Beta;"], [915, "&Gamma;"], [916, "&Delta;"], [917, "&Epsilon;"], [918, "&Zeta;"], [919, "&Eta;"], [920, "&Theta;"], [921, "&Iota;"], [922, "&Kappa;"], [923, "&Lambda;"], [924, "&Mu;"], [925, "&Nu;"], [926, "&Xi;"], [927, "&Omicron;"], [928, "&Pi;"], [929, "&Rho;"], [931, "&Sigma;"], [932, "&Tau;"], [933, "&Upsilon;"], [934, "&Phi;"], [935, "&Chi;"], [936, "&Psi;"], [937, "&ohm;"], [945, "&alpha;"], [946, "&beta;"], [947, "&gamma;"], [948, "&delta;"], [949, "&epsi;"], [950, "&zeta;"], [951, "&eta;"], [952, "&theta;"], [953, "&iota;"], [954, "&kappa;"], [955, "&lambda;"], [956, "&mu;"], [957, "&nu;"], [958, "&xi;"], [959, "&omicron;"], [960, "&pi;"], [961, "&rho;"], [962, "&sigmaf;"], [963, "&sigma;"], [964, "&tau;"], [965, "&upsi;"], [966, "&phi;"], [967, "&chi;"], [968, "&psi;"], [969, "&omega;"], [977, "&thetasym;"], [978, "&Upsi;"], [981, "&phiv;"], [982, "&piv;"], [988, "&Gammad;"], [989, "&digamma;"], [1008, "&kappav;"], [1009, "&rhov;"], [1013, "&epsiv;"], [1014, "&backepsilon;"], [1025, "&IOcy;"], [1026, "&DJcy;"], [1027, "&GJcy;"], [1028, "&Jukcy;"], [1029, "&DScy;"], [1030, "&Iukcy;"], [1031, "&YIcy;"], [1032, "&Jsercy;"], [1033, "&LJcy;"], [1034, "&NJcy;"], [1035, "&TSHcy;"], [1036, "&KJcy;"], [1038, "&Ubrcy;"], [1039, "&DZcy;"], [1040, "&Acy;"], [1041, "&Bcy;"], [1042, "&Vcy;"], [1043, "&Gcy;"], [1044, "&Dcy;"], [1045, "&IEcy;"], [1046, "&ZHcy;"], [1047, "&Zcy;"], [1048, "&Icy;"], [1049, "&Jcy;"], [1050, "&Kcy;"], [1051, "&Lcy;"], [1052, "&Mcy;"], [1053, "&Ncy;"], [1054, "&Ocy;"], [1055, "&Pcy;"], [1056, "&Rcy;"], [1057, "&Scy;"], [1058, "&Tcy;"], [1059, "&Ucy;"], [1060, "&Fcy;"], [1061, "&KHcy;"], [1062, "&TScy;"], [1063, "&CHcy;"], [1064, "&SHcy;"], [1065, "&SHCHcy;"], [1066, "&HARDcy;"], [1067, "&Ycy;"], [1068, "&SOFTcy;"], [1069, "&Ecy;"], [1070, "&YUcy;"], [1071, "&YAcy;"], [1072, "&acy;"], [1073, "&bcy;"], [1074, "&vcy;"], [1075, "&gcy;"], [1076, "&dcy;"], [1077, "&iecy;"], [1078, "&zhcy;"], [1079, "&zcy;"], [1080, "&icy;"], [1081, "&jcy;"], [1082, "&kcy;"], [1083, "&lcy;"], [1084, "&mcy;"], [1085, "&ncy;"], [1086, "&ocy;"], [1087, "&pcy;"], [1088, "&rcy;"], [1089, "&scy;"], [1090, "&tcy;"], [1091, "&ucy;"], [1092, "&fcy;"], [1093, "&khcy;"], [1094, "&tscy;"], [1095, "&chcy;"], [1096, "&shcy;"], [1097, "&shchcy;"], [1098, "&hardcy;"], [1099, "&ycy;"], [1100, "&softcy;"], [1101, "&ecy;"], [1102, "&yucy;"], [1103, "&yacy;"], [1105, "&iocy;"], [1106, "&djcy;"], [1107, "&gjcy;"], [1108, "&jukcy;"], [1109, "&dscy;"], [1110, "&iukcy;"], [1111, "&yicy;"], [1112, "&jsercy;"], [1113, "&ljcy;"], [1114, "&njcy;"], [1115, "&tshcy;"], [1116, "&kjcy;"], [1118, "&ubrcy;"], [1119, "&dzcy;"], [8194, "&ensp;"], [8195, "&emsp;"], [8196, "&emsp13;"], [8197, "&emsp14;"], [8199, "&numsp;"], [8200, "&puncsp;"], [8201, "&ThinSpace;"], [8202, "&hairsp;"], [8203, "&NegativeMediumSpace;"], [8204, "&zwnj;"], [8205, "&zwj;"], [8206, "&lrm;"], [8207, "&rlm;"], [8208, "&dash;"], [8211, "&ndash;"], [8212, "&mdash;"], [8213, "&horbar;"], [8214, "&Verbar;"], [8216, "&lsquo;"], [8217, "&CloseCurlyQuote;"], [8218, "&lsquor;"], [8220, "&ldquo;"], [8221, "&CloseCurlyDoubleQuote;"], [8222, "&bdquo;"], [8224, "&dagger;"], [8225, "&Dagger;"], [8226, "&bull;"], [8229, "&nldr;"], [8230, "&hellip;"], [8240, "&permil;"], [8241, "&pertenk;"], [8242, "&prime;"], [8243, "&Prime;"], [8244, "&tprime;"], [8245, "&backprime;"], [8249, "&lsaquo;"], [8250, "&rsaquo;"], [8254, "&oline;"], [8257, "&caret;"], [8259, "&hybull;"], [8260, "&frasl;"], [8271, "&bsemi;"], [8279, "&qprime;"], [8287, { v: "&MediumSpace;", n: 8202, o: "&ThickSpace;" }], [8288, "&NoBreak;"], [8289, "&af;"], [8290, "&InvisibleTimes;"], [8291, "&ic;"], [8364, "&euro;"], [8411, "&tdot;"], [8412, "&DotDot;"], [8450, "&complexes;"], [8453, "&incare;"], [8458, "&gscr;"], [8459, "&hamilt;"], [8460, "&Hfr;"], [8461, "&Hopf;"], [8462, "&planckh;"], [8463, "&hbar;"], [8464, "&imagline;"], [8465, "&Ifr;"], [8466, "&lagran;"], [8467, "&ell;"], [8469, "&naturals;"], [8470, "&numero;"], [8471, "&copysr;"], [8472, "&weierp;"], [8473, "&Popf;"], [8474, "&Qopf;"], [8475, "&realine;"], [8476, "&real;"], [8477, "&reals;"], [8478, "&rx;"], [8482, "&trade;"], [8484, "&integers;"], [8487, "&mho;"], [8488, "&zeetrf;"], [8489, "&iiota;"], [8492, "&bernou;"], [8493, "&Cayleys;"], [8495, "&escr;"], [8496, "&Escr;"], [8497, "&Fouriertrf;"], [8499, "&Mellintrf;"], [8500, "&order;"], [8501, "&alefsym;"], [8502, "&beth;"], [8503, "&gimel;"], [8504, "&daleth;"], [8517, "&CapitalDifferentialD;"], [8518, "&dd;"], [8519, "&ee;"], [8520, "&ii;"], [8531, "&frac13;"], [8532, "&frac23;"], [8533, "&frac15;"], [8534, "&frac25;"], [8535, "&frac35;"], [8536, "&frac45;"], [8537, "&frac16;"], [8538, "&frac56;"], [8539, "&frac18;"], [8540, "&frac38;"], [8541, "&frac58;"], [8542, "&frac78;"], [8592, "&larr;"], [8593, "&ShortUpArrow;"], [8594, "&rarr;"], [8595, "&darr;"], [8596, "&harr;"], [8597, "&updownarrow;"], [8598, "&nwarr;"], [8599, "&nearr;"], [8600, "&LowerRightArrow;"], [8601, "&LowerLeftArrow;"], [8602, "&nlarr;"], [8603, "&nrarr;"], [8605, { v: "&rarrw;", n: 824, o: "&nrarrw;" }], [8606, "&Larr;"], [8607, "&Uarr;"], [8608, "&Rarr;"], [8609, "&Darr;"], [8610, "&larrtl;"], [8611, "&rarrtl;"], [8612, "&LeftTeeArrow;"], [8613, "&mapstoup;"], [8614, "&map;"], [8615, "&DownTeeArrow;"], [8617, "&hookleftarrow;"], [8618, "&hookrightarrow;"], [8619, "&larrlp;"], [8620, "&looparrowright;"], [8621, "&harrw;"], [8622, "&nharr;"], [8624, "&lsh;"], [8625, "&rsh;"], [8626, "&ldsh;"], [8627, "&rdsh;"], [8629, "&crarr;"], [8630, "&cularr;"], [8631, "&curarr;"], [8634, "&circlearrowleft;"], [8635, "&circlearrowright;"], [8636, "&leftharpoonup;"], [8637, "&DownLeftVector;"], [8638, "&RightUpVector;"], [8639, "&LeftUpVector;"], [8640, "&rharu;"], [8641, "&DownRightVector;"], [8642, "&dharr;"], [8643, "&dharl;"], [8644, "&RightArrowLeftArrow;"], [8645, "&udarr;"], [8646, "&LeftArrowRightArrow;"], [8647, "&leftleftarrows;"], [8648, "&upuparrows;"], [8649, "&rightrightarrows;"], [8650, "&ddarr;"], [8651, "&leftrightharpoons;"], [8652, "&Equilibrium;"], [8653, "&nlArr;"], [8654, "&nhArr;"], [8655, "&nrArr;"], [8656, "&DoubleLeftArrow;"], [8657, "&DoubleUpArrow;"], [8658, "&DoubleRightArrow;"], [8659, "&dArr;"], [8660, "&DoubleLeftRightArrow;"], [8661, "&DoubleUpDownArrow;"], [8662, "&nwArr;"], [8663, "&neArr;"], [8664, "&seArr;"], [8665, "&swArr;"], [8666, "&lAarr;"], [8667, "&rAarr;"], [8669, "&zigrarr;"], [8676, "&larrb;"], [8677, "&rarrb;"], [8693, "&DownArrowUpArrow;"], [8701, "&loarr;"], [8702, "&roarr;"], [8703, "&hoarr;"], [8704, "&forall;"], [8705, "&comp;"], [8706, { v: "&part;", n: 824, o: "&npart;" }], [8707, "&exist;"], [8708, "&nexist;"], [8709, "&empty;"], [8711, "&Del;"], [8712, "&Element;"], [8713, "&NotElement;"], [8715, "&ni;"], [8716, "&notni;"], [8719, "&prod;"], [8720, "&coprod;"], [8721, "&sum;"], [8722, "&minus;"], [8723, "&MinusPlus;"], [8724, "&dotplus;"], [8726, "&Backslash;"], [8727, "&lowast;"], [8728, "&compfn;"], [8730, "&radic;"], [8733, "&prop;"], [8734, "&infin;"], [8735, "&angrt;"], [8736, { v: "&ang;", n: 8402, o: "&nang;" }], [8737, "&angmsd;"], [8738, "&angsph;"], [8739, "&mid;"], [8740, "&nmid;"], [8741, "&DoubleVerticalBar;"], [8742, "&NotDoubleVerticalBar;"], [8743, "&and;"], [8744, "&or;"], [8745, { v: "&cap;", n: 65024, o: "&caps;" }], [8746, { v: "&cup;", n: 65024, o: "&cups;" }], [8747, "&int;"], [8748, "&Int;"], [8749, "&iiint;"], [8750, "&conint;"], [8751, "&Conint;"], [8752, "&Cconint;"], [8753, "&cwint;"], [8754, "&ClockwiseContourIntegral;"], [8755, "&awconint;"], [8756, "&there4;"], [8757, "&becaus;"], [8758, "&ratio;"], [8759, "&Colon;"], [8760, "&dotminus;"], [8762, "&mDDot;"], [8763, "&homtht;"], [8764, { v: "&sim;", n: 8402, o: "&nvsim;" }], [8765, { v: "&backsim;", n: 817, o: "&race;" }], [8766, { v: "&ac;", n: 819, o: "&acE;" }], [8767, "&acd;"], [8768, "&VerticalTilde;"], [8769, "&NotTilde;"], [8770, { v: "&eqsim;", n: 824, o: "&nesim;" }], [8771, "&sime;"], [8772, "&NotTildeEqual;"], [8773, "&cong;"], [8774, "&simne;"], [8775, "&ncong;"], [8776, "&ap;"], [8777, "&nap;"], [8778, "&ape;"], [8779, { v: "&apid;", n: 824, o: "&napid;" }], [8780, "&backcong;"], [8781, { v: "&asympeq;", n: 8402, o: "&nvap;" }], [8782, { v: "&bump;", n: 824, o: "&nbump;" }], [8783, { v: "&bumpe;", n: 824, o: "&nbumpe;" }], [8784, { v: "&doteq;", n: 824, o: "&nedot;" }], [8785, "&doteqdot;"], [8786, "&efDot;"], [8787, "&erDot;"], [8788, "&Assign;"], [8789, "&ecolon;"], [8790, "&ecir;"], [8791, "&circeq;"], [8793, "&wedgeq;"], [8794, "&veeeq;"], [8796, "&triangleq;"], [8799, "&equest;"], [8800, "&ne;"], [8801, { v: "&Congruent;", n: 8421, o: "&bnequiv;" }], [8802, "&nequiv;"], [8804, { v: "&le;", n: 8402, o: "&nvle;" }], [8805, { v: "&ge;", n: 8402, o: "&nvge;" }], [8806, { v: "&lE;", n: 824, o: "&nlE;" }], [8807, { v: "&gE;", n: 824, o: "&ngE;" }], [8808, { v: "&lnE;", n: 65024, o: "&lvertneqq;" }], [8809, { v: "&gnE;", n: 65024, o: "&gvertneqq;" }], [8810, { v: "&ll;", n: new Map([[824, "&nLtv;"], [8402, "&nLt;"]]) }], [8811, { v: "&gg;", n: new Map([[824, "&nGtv;"], [8402, "&nGt;"]]) }], [8812, "&between;"], [8813, "&NotCupCap;"], [8814, "&nless;"], [8815, "&ngt;"], [8816, "&nle;"], [8817, "&nge;"], [8818, "&lesssim;"], [8819, "&GreaterTilde;"], [8820, "&nlsim;"], [8821, "&ngsim;"], [8822, "&LessGreater;"], [8823, "&gl;"], [8824, "&NotLessGreater;"], [8825, "&NotGreaterLess;"], [8826, "&pr;"], [8827, "&sc;"], [8828, "&prcue;"], [8829, "&sccue;"], [8830, "&PrecedesTilde;"], [8831, { v: "&scsim;", n: 824, o: "&NotSucceedsTilde;" }], [8832, "&NotPrecedes;"], [8833, "&NotSucceeds;"], [8834, { v: "&sub;", n: 8402, o: "&NotSubset;" }], [8835, { v: "&sup;", n: 8402, o: "&NotSuperset;" }], [8836, "&nsub;"], [8837, "&nsup;"], [8838, "&sube;"], [8839, "&supe;"], [8840, "&NotSubsetEqual;"], [8841, "&NotSupersetEqual;"], [8842, { v: "&subne;", n: 65024, o: "&varsubsetneq;" }], [8843, { v: "&supne;", n: 65024, o: "&varsupsetneq;" }], [8845, "&cupdot;"], [8846, "&UnionPlus;"], [8847, { v: "&sqsub;", n: 824, o: "&NotSquareSubset;" }], [8848, { v: "&sqsup;", n: 824, o: "&NotSquareSuperset;" }], [8849, "&sqsube;"], [8850, "&sqsupe;"], [8851, { v: "&sqcap;", n: 65024, o: "&sqcaps;" }], [8852, { v: "&sqcup;", n: 65024, o: "&sqcups;" }], [8853, "&CirclePlus;"], [8854, "&CircleMinus;"], [8855, "&CircleTimes;"], [8856, "&osol;"], [8857, "&CircleDot;"], [8858, "&circledcirc;"], [8859, "&circledast;"], [8861, "&circleddash;"], [8862, "&boxplus;"], [8863, "&boxminus;"], [8864, "&boxtimes;"], [8865, "&dotsquare;"], [8866, "&RightTee;"], [8867, "&dashv;"], [8868, "&DownTee;"], [8869, "&bot;"], [8871, "&models;"], [8872, "&DoubleRightTee;"], [8873, "&Vdash;"], [8874, "&Vvdash;"], [8875, "&VDash;"], [8876, "&nvdash;"], [8877, "&nvDash;"], [8878, "&nVdash;"], [8879, "&nVDash;"], [8880, "&prurel;"], [8882, "&LeftTriangle;"], [8883, "&RightTriangle;"], [8884, { v: "&LeftTriangleEqual;", n: 8402, o: "&nvltrie;" }], [8885, { v: "&RightTriangleEqual;", n: 8402, o: "&nvrtrie;" }], [8886, "&origof;"], [8887, "&imof;"], [8888, "&multimap;"], [8889, "&hercon;"], [8890, "&intcal;"], [8891, "&veebar;"], [8893, "&barvee;"], [8894, "&angrtvb;"], [8895, "&lrtri;"], [8896, "&bigwedge;"], [8897, "&bigvee;"], [8898, "&bigcap;"], [8899, "&bigcup;"], [8900, "&diam;"], [8901, "&sdot;"], [8902, "&sstarf;"], [8903, "&divideontimes;"], [8904, "&bowtie;"], [8905, "&ltimes;"], [8906, "&rtimes;"], [8907, "&leftthreetimes;"], [8908, "&rightthreetimes;"], [8909, "&backsimeq;"], [8910, "&curlyvee;"], [8911, "&curlywedge;"], [8912, "&Sub;"], [8913, "&Sup;"], [8914, "&Cap;"], [8915, "&Cup;"], [8916, "&fork;"], [8917, "&epar;"], [8918, "&lessdot;"], [8919, "&gtdot;"], [8920, { v: "&Ll;", n: 824, o: "&nLl;" }], [8921, { v: "&Gg;", n: 824, o: "&nGg;" }], [8922, { v: "&leg;", n: 65024, o: "&lesg;" }], [8923, { v: "&gel;", n: 65024, o: "&gesl;" }], [8926, "&cuepr;"], [8927, "&cuesc;"], [8928, "&NotPrecedesSlantEqual;"], [8929, "&NotSucceedsSlantEqual;"], [8930, "&NotSquareSubsetEqual;"], [8931, "&NotSquareSupersetEqual;"], [8934, "&lnsim;"], [8935, "&gnsim;"], [8936, "&precnsim;"], [8937, "&scnsim;"], [8938, "&nltri;"], [8939, "&NotRightTriangle;"], [8940, "&nltrie;"], [8941, "&NotRightTriangleEqual;"], [8942, "&vellip;"], [8943, "&ctdot;"], [8944, "&utdot;"], [8945, "&dtdot;"], [8946, "&disin;"], [8947, "&isinsv;"], [8948, "&isins;"], [8949, { v: "&isindot;", n: 824, o: "&notindot;" }], [8950, "&notinvc;"], [8951, "&notinvb;"], [8953, { v: "&isinE;", n: 824, o: "&notinE;" }], [8954, "&nisd;"], [8955, "&xnis;"], [8956, "&nis;"], [8957, "&notnivc;"], [8958, "&notnivb;"], [8965, "&barwed;"], [8966, "&Barwed;"], [8968, "&lceil;"], [8969, "&rceil;"], [8970, "&LeftFloor;"], [8971, "&rfloor;"], [8972, "&drcrop;"], [8973, "&dlcrop;"], [8974, "&urcrop;"], [8975, "&ulcrop;"], [8976, "&bnot;"], [8978, "&profline;"], [8979, "&profsurf;"], [8981, "&telrec;"], [8982, "&target;"], [8988, "&ulcorn;"], [8989, "&urcorn;"], [8990, "&dlcorn;"], [8991, "&drcorn;"], [8994, "&frown;"], [8995, "&smile;"], [9005, "&cylcty;"], [9006, "&profalar;"], [9014, "&topbot;"], [9021, "&ovbar;"], [9023, "&solbar;"], [9084, "&angzarr;"], [9136, "&lmoustache;"], [9137, "&rmoustache;"], [9140, "&OverBracket;"], [9141, "&bbrk;"], [9142, "&bbrktbrk;"], [9180, "&OverParenthesis;"], [9181, "&UnderParenthesis;"], [9182, "&OverBrace;"], [9183, "&UnderBrace;"], [9186, "&trpezium;"], [9191, "&elinters;"], [9251, "&blank;"], [9416, "&circledS;"], [9472, "&boxh;"], [9474, "&boxv;"], [9484, "&boxdr;"], [9488, "&boxdl;"], [9492, "&boxur;"], [9496, "&boxul;"], [9500, "&boxvr;"], [9508, "&boxvl;"], [9516, "&boxhd;"], [9524, "&boxhu;"], [9532, "&boxvh;"], [9552, "&boxH;"], [9553, "&boxV;"], [9554, "&boxdR;"], [9555, "&boxDr;"], [9556, "&boxDR;"], [9557, "&boxdL;"], [9558, "&boxDl;"], [9559, "&boxDL;"], [9560, "&boxuR;"], [9561, "&boxUr;"], [9562, "&boxUR;"], [9563, "&boxuL;"], [9564, "&boxUl;"], [9565, "&boxUL;"], [9566, "&boxvR;"], [9567, "&boxVr;"], [9568, "&boxVR;"], [9569, "&boxvL;"], [9570, "&boxVl;"], [9571, "&boxVL;"], [9572, "&boxHd;"], [9573, "&boxhD;"], [9574, "&boxHD;"], [9575, "&boxHu;"], [9576, "&boxhU;"], [9577, "&boxHU;"], [9578, "&boxvH;"], [9579, "&boxVh;"], [9580, "&boxVH;"], [9600, "&uhblk;"], [9604, "&lhblk;"], [9608, "&block;"], [9617, "&blk14;"], [9618, "&blk12;"], [9619, "&blk34;"], [9633, "&square;"], [9642, "&blacksquare;"], [9643, "&EmptyVerySmallSquare;"], [9645, "&rect;"], [9646, "&marker;"], [9649, "&fltns;"], [9651, "&bigtriangleup;"], [9652, "&blacktriangle;"], [9653, "&triangle;"], [9656, "&blacktriangleright;"], [9657, "&rtri;"], [9661, "&bigtriangledown;"], [9662, "&blacktriangledown;"], [9663, "&dtri;"], [9666, "&blacktriangleleft;"], [9667, "&ltri;"], [9674, "&loz;"], [9675, "&cir;"], [9708, "&tridot;"], [9711, "&bigcirc;"], [9720, "&ultri;"], [9721, "&urtri;"], [9722, "&lltri;"], [9723, "&EmptySmallSquare;"], [9724, "&FilledSmallSquare;"], [9733, "&bigstar;"], [9734, "&star;"], [9742, "&phone;"], [9792, "&female;"], [9794, "&male;"], [9824, "&spades;"], [9827, "&clubs;"], [9829, "&hearts;"], [9830, "&diamondsuit;"], [9834, "&sung;"], [9837, "&flat;"], [9838, "&natural;"], [9839, "&sharp;"], [10003, "&check;"], [10007, "&cross;"], [10016, "&malt;"], [10038, "&sext;"], [10072, "&VerticalSeparator;"], [10098, "&lbbrk;"], [10099, "&rbbrk;"], [10184, "&bsolhsub;"], [10185, "&suphsol;"], [10214, "&LeftDoubleBracket;"], [10215, "&RightDoubleBracket;"], [10216, "&lang;"], [10217, "&rang;"], [10218, "&Lang;"], [10219, "&Rang;"], [10220, "&loang;"], [10221, "&roang;"], [10229, "&longleftarrow;"], [10230, "&longrightarrow;"], [10231, "&longleftrightarrow;"], [10232, "&DoubleLongLeftArrow;"], [10233, "&DoubleLongRightArrow;"], [10234, "&DoubleLongLeftRightArrow;"], [10236, "&longmapsto;"], [10239, "&dzigrarr;"], [10498, "&nvlArr;"], [10499, "&nvrArr;"], [10500, "&nvHarr;"], [10501, "&Map;"], [10508, "&lbarr;"], [10509, "&bkarow;"], [10510, "&lBarr;"], [10511, "&dbkarow;"], [10512, "&drbkarow;"], [10513, "&DDotrahd;"], [10514, "&UpArrowBar;"], [10515, "&DownArrowBar;"], [10518, "&Rarrtl;"], [10521, "&latail;"], [10522, "&ratail;"], [10523, "&lAtail;"], [10524, "&rAtail;"], [10525, "&larrfs;"], [10526, "&rarrfs;"], [10527, "&larrbfs;"], [10528, "&rarrbfs;"], [10531, "&nwarhk;"], [10532, "&nearhk;"], [10533, "&hksearow;"], [10534, "&hkswarow;"], [10535, "&nwnear;"], [10536, "&nesear;"], [10537, "&seswar;"], [10538, "&swnwar;"], [10547, { v: "&rarrc;", n: 824, o: "&nrarrc;" }], [10549, "&cudarrr;"], [10550, "&ldca;"], [10551, "&rdca;"], [10552, "&cudarrl;"], [10553, "&larrpl;"], [10556, "&curarrm;"], [10557, "&cularrp;"], [10565, "&rarrpl;"], [10568, "&harrcir;"], [10569, "&Uarrocir;"], [10570, "&lurdshar;"], [10571, "&ldrushar;"], [10574, "&LeftRightVector;"], [10575, "&RightUpDownVector;"], [10576, "&DownLeftRightVector;"], [10577, "&LeftUpDownVector;"], [10578, "&LeftVectorBar;"], [10579, "&RightVectorBar;"], [10580, "&RightUpVectorBar;"], [10581, "&RightDownVectorBar;"], [10582, "&DownLeftVectorBar;"], [10583, "&DownRightVectorBar;"], [10584, "&LeftUpVectorBar;"], [10585, "&LeftDownVectorBar;"], [10586, "&LeftTeeVector;"], [10587, "&RightTeeVector;"], [10588, "&RightUpTeeVector;"], [10589, "&RightDownTeeVector;"], [10590, "&DownLeftTeeVector;"], [10591, "&DownRightTeeVector;"], [10592, "&LeftUpTeeVector;"], [10593, "&LeftDownTeeVector;"], [10594, "&lHar;"], [10595, "&uHar;"], [10596, "&rHar;"], [10597, "&dHar;"], [10598, "&luruhar;"], [10599, "&ldrdhar;"], [10600, "&ruluhar;"], [10601, "&rdldhar;"], [10602, "&lharul;"], [10603, "&llhard;"], [10604, "&rharul;"], [10605, "&lrhard;"], [10606, "&udhar;"], [10607, "&duhar;"], [10608, "&RoundImplies;"], [10609, "&erarr;"], [10610, "&simrarr;"], [10611, "&larrsim;"], [10612, "&rarrsim;"], [10613, "&rarrap;"], [10614, "&ltlarr;"], [10616, "&gtrarr;"], [10617, "&subrarr;"], [10619, "&suplarr;"], [10620, "&lfisht;"], [10621, "&rfisht;"], [10622, "&ufisht;"], [10623, "&dfisht;"], [10629, "&lopar;"], [10630, "&ropar;"], [10635, "&lbrke;"], [10636, "&rbrke;"], [10637, "&lbrkslu;"], [10638, "&rbrksld;"], [10639, "&lbrksld;"], [10640, "&rbrkslu;"], [10641, "&langd;"], [10642, "&rangd;"], [10643, "&lparlt;"], [10644, "&rpargt;"], [10645, "&gtlPar;"], [10646, "&ltrPar;"], [10650, "&vzigzag;"], [10652, "&vangrt;"], [10653, "&angrtvbd;"], [10660, "&ange;"], [10661, "&range;"], [10662, "&dwangle;"], [10663, "&uwangle;"], [10664, "&angmsdaa;"], [10665, "&angmsdab;"], [10666, "&angmsdac;"], [10667, "&angmsdad;"], [10668, "&angmsdae;"], [10669, "&angmsdaf;"], [10670, "&angmsdag;"], [10671, "&angmsdah;"], [10672, "&bemptyv;"], [10673, "&demptyv;"], [10674, "&cemptyv;"], [10675, "&raemptyv;"], [10676, "&laemptyv;"], [10677, "&ohbar;"], [10678, "&omid;"], [10679, "&opar;"], [10681, "&operp;"], [10683, "&olcross;"], [10684, "&odsold;"], [10686, "&olcir;"], [10687, "&ofcir;"], [10688, "&olt;"], [10689, "&ogt;"], [10690, "&cirscir;"], [10691, "&cirE;"], [10692, "&solb;"], [10693, "&bsolb;"], [10697, "&boxbox;"], [10701, "&trisb;"], [10702, "&rtriltri;"], [10703, { v: "&LeftTriangleBar;", n: 824, o: "&NotLeftTriangleBar;" }], [10704, { v: "&RightTriangleBar;", n: 824, o: "&NotRightTriangleBar;" }], [10716, "&iinfin;"], [10717, "&infintie;"], [10718, "&nvinfin;"], [10723, "&eparsl;"], [10724, "&smeparsl;"], [10725, "&eqvparsl;"], [10731, "&blacklozenge;"], [10740, "&RuleDelayed;"], [10742, "&dsol;"], [10752, "&bigodot;"], [10753, "&bigoplus;"], [10754, "&bigotimes;"], [10756, "&biguplus;"], [10758, "&bigsqcup;"], [10764, "&iiiint;"], [10765, "&fpartint;"], [10768, "&cirfnint;"], [10769, "&awint;"], [10770, "&rppolint;"], [10771, "&scpolint;"], [10772, "&npolint;"], [10773, "&pointint;"], [10774, "&quatint;"], [10775, "&intlarhk;"], [10786, "&pluscir;"], [10787, "&plusacir;"], [10788, "&simplus;"], [10789, "&plusdu;"], [10790, "&plussim;"], [10791, "&plustwo;"], [10793, "&mcomma;"], [10794, "&minusdu;"], [10797, "&loplus;"], [10798, "&roplus;"], [10799, "&Cross;"], [10800, "&timesd;"], [10801, "&timesbar;"], [10803, "&smashp;"], [10804, "&lotimes;"], [10805, "&rotimes;"], [10806, "&otimesas;"], [10807, "&Otimes;"], [10808, "&odiv;"], [10809, "&triplus;"], [10810, "&triminus;"], [10811, "&tritime;"], [10812, "&intprod;"], [10815, "&amalg;"], [10816, "&capdot;"], [10818, "&ncup;"], [10819, "&ncap;"], [10820, "&capand;"], [10821, "&cupor;"], [10822, "&cupcap;"], [10823, "&capcup;"], [10824, "&cupbrcap;"], [10825, "&capbrcup;"], [10826, "&cupcup;"], [10827, "&capcap;"], [10828, "&ccups;"], [10829, "&ccaps;"], [10832, "&ccupssm;"], [10835, "&And;"], [10836, "&Or;"], [10837, "&andand;"], [10838, "&oror;"], [10839, "&orslope;"], [10840, "&andslope;"], [10842, "&andv;"], [10843, "&orv;"], [10844, "&andd;"], [10845, "&ord;"], [10847, "&wedbar;"], [10854, "&sdote;"], [10858, "&simdot;"], [10861, { v: "&congdot;", n: 824, o: "&ncongdot;" }], [10862, "&easter;"], [10863, "&apacir;"], [10864, { v: "&apE;", n: 824, o: "&napE;" }], [10865, "&eplus;"], [10866, "&pluse;"], [10867, "&Esim;"], [10868, "&Colone;"], [10869, "&Equal;"], [10871, "&ddotseq;"], [10872, "&equivDD;"], [10873, "&ltcir;"], [10874, "&gtcir;"], [10875, "&ltquest;"], [10876, "&gtquest;"], [10877, { v: "&leqslant;", n: 824, o: "&nleqslant;" }], [10878, { v: "&geqslant;", n: 824, o: "&ngeqslant;" }], [10879, "&lesdot;"], [10880, "&gesdot;"], [10881, "&lesdoto;"], [10882, "&gesdoto;"], [10883, "&lesdotor;"], [10884, "&gesdotol;"], [10885, "&lap;"], [10886, "&gap;"], [10887, "&lne;"], [10888, "&gne;"], [10889, "&lnap;"], [10890, "&gnap;"], [10891, "&lEg;"], [10892, "&gEl;"], [10893, "&lsime;"], [10894, "&gsime;"], [10895, "&lsimg;"], [10896, "&gsiml;"], [10897, "&lgE;"], [10898, "&glE;"], [10899, "&lesges;"], [10900, "&gesles;"], [10901, "&els;"], [10902, "&egs;"], [10903, "&elsdot;"], [10904, "&egsdot;"], [10905, "&el;"], [10906, "&eg;"], [10909, "&siml;"], [10910, "&simg;"], [10911, "&simlE;"], [10912, "&simgE;"], [10913, { v: "&LessLess;", n: 824, o: "&NotNestedLessLess;" }], [10914, { v: "&GreaterGreater;", n: 824, o: "&NotNestedGreaterGreater;" }], [10916, "&glj;"], [10917, "&gla;"], [10918, "&ltcc;"], [10919, "&gtcc;"], [10920, "&lescc;"], [10921, "&gescc;"], [10922, "&smt;"], [10923, "&lat;"], [10924, { v: "&smte;", n: 65024, o: "&smtes;" }], [10925, { v: "&late;", n: 65024, o: "&lates;" }], [10926, "&bumpE;"], [10927, { v: "&PrecedesEqual;", n: 824, o: "&NotPrecedesEqual;" }], [10928, { v: "&sce;", n: 824, o: "&NotSucceedsEqual;" }], [10931, "&prE;"], [10932, "&scE;"], [10933, "&precneqq;"], [10934, "&scnE;"], [10935, "&prap;"], [10936, "&scap;"], [10937, "&precnapprox;"], [10938, "&scnap;"], [10939, "&Pr;"], [10940, "&Sc;"], [10941, "&subdot;"], [10942, "&supdot;"], [10943, "&subplus;"], [10944, "&supplus;"], [10945, "&submult;"], [10946, "&supmult;"], [10947, "&subedot;"], [10948, "&supedot;"], [10949, { v: "&subE;", n: 824, o: "&nsubE;" }], [10950, { v: "&supE;", n: 824, o: "&nsupE;" }], [10951, "&subsim;"], [10952, "&supsim;"], [10955, { v: "&subnE;", n: 65024, o: "&varsubsetneqq;" }], [10956, { v: "&supnE;", n: 65024, o: "&varsupsetneqq;" }], [10959, "&csub;"], [10960, "&csup;"], [10961, "&csube;"], [10962, "&csupe;"], [10963, "&subsup;"], [10964, "&supsub;"], [10965, "&subsub;"], [10966, "&supsup;"], [10967, "&suphsub;"], [10968, "&supdsub;"], [10969, "&forkv;"], [10970, "&topfork;"], [10971, "&mlcp;"], [10980, "&Dashv;"], [10982, "&Vdashl;"], [10983, "&Barv;"], [10984, "&vBar;"], [10985, "&vBarv;"], [10987, "&Vbar;"], [10988, "&Not;"], [10989, "&bNot;"], [10990, "&rnmid;"], [10991, "&cirmid;"], [10992, "&midcir;"], [10993, "&topcir;"], [10994, "&nhpar;"], [10995, "&parsim;"], [11005, { v: "&parsl;", n: 8421, o: "&nparsl;" }], [55349, { n: new Map([[56476, "&Ascr;"], [56478, "&Cscr;"], [56479, "&Dscr;"], [56482, "&Gscr;"], [56485, "&Jscr;"], [56486, "&Kscr;"], [56489, "&Nscr;"], [56490, "&Oscr;"], [56491, "&Pscr;"], [56492, "&Qscr;"], [56494, "&Sscr;"], [56495, "&Tscr;"], [56496, "&Uscr;"], [56497, "&Vscr;"], [56498, "&Wscr;"], [56499, "&Xscr;"], [56500, "&Yscr;"], [56501, "&Zscr;"], [56502, "&ascr;"], [56503, "&bscr;"], [56504, "&cscr;"], [56505, "&dscr;"], [56507, "&fscr;"], [56509, "&hscr;"], [56510, "&iscr;"], [56511, "&jscr;"], [56512, "&kscr;"], [56513, "&lscr;"], [56514, "&mscr;"], [56515, "&nscr;"], [56517, "&pscr;"], [56518, "&qscr;"], [56519, "&rscr;"], [56520, "&sscr;"], [56521, "&tscr;"], [56522, "&uscr;"], [56523, "&vscr;"], [56524, "&wscr;"], [56525, "&xscr;"], [56526, "&yscr;"], [56527, "&zscr;"], [56580, "&Afr;"], [56581, "&Bfr;"], [56583, "&Dfr;"], [56584, "&Efr;"], [56585, "&Ffr;"], [56586, "&Gfr;"], [56589, "&Jfr;"], [56590, "&Kfr;"], [56591, "&Lfr;"], [56592, "&Mfr;"], [56593, "&Nfr;"], [56594, "&Ofr;"], [56595, "&Pfr;"], [56596, "&Qfr;"], [56598, "&Sfr;"], [56599, "&Tfr;"], [56600, "&Ufr;"], [56601, "&Vfr;"], [56602, "&Wfr;"], [56603, "&Xfr;"], [56604, "&Yfr;"], [56606, "&afr;"], [56607, "&bfr;"], [56608, "&cfr;"], [56609, "&dfr;"], [56610, "&efr;"], [56611, "&ffr;"], [56612, "&gfr;"], [56613, "&hfr;"], [56614, "&ifr;"], [56615, "&jfr;"], [56616, "&kfr;"], [56617, "&lfr;"], [56618, "&mfr;"], [56619, "&nfr;"], [56620, "&ofr;"], [56621, "&pfr;"], [56622, "&qfr;"], [56623, "&rfr;"], [56624, "&sfr;"], [56625, "&tfr;"], [56626, "&ufr;"], [56627, "&vfr;"], [56628, "&wfr;"], [56629, "&xfr;"], [56630, "&yfr;"], [56631, "&zfr;"], [56632, "&Aopf;"], [56633, "&Bopf;"], [56635, "&Dopf;"], [56636, "&Eopf;"], [56637, "&Fopf;"], [56638, "&Gopf;"], [56640, "&Iopf;"], [56641, "&Jopf;"], [56642, "&Kopf;"], [56643, "&Lopf;"], [56644, "&Mopf;"], [56646, "&Oopf;"], [56650, "&Sopf;"], [56651, "&Topf;"], [56652, "&Uopf;"], [56653, "&Vopf;"], [56654, "&Wopf;"], [56655, "&Xopf;"], [56656, "&Yopf;"], [56658, "&aopf;"], [56659, "&bopf;"], [56660, "&copf;"], [56661, "&dopf;"], [56662, "&eopf;"], [56663, "&fopf;"], [56664, "&gopf;"], [56665, "&hopf;"], [56666, "&iopf;"], [56667, "&jopf;"], [56668, "&kopf;"], [56669, "&lopf;"], [56670, "&mopf;"], [56671, "&nopf;"], [56672, "&oopf;"], [56673, "&popf;"], [56674, "&qopf;"], [56675, "&ropf;"], [56676, "&sopf;"], [56677, "&topf;"], [56678, "&uopf;"], [56679, "&vopf;"], [56680, "&wopf;"], [56681, "&xopf;"], [56682, "&yopf;"], [56683, "&zopf;"]]) }], [64256, "&fflig;"], [64257, "&filig;"], [64258, "&fllig;"], [64259, "&ffilig;"], [64260, "&ffllig;"]]);
+function restoreDiff(arr) {
+  for (let i = 1; i < arr.length; i++) {
+    arr[i][0] += arr[i - 1][0] + 1;
+  }
+  return arr;
+}
+var encode_html_default = new Map(/* @__PURE__ */ restoreDiff([[9, "&Tab;"], [0, "&NewLine;"], [22, "&excl;"], [0, "&quot;"], [0, "&num;"], [0, "&dollar;"], [0, "&percnt;"], [0, "&amp;"], [0, "&apos;"], [0, "&lpar;"], [0, "&rpar;"], [0, "&ast;"], [0, "&plus;"], [0, "&comma;"], [1, "&period;"], [0, "&sol;"], [10, "&colon;"], [0, "&semi;"], [0, { v: "&lt;", n: 8402, o: "&nvlt;" }], [0, { v: "&equals;", n: 8421, o: "&bne;" }], [0, { v: "&gt;", n: 8402, o: "&nvgt;" }], [0, "&quest;"], [0, "&commat;"], [26, "&lbrack;"], [0, "&bsol;"], [0, "&rbrack;"], [0, "&Hat;"], [0, "&lowbar;"], [0, "&DiacriticalGrave;"], [5, { n: 106, o: "&fjlig;" }], [20, "&lbrace;"], [0, "&verbar;"], [0, "&rbrace;"], [34, "&nbsp;"], [0, "&iexcl;"], [0, "&cent;"], [0, "&pound;"], [0, "&curren;"], [0, "&yen;"], [0, "&brvbar;"], [0, "&sect;"], [0, "&die;"], [0, "&copy;"], [0, "&ordf;"], [0, "&laquo;"], [0, "&not;"], [0, "&shy;"], [0, "&circledR;"], [0, "&macr;"], [0, "&deg;"], [0, "&PlusMinus;"], [0, "&sup2;"], [0, "&sup3;"], [0, "&acute;"], [0, "&micro;"], [0, "&para;"], [0, "&centerdot;"], [0, "&cedil;"], [0, "&sup1;"], [0, "&ordm;"], [0, "&raquo;"], [0, "&frac14;"], [0, "&frac12;"], [0, "&frac34;"], [0, "&iquest;"], [0, "&Agrave;"], [0, "&Aacute;"], [0, "&Acirc;"], [0, "&Atilde;"], [0, "&Auml;"], [0, "&angst;"], [0, "&AElig;"], [0, "&Ccedil;"], [0, "&Egrave;"], [0, "&Eacute;"], [0, "&Ecirc;"], [0, "&Euml;"], [0, "&Igrave;"], [0, "&Iacute;"], [0, "&Icirc;"], [0, "&Iuml;"], [0, "&ETH;"], [0, "&Ntilde;"], [0, "&Ograve;"], [0, "&Oacute;"], [0, "&Ocirc;"], [0, "&Otilde;"], [0, "&Ouml;"], [0, "&times;"], [0, "&Oslash;"], [0, "&Ugrave;"], [0, "&Uacute;"], [0, "&Ucirc;"], [0, "&Uuml;"], [0, "&Yacute;"], [0, "&THORN;"], [0, "&szlig;"], [0, "&agrave;"], [0, "&aacute;"], [0, "&acirc;"], [0, "&atilde;"], [0, "&auml;"], [0, "&aring;"], [0, "&aelig;"], [0, "&ccedil;"], [0, "&egrave;"], [0, "&eacute;"], [0, "&ecirc;"], [0, "&euml;"], [0, "&igrave;"], [0, "&iacute;"], [0, "&icirc;"], [0, "&iuml;"], [0, "&eth;"], [0, "&ntilde;"], [0, "&ograve;"], [0, "&oacute;"], [0, "&ocirc;"], [0, "&otilde;"], [0, "&ouml;"], [0, "&div;"], [0, "&oslash;"], [0, "&ugrave;"], [0, "&uacute;"], [0, "&ucirc;"], [0, "&uuml;"], [0, "&yacute;"], [0, "&thorn;"], [0, "&yuml;"], [0, "&Amacr;"], [0, "&amacr;"], [0, "&Abreve;"], [0, "&abreve;"], [0, "&Aogon;"], [0, "&aogon;"], [0, "&Cacute;"], [0, "&cacute;"], [0, "&Ccirc;"], [0, "&ccirc;"], [0, "&Cdot;"], [0, "&cdot;"], [0, "&Ccaron;"], [0, "&ccaron;"], [0, "&Dcaron;"], [0, "&dcaron;"], [0, "&Dstrok;"], [0, "&dstrok;"], [0, "&Emacr;"], [0, "&emacr;"], [2, "&Edot;"], [0, "&edot;"], [0, "&Eogon;"], [0, "&eogon;"], [0, "&Ecaron;"], [0, "&ecaron;"], [0, "&Gcirc;"], [0, "&gcirc;"], [0, "&Gbreve;"], [0, "&gbreve;"], [0, "&Gdot;"], [0, "&gdot;"], [0, "&Gcedil;"], [1, "&Hcirc;"], [0, "&hcirc;"], [0, "&Hstrok;"], [0, "&hstrok;"], [0, "&Itilde;"], [0, "&itilde;"], [0, "&Imacr;"], [0, "&imacr;"], [2, "&Iogon;"], [0, "&iogon;"], [0, "&Idot;"], [0, "&imath;"], [0, "&IJlig;"], [0, "&ijlig;"], [0, "&Jcirc;"], [0, "&jcirc;"], [0, "&Kcedil;"], [0, "&kcedil;"], [0, "&kgreen;"], [0, "&Lacute;"], [0, "&lacute;"], [0, "&Lcedil;"], [0, "&lcedil;"], [0, "&Lcaron;"], [0, "&lcaron;"], [0, "&Lmidot;"], [0, "&lmidot;"], [0, "&Lstrok;"], [0, "&lstrok;"], [0, "&Nacute;"], [0, "&nacute;"], [0, "&Ncedil;"], [0, "&ncedil;"], [0, "&Ncaron;"], [0, "&ncaron;"], [0, "&napos;"], [0, "&ENG;"], [0, "&eng;"], [0, "&Omacr;"], [0, "&omacr;"], [2, "&Odblac;"], [0, "&odblac;"], [0, "&OElig;"], [0, "&oelig;"], [0, "&Racute;"], [0, "&racute;"], [0, "&Rcedil;"], [0, "&rcedil;"], [0, "&Rcaron;"], [0, "&rcaron;"], [0, "&Sacute;"], [0, "&sacute;"], [0, "&Scirc;"], [0, "&scirc;"], [0, "&Scedil;"], [0, "&scedil;"], [0, "&Scaron;"], [0, "&scaron;"], [0, "&Tcedil;"], [0, "&tcedil;"], [0, "&Tcaron;"], [0, "&tcaron;"], [0, "&Tstrok;"], [0, "&tstrok;"], [0, "&Utilde;"], [0, "&utilde;"], [0, "&Umacr;"], [0, "&umacr;"], [0, "&Ubreve;"], [0, "&ubreve;"], [0, "&Uring;"], [0, "&uring;"], [0, "&Udblac;"], [0, "&udblac;"], [0, "&Uogon;"], [0, "&uogon;"], [0, "&Wcirc;"], [0, "&wcirc;"], [0, "&Ycirc;"], [0, "&ycirc;"], [0, "&Yuml;"], [0, "&Zacute;"], [0, "&zacute;"], [0, "&Zdot;"], [0, "&zdot;"], [0, "&Zcaron;"], [0, "&zcaron;"], [19, "&fnof;"], [34, "&imped;"], [63, "&gacute;"], [65, "&jmath;"], [142, "&circ;"], [0, "&caron;"], [16, "&breve;"], [0, "&DiacriticalDot;"], [0, "&ring;"], [0, "&ogon;"], [0, "&DiacriticalTilde;"], [0, "&dblac;"], [51, "&DownBreve;"], [127, "&Alpha;"], [0, "&Beta;"], [0, "&Gamma;"], [0, "&Delta;"], [0, "&Epsilon;"], [0, "&Zeta;"], [0, "&Eta;"], [0, "&Theta;"], [0, "&Iota;"], [0, "&Kappa;"], [0, "&Lambda;"], [0, "&Mu;"], [0, "&Nu;"], [0, "&Xi;"], [0, "&Omicron;"], [0, "&Pi;"], [0, "&Rho;"], [1, "&Sigma;"], [0, "&Tau;"], [0, "&Upsilon;"], [0, "&Phi;"], [0, "&Chi;"], [0, "&Psi;"], [0, "&ohm;"], [7, "&alpha;"], [0, "&beta;"], [0, "&gamma;"], [0, "&delta;"], [0, "&epsi;"], [0, "&zeta;"], [0, "&eta;"], [0, "&theta;"], [0, "&iota;"], [0, "&kappa;"], [0, "&lambda;"], [0, "&mu;"], [0, "&nu;"], [0, "&xi;"], [0, "&omicron;"], [0, "&pi;"], [0, "&rho;"], [0, "&sigmaf;"], [0, "&sigma;"], [0, "&tau;"], [0, "&upsi;"], [0, "&phi;"], [0, "&chi;"], [0, "&psi;"], [0, "&omega;"], [7, "&thetasym;"], [0, "&Upsi;"], [2, "&phiv;"], [0, "&piv;"], [5, "&Gammad;"], [0, "&digamma;"], [18, "&kappav;"], [0, "&rhov;"], [3, "&epsiv;"], [0, "&backepsilon;"], [10, "&IOcy;"], [0, "&DJcy;"], [0, "&GJcy;"], [0, "&Jukcy;"], [0, "&DScy;"], [0, "&Iukcy;"], [0, "&YIcy;"], [0, "&Jsercy;"], [0, "&LJcy;"], [0, "&NJcy;"], [0, "&TSHcy;"], [0, "&KJcy;"], [1, "&Ubrcy;"], [0, "&DZcy;"], [0, "&Acy;"], [0, "&Bcy;"], [0, "&Vcy;"], [0, "&Gcy;"], [0, "&Dcy;"], [0, "&IEcy;"], [0, "&ZHcy;"], [0, "&Zcy;"], [0, "&Icy;"], [0, "&Jcy;"], [0, "&Kcy;"], [0, "&Lcy;"], [0, "&Mcy;"], [0, "&Ncy;"], [0, "&Ocy;"], [0, "&Pcy;"], [0, "&Rcy;"], [0, "&Scy;"], [0, "&Tcy;"], [0, "&Ucy;"], [0, "&Fcy;"], [0, "&KHcy;"], [0, "&TScy;"], [0, "&CHcy;"], [0, "&SHcy;"], [0, "&SHCHcy;"], [0, "&HARDcy;"], [0, "&Ycy;"], [0, "&SOFTcy;"], [0, "&Ecy;"], [0, "&YUcy;"], [0, "&YAcy;"], [0, "&acy;"], [0, "&bcy;"], [0, "&vcy;"], [0, "&gcy;"], [0, "&dcy;"], [0, "&iecy;"], [0, "&zhcy;"], [0, "&zcy;"], [0, "&icy;"], [0, "&jcy;"], [0, "&kcy;"], [0, "&lcy;"], [0, "&mcy;"], [0, "&ncy;"], [0, "&ocy;"], [0, "&pcy;"], [0, "&rcy;"], [0, "&scy;"], [0, "&tcy;"], [0, "&ucy;"], [0, "&fcy;"], [0, "&khcy;"], [0, "&tscy;"], [0, "&chcy;"], [0, "&shcy;"], [0, "&shchcy;"], [0, "&hardcy;"], [0, "&ycy;"], [0, "&softcy;"], [0, "&ecy;"], [0, "&yucy;"], [0, "&yacy;"], [1, "&iocy;"], [0, "&djcy;"], [0, "&gjcy;"], [0, "&jukcy;"], [0, "&dscy;"], [0, "&iukcy;"], [0, "&yicy;"], [0, "&jsercy;"], [0, "&ljcy;"], [0, "&njcy;"], [0, "&tshcy;"], [0, "&kjcy;"], [1, "&ubrcy;"], [0, "&dzcy;"], [7074, "&ensp;"], [0, "&emsp;"], [0, "&emsp13;"], [0, "&emsp14;"], [1, "&numsp;"], [0, "&puncsp;"], [0, "&ThinSpace;"], [0, "&hairsp;"], [0, "&NegativeMediumSpace;"], [0, "&zwnj;"], [0, "&zwj;"], [0, "&lrm;"], [0, "&rlm;"], [0, "&dash;"], [2, "&ndash;"], [0, "&mdash;"], [0, "&horbar;"], [0, "&Verbar;"], [1, "&lsquo;"], [0, "&CloseCurlyQuote;"], [0, "&lsquor;"], [1, "&ldquo;"], [0, "&CloseCurlyDoubleQuote;"], [0, "&bdquo;"], [1, "&dagger;"], [0, "&Dagger;"], [0, "&bull;"], [2, "&nldr;"], [0, "&hellip;"], [9, "&permil;"], [0, "&pertenk;"], [0, "&prime;"], [0, "&Prime;"], [0, "&tprime;"], [0, "&backprime;"], [3, "&lsaquo;"], [0, "&rsaquo;"], [3, "&oline;"], [2, "&caret;"], [1, "&hybull;"], [0, "&frasl;"], [10, "&bsemi;"], [7, "&qprime;"], [7, { v: "&MediumSpace;", n: 8202, o: "&ThickSpace;" }], [0, "&NoBreak;"], [0, "&af;"], [0, "&InvisibleTimes;"], [0, "&ic;"], [72, "&euro;"], [46, "&tdot;"], [0, "&DotDot;"], [37, "&complexes;"], [2, "&incare;"], [4, "&gscr;"], [0, "&hamilt;"], [0, "&Hfr;"], [0, "&Hopf;"], [0, "&planckh;"], [0, "&hbar;"], [0, "&imagline;"], [0, "&Ifr;"], [0, "&lagran;"], [0, "&ell;"], [1, "&naturals;"], [0, "&numero;"], [0, "&copysr;"], [0, "&weierp;"], [0, "&Popf;"], [0, "&Qopf;"], [0, "&realine;"], [0, "&real;"], [0, "&reals;"], [0, "&rx;"], [3, "&trade;"], [1, "&integers;"], [2, "&mho;"], [0, "&zeetrf;"], [0, "&iiota;"], [2, "&bernou;"], [0, "&Cayleys;"], [1, "&escr;"], [0, "&Escr;"], [0, "&Fouriertrf;"], [1, "&Mellintrf;"], [0, "&order;"], [0, "&alefsym;"], [0, "&beth;"], [0, "&gimel;"], [0, "&daleth;"], [12, "&CapitalDifferentialD;"], [0, "&dd;"], [0, "&ee;"], [0, "&ii;"], [10, "&frac13;"], [0, "&frac23;"], [0, "&frac15;"], [0, "&frac25;"], [0, "&frac35;"], [0, "&frac45;"], [0, "&frac16;"], [0, "&frac56;"], [0, "&frac18;"], [0, "&frac38;"], [0, "&frac58;"], [0, "&frac78;"], [49, "&larr;"], [0, "&ShortUpArrow;"], [0, "&rarr;"], [0, "&darr;"], [0, "&harr;"], [0, "&updownarrow;"], [0, "&nwarr;"], [0, "&nearr;"], [0, "&LowerRightArrow;"], [0, "&LowerLeftArrow;"], [0, "&nlarr;"], [0, "&nrarr;"], [1, { v: "&rarrw;", n: 824, o: "&nrarrw;" }], [0, "&Larr;"], [0, "&Uarr;"], [0, "&Rarr;"], [0, "&Darr;"], [0, "&larrtl;"], [0, "&rarrtl;"], [0, "&LeftTeeArrow;"], [0, "&mapstoup;"], [0, "&map;"], [0, "&DownTeeArrow;"], [1, "&hookleftarrow;"], [0, "&hookrightarrow;"], [0, "&larrlp;"], [0, "&looparrowright;"], [0, "&harrw;"], [0, "&nharr;"], [1, "&lsh;"], [0, "&rsh;"], [0, "&ldsh;"], [0, "&rdsh;"], [1, "&crarr;"], [0, "&cularr;"], [0, "&curarr;"], [2, "&circlearrowleft;"], [0, "&circlearrowright;"], [0, "&leftharpoonup;"], [0, "&DownLeftVector;"], [0, "&RightUpVector;"], [0, "&LeftUpVector;"], [0, "&rharu;"], [0, "&DownRightVector;"], [0, "&dharr;"], [0, "&dharl;"], [0, "&RightArrowLeftArrow;"], [0, "&udarr;"], [0, "&LeftArrowRightArrow;"], [0, "&leftleftarrows;"], [0, "&upuparrows;"], [0, "&rightrightarrows;"], [0, "&ddarr;"], [0, "&leftrightharpoons;"], [0, "&Equilibrium;"], [0, "&nlArr;"], [0, "&nhArr;"], [0, "&nrArr;"], [0, "&DoubleLeftArrow;"], [0, "&DoubleUpArrow;"], [0, "&DoubleRightArrow;"], [0, "&dArr;"], [0, "&DoubleLeftRightArrow;"], [0, "&DoubleUpDownArrow;"], [0, "&nwArr;"], [0, "&neArr;"], [0, "&seArr;"], [0, "&swArr;"], [0, "&lAarr;"], [0, "&rAarr;"], [1, "&zigrarr;"], [6, "&larrb;"], [0, "&rarrb;"], [15, "&DownArrowUpArrow;"], [7, "&loarr;"], [0, "&roarr;"], [0, "&hoarr;"], [0, "&forall;"], [0, "&comp;"], [0, { v: "&part;", n: 824, o: "&npart;" }], [0, "&exist;"], [0, "&nexist;"], [0, "&empty;"], [1, "&Del;"], [0, "&Element;"], [0, "&NotElement;"], [1, "&ni;"], [0, "&notni;"], [2, "&prod;"], [0, "&coprod;"], [0, "&sum;"], [0, "&minus;"], [0, "&MinusPlus;"], [0, "&dotplus;"], [1, "&Backslash;"], [0, "&lowast;"], [0, "&compfn;"], [1, "&radic;"], [2, "&prop;"], [0, "&infin;"], [0, "&angrt;"], [0, { v: "&ang;", n: 8402, o: "&nang;" }], [0, "&angmsd;"], [0, "&angsph;"], [0, "&mid;"], [0, "&nmid;"], [0, "&DoubleVerticalBar;"], [0, "&NotDoubleVerticalBar;"], [0, "&and;"], [0, "&or;"], [0, { v: "&cap;", n: 65024, o: "&caps;" }], [0, { v: "&cup;", n: 65024, o: "&cups;" }], [0, "&int;"], [0, "&Int;"], [0, "&iiint;"], [0, "&conint;"], [0, "&Conint;"], [0, "&Cconint;"], [0, "&cwint;"], [0, "&ClockwiseContourIntegral;"], [0, "&awconint;"], [0, "&there4;"], [0, "&becaus;"], [0, "&ratio;"], [0, "&Colon;"], [0, "&dotminus;"], [1, "&mDDot;"], [0, "&homtht;"], [0, { v: "&sim;", n: 8402, o: "&nvsim;" }], [0, { v: "&backsim;", n: 817, o: "&race;" }], [0, { v: "&ac;", n: 819, o: "&acE;" }], [0, "&acd;"], [0, "&VerticalTilde;"], [0, "&NotTilde;"], [0, { v: "&eqsim;", n: 824, o: "&nesim;" }], [0, "&sime;"], [0, "&NotTildeEqual;"], [0, "&cong;"], [0, "&simne;"], [0, "&ncong;"], [0, "&ap;"], [0, "&nap;"], [0, "&ape;"], [0, { v: "&apid;", n: 824, o: "&napid;" }], [0, "&backcong;"], [0, { v: "&asympeq;", n: 8402, o: "&nvap;" }], [0, { v: "&bump;", n: 824, o: "&nbump;" }], [0, { v: "&bumpe;", n: 824, o: "&nbumpe;" }], [0, { v: "&doteq;", n: 824, o: "&nedot;" }], [0, "&doteqdot;"], [0, "&efDot;"], [0, "&erDot;"], [0, "&Assign;"], [0, "&ecolon;"], [0, "&ecir;"], [0, "&circeq;"], [1, "&wedgeq;"], [0, "&veeeq;"], [1, "&triangleq;"], [2, "&equest;"], [0, "&ne;"], [0, { v: "&Congruent;", n: 8421, o: "&bnequiv;" }], [0, "&nequiv;"], [1, { v: "&le;", n: 8402, o: "&nvle;" }], [0, { v: "&ge;", n: 8402, o: "&nvge;" }], [0, { v: "&lE;", n: 824, o: "&nlE;" }], [0, { v: "&gE;", n: 824, o: "&ngE;" }], [0, { v: "&lnE;", n: 65024, o: "&lvertneqq;" }], [0, { v: "&gnE;", n: 65024, o: "&gvertneqq;" }], [0, { v: "&ll;", n: new Map(/* @__PURE__ */ restoreDiff([[824, "&nLtv;"], [7577, "&nLt;"]])) }], [0, { v: "&gg;", n: new Map(/* @__PURE__ */ restoreDiff([[824, "&nGtv;"], [7577, "&nGt;"]])) }], [0, "&between;"], [0, "&NotCupCap;"], [0, "&nless;"], [0, "&ngt;"], [0, "&nle;"], [0, "&nge;"], [0, "&lesssim;"], [0, "&GreaterTilde;"], [0, "&nlsim;"], [0, "&ngsim;"], [0, "&LessGreater;"], [0, "&gl;"], [0, "&NotLessGreater;"], [0, "&NotGreaterLess;"], [0, "&pr;"], [0, "&sc;"], [0, "&prcue;"], [0, "&sccue;"], [0, "&PrecedesTilde;"], [0, { v: "&scsim;", n: 824, o: "&NotSucceedsTilde;" }], [0, "&NotPrecedes;"], [0, "&NotSucceeds;"], [0, { v: "&sub;", n: 8402, o: "&NotSubset;" }], [0, { v: "&sup;", n: 8402, o: "&NotSuperset;" }], [0, "&nsub;"], [0, "&nsup;"], [0, "&sube;"], [0, "&supe;"], [0, "&NotSubsetEqual;"], [0, "&NotSupersetEqual;"], [0, { v: "&subne;", n: 65024, o: "&varsubsetneq;" }], [0, { v: "&supne;", n: 65024, o: "&varsupsetneq;" }], [1, "&cupdot;"], [0, "&UnionPlus;"], [0, { v: "&sqsub;", n: 824, o: "&NotSquareSubset;" }], [0, { v: "&sqsup;", n: 824, o: "&NotSquareSuperset;" }], [0, "&sqsube;"], [0, "&sqsupe;"], [0, { v: "&sqcap;", n: 65024, o: "&sqcaps;" }], [0, { v: "&sqcup;", n: 65024, o: "&sqcups;" }], [0, "&CirclePlus;"], [0, "&CircleMinus;"], [0, "&CircleTimes;"], [0, "&osol;"], [0, "&CircleDot;"], [0, "&circledcirc;"], [0, "&circledast;"], [1, "&circleddash;"], [0, "&boxplus;"], [0, "&boxminus;"], [0, "&boxtimes;"], [0, "&dotsquare;"], [0, "&RightTee;"], [0, "&dashv;"], [0, "&DownTee;"], [0, "&bot;"], [1, "&models;"], [0, "&DoubleRightTee;"], [0, "&Vdash;"], [0, "&Vvdash;"], [0, "&VDash;"], [0, "&nvdash;"], [0, "&nvDash;"], [0, "&nVdash;"], [0, "&nVDash;"], [0, "&prurel;"], [1, "&LeftTriangle;"], [0, "&RightTriangle;"], [0, { v: "&LeftTriangleEqual;", n: 8402, o: "&nvltrie;" }], [0, { v: "&RightTriangleEqual;", n: 8402, o: "&nvrtrie;" }], [0, "&origof;"], [0, "&imof;"], [0, "&multimap;"], [0, "&hercon;"], [0, "&intcal;"], [0, "&veebar;"], [1, "&barvee;"], [0, "&angrtvb;"], [0, "&lrtri;"], [0, "&bigwedge;"], [0, "&bigvee;"], [0, "&bigcap;"], [0, "&bigcup;"], [0, "&diam;"], [0, "&sdot;"], [0, "&sstarf;"], [0, "&divideontimes;"], [0, "&bowtie;"], [0, "&ltimes;"], [0, "&rtimes;"], [0, "&leftthreetimes;"], [0, "&rightthreetimes;"], [0, "&backsimeq;"], [0, "&curlyvee;"], [0, "&curlywedge;"], [0, "&Sub;"], [0, "&Sup;"], [0, "&Cap;"], [0, "&Cup;"], [0, "&fork;"], [0, "&epar;"], [0, "&lessdot;"], [0, "&gtdot;"], [0, { v: "&Ll;", n: 824, o: "&nLl;" }], [0, { v: "&Gg;", n: 824, o: "&nGg;" }], [0, { v: "&leg;", n: 65024, o: "&lesg;" }], [0, { v: "&gel;", n: 65024, o: "&gesl;" }], [2, "&cuepr;"], [0, "&cuesc;"], [0, "&NotPrecedesSlantEqual;"], [0, "&NotSucceedsSlantEqual;"], [0, "&NotSquareSubsetEqual;"], [0, "&NotSquareSupersetEqual;"], [2, "&lnsim;"], [0, "&gnsim;"], [0, "&precnsim;"], [0, "&scnsim;"], [0, "&nltri;"], [0, "&NotRightTriangle;"], [0, "&nltrie;"], [0, "&NotRightTriangleEqual;"], [0, "&vellip;"], [0, "&ctdot;"], [0, "&utdot;"], [0, "&dtdot;"], [0, "&disin;"], [0, "&isinsv;"], [0, "&isins;"], [0, { v: "&isindot;", n: 824, o: "&notindot;" }], [0, "&notinvc;"], [0, "&notinvb;"], [1, { v: "&isinE;", n: 824, o: "&notinE;" }], [0, "&nisd;"], [0, "&xnis;"], [0, "&nis;"], [0, "&notnivc;"], [0, "&notnivb;"], [6, "&barwed;"], [0, "&Barwed;"], [1, "&lceil;"], [0, "&rceil;"], [0, "&LeftFloor;"], [0, "&rfloor;"], [0, "&drcrop;"], [0, "&dlcrop;"], [0, "&urcrop;"], [0, "&ulcrop;"], [0, "&bnot;"], [1, "&profline;"], [0, "&profsurf;"], [1, "&telrec;"], [0, "&target;"], [5, "&ulcorn;"], [0, "&urcorn;"], [0, "&dlcorn;"], [0, "&drcorn;"], [2, "&frown;"], [0, "&smile;"], [9, "&cylcty;"], [0, "&profalar;"], [7, "&topbot;"], [6, "&ovbar;"], [1, "&solbar;"], [60, "&angzarr;"], [51, "&lmoustache;"], [0, "&rmoustache;"], [2, "&OverBracket;"], [0, "&bbrk;"], [0, "&bbrktbrk;"], [37, "&OverParenthesis;"], [0, "&UnderParenthesis;"], [0, "&OverBrace;"], [0, "&UnderBrace;"], [2, "&trpezium;"], [4, "&elinters;"], [59, "&blank;"], [164, "&circledS;"], [55, "&boxh;"], [1, "&boxv;"], [9, "&boxdr;"], [3, "&boxdl;"], [3, "&boxur;"], [3, "&boxul;"], [3, "&boxvr;"], [7, "&boxvl;"], [7, "&boxhd;"], [7, "&boxhu;"], [7, "&boxvh;"], [19, "&boxH;"], [0, "&boxV;"], [0, "&boxdR;"], [0, "&boxDr;"], [0, "&boxDR;"], [0, "&boxdL;"], [0, "&boxDl;"], [0, "&boxDL;"], [0, "&boxuR;"], [0, "&boxUr;"], [0, "&boxUR;"], [0, "&boxuL;"], [0, "&boxUl;"], [0, "&boxUL;"], [0, "&boxvR;"], [0, "&boxVr;"], [0, "&boxVR;"], [0, "&boxvL;"], [0, "&boxVl;"], [0, "&boxVL;"], [0, "&boxHd;"], [0, "&boxhD;"], [0, "&boxHD;"], [0, "&boxHu;"], [0, "&boxhU;"], [0, "&boxHU;"], [0, "&boxvH;"], [0, "&boxVh;"], [0, "&boxVH;"], [19, "&uhblk;"], [3, "&lhblk;"], [3, "&block;"], [8, "&blk14;"], [0, "&blk12;"], [0, "&blk34;"], [13, "&square;"], [8, "&blacksquare;"], [0, "&EmptyVerySmallSquare;"], [1, "&rect;"], [0, "&marker;"], [2, "&fltns;"], [1, "&bigtriangleup;"], [0, "&blacktriangle;"], [0, "&triangle;"], [2, "&blacktriangleright;"], [0, "&rtri;"], [3, "&bigtriangledown;"], [0, "&blacktriangledown;"], [0, "&dtri;"], [2, "&blacktriangleleft;"], [0, "&ltri;"], [6, "&loz;"], [0, "&cir;"], [32, "&tridot;"], [2, "&bigcirc;"], [8, "&ultri;"], [0, "&urtri;"], [0, "&lltri;"], [0, "&EmptySmallSquare;"], [0, "&FilledSmallSquare;"], [8, "&bigstar;"], [0, "&star;"], [7, "&phone;"], [49, "&female;"], [1, "&male;"], [29, "&spades;"], [2, "&clubs;"], [1, "&hearts;"], [0, "&diamondsuit;"], [3, "&sung;"], [2, "&flat;"], [0, "&natural;"], [0, "&sharp;"], [163, "&check;"], [3, "&cross;"], [8, "&malt;"], [21, "&sext;"], [33, "&VerticalSeparator;"], [25, "&lbbrk;"], [0, "&rbbrk;"], [84, "&bsolhsub;"], [0, "&suphsol;"], [28, "&LeftDoubleBracket;"], [0, "&RightDoubleBracket;"], [0, "&lang;"], [0, "&rang;"], [0, "&Lang;"], [0, "&Rang;"], [0, "&loang;"], [0, "&roang;"], [7, "&longleftarrow;"], [0, "&longrightarrow;"], [0, "&longleftrightarrow;"], [0, "&DoubleLongLeftArrow;"], [0, "&DoubleLongRightArrow;"], [0, "&DoubleLongLeftRightArrow;"], [1, "&longmapsto;"], [2, "&dzigrarr;"], [258, "&nvlArr;"], [0, "&nvrArr;"], [0, "&nvHarr;"], [0, "&Map;"], [6, "&lbarr;"], [0, "&bkarow;"], [0, "&lBarr;"], [0, "&dbkarow;"], [0, "&drbkarow;"], [0, "&DDotrahd;"], [0, "&UpArrowBar;"], [0, "&DownArrowBar;"], [2, "&Rarrtl;"], [2, "&latail;"], [0, "&ratail;"], [0, "&lAtail;"], [0, "&rAtail;"], [0, "&larrfs;"], [0, "&rarrfs;"], [0, "&larrbfs;"], [0, "&rarrbfs;"], [2, "&nwarhk;"], [0, "&nearhk;"], [0, "&hksearow;"], [0, "&hkswarow;"], [0, "&nwnear;"], [0, "&nesear;"], [0, "&seswar;"], [0, "&swnwar;"], [8, { v: "&rarrc;", n: 824, o: "&nrarrc;" }], [1, "&cudarrr;"], [0, "&ldca;"], [0, "&rdca;"], [0, "&cudarrl;"], [0, "&larrpl;"], [2, "&curarrm;"], [0, "&cularrp;"], [7, "&rarrpl;"], [2, "&harrcir;"], [0, "&Uarrocir;"], [0, "&lurdshar;"], [0, "&ldrushar;"], [2, "&LeftRightVector;"], [0, "&RightUpDownVector;"], [0, "&DownLeftRightVector;"], [0, "&LeftUpDownVector;"], [0, "&LeftVectorBar;"], [0, "&RightVectorBar;"], [0, "&RightUpVectorBar;"], [0, "&RightDownVectorBar;"], [0, "&DownLeftVectorBar;"], [0, "&DownRightVectorBar;"], [0, "&LeftUpVectorBar;"], [0, "&LeftDownVectorBar;"], [0, "&LeftTeeVector;"], [0, "&RightTeeVector;"], [0, "&RightUpTeeVector;"], [0, "&RightDownTeeVector;"], [0, "&DownLeftTeeVector;"], [0, "&DownRightTeeVector;"], [0, "&LeftUpTeeVector;"], [0, "&LeftDownTeeVector;"], [0, "&lHar;"], [0, "&uHar;"], [0, "&rHar;"], [0, "&dHar;"], [0, "&luruhar;"], [0, "&ldrdhar;"], [0, "&ruluhar;"], [0, "&rdldhar;"], [0, "&lharul;"], [0, "&llhard;"], [0, "&rharul;"], [0, "&lrhard;"], [0, "&udhar;"], [0, "&duhar;"], [0, "&RoundImplies;"], [0, "&erarr;"], [0, "&simrarr;"], [0, "&larrsim;"], [0, "&rarrsim;"], [0, "&rarrap;"], [0, "&ltlarr;"], [1, "&gtrarr;"], [0, "&subrarr;"], [1, "&suplarr;"], [0, "&lfisht;"], [0, "&rfisht;"], [0, "&ufisht;"], [0, "&dfisht;"], [5, "&lopar;"], [0, "&ropar;"], [4, "&lbrke;"], [0, "&rbrke;"], [0, "&lbrkslu;"], [0, "&rbrksld;"], [0, "&lbrksld;"], [0, "&rbrkslu;"], [0, "&langd;"], [0, "&rangd;"], [0, "&lparlt;"], [0, "&rpargt;"], [0, "&gtlPar;"], [0, "&ltrPar;"], [3, "&vzigzag;"], [1, "&vangrt;"], [0, "&angrtvbd;"], [6, "&ange;"], [0, "&range;"], [0, "&dwangle;"], [0, "&uwangle;"], [0, "&angmsdaa;"], [0, "&angmsdab;"], [0, "&angmsdac;"], [0, "&angmsdad;"], [0, "&angmsdae;"], [0, "&angmsdaf;"], [0, "&angmsdag;"], [0, "&angmsdah;"], [0, "&bemptyv;"], [0, "&demptyv;"], [0, "&cemptyv;"], [0, "&raemptyv;"], [0, "&laemptyv;"], [0, "&ohbar;"], [0, "&omid;"], [0, "&opar;"], [1, "&operp;"], [1, "&olcross;"], [0, "&odsold;"], [1, "&olcir;"], [0, "&ofcir;"], [0, "&olt;"], [0, "&ogt;"], [0, "&cirscir;"], [0, "&cirE;"], [0, "&solb;"], [0, "&bsolb;"], [3, "&boxbox;"], [3, "&trisb;"], [0, "&rtriltri;"], [0, { v: "&LeftTriangleBar;", n: 824, o: "&NotLeftTriangleBar;" }], [0, { v: "&RightTriangleBar;", n: 824, o: "&NotRightTriangleBar;" }], [11, "&iinfin;"], [0, "&infintie;"], [0, "&nvinfin;"], [4, "&eparsl;"], [0, "&smeparsl;"], [0, "&eqvparsl;"], [5, "&blacklozenge;"], [8, "&RuleDelayed;"], [1, "&dsol;"], [9, "&bigodot;"], [0, "&bigoplus;"], [0, "&bigotimes;"], [1, "&biguplus;"], [1, "&bigsqcup;"], [5, "&iiiint;"], [0, "&fpartint;"], [2, "&cirfnint;"], [0, "&awint;"], [0, "&rppolint;"], [0, "&scpolint;"], [0, "&npolint;"], [0, "&pointint;"], [0, "&quatint;"], [0, "&intlarhk;"], [10, "&pluscir;"], [0, "&plusacir;"], [0, "&simplus;"], [0, "&plusdu;"], [0, "&plussim;"], [0, "&plustwo;"], [1, "&mcomma;"], [0, "&minusdu;"], [2, "&loplus;"], [0, "&roplus;"], [0, "&Cross;"], [0, "&timesd;"], [0, "&timesbar;"], [1, "&smashp;"], [0, "&lotimes;"], [0, "&rotimes;"], [0, "&otimesas;"], [0, "&Otimes;"], [0, "&odiv;"], [0, "&triplus;"], [0, "&triminus;"], [0, "&tritime;"], [0, "&intprod;"], [2, "&amalg;"], [0, "&capdot;"], [1, "&ncup;"], [0, "&ncap;"], [0, "&capand;"], [0, "&cupor;"], [0, "&cupcap;"], [0, "&capcup;"], [0, "&cupbrcap;"], [0, "&capbrcup;"], [0, "&cupcup;"], [0, "&capcap;"], [0, "&ccups;"], [0, "&ccaps;"], [2, "&ccupssm;"], [2, "&And;"], [0, "&Or;"], [0, "&andand;"], [0, "&oror;"], [0, "&orslope;"], [0, "&andslope;"], [1, "&andv;"], [0, "&orv;"], [0, "&andd;"], [0, "&ord;"], [1, "&wedbar;"], [6, "&sdote;"], [3, "&simdot;"], [2, { v: "&congdot;", n: 824, o: "&ncongdot;" }], [0, "&easter;"], [0, "&apacir;"], [0, { v: "&apE;", n: 824, o: "&napE;" }], [0, "&eplus;"], [0, "&pluse;"], [0, "&Esim;"], [0, "&Colone;"], [0, "&Equal;"], [1, "&ddotseq;"], [0, "&equivDD;"], [0, "&ltcir;"], [0, "&gtcir;"], [0, "&ltquest;"], [0, "&gtquest;"], [0, { v: "&leqslant;", n: 824, o: "&nleqslant;" }], [0, { v: "&geqslant;", n: 824, o: "&ngeqslant;" }], [0, "&lesdot;"], [0, "&gesdot;"], [0, "&lesdoto;"], [0, "&gesdoto;"], [0, "&lesdotor;"], [0, "&gesdotol;"], [0, "&lap;"], [0, "&gap;"], [0, "&lne;"], [0, "&gne;"], [0, "&lnap;"], [0, "&gnap;"], [0, "&lEg;"], [0, "&gEl;"], [0, "&lsime;"], [0, "&gsime;"], [0, "&lsimg;"], [0, "&gsiml;"], [0, "&lgE;"], [0, "&glE;"], [0, "&lesges;"], [0, "&gesles;"], [0, "&els;"], [0, "&egs;"], [0, "&elsdot;"], [0, "&egsdot;"], [0, "&el;"], [0, "&eg;"], [2, "&siml;"], [0, "&simg;"], [0, "&simlE;"], [0, "&simgE;"], [0, { v: "&LessLess;", n: 824, o: "&NotNestedLessLess;" }], [0, { v: "&GreaterGreater;", n: 824, o: "&NotNestedGreaterGreater;" }], [1, "&glj;"], [0, "&gla;"], [0, "&ltcc;"], [0, "&gtcc;"], [0, "&lescc;"], [0, "&gescc;"], [0, "&smt;"], [0, "&lat;"], [0, { v: "&smte;", n: 65024, o: "&smtes;" }], [0, { v: "&late;", n: 65024, o: "&lates;" }], [0, "&bumpE;"], [0, { v: "&PrecedesEqual;", n: 824, o: "&NotPrecedesEqual;" }], [0, { v: "&sce;", n: 824, o: "&NotSucceedsEqual;" }], [2, "&prE;"], [0, "&scE;"], [0, "&precneqq;"], [0, "&scnE;"], [0, "&prap;"], [0, "&scap;"], [0, "&precnapprox;"], [0, "&scnap;"], [0, "&Pr;"], [0, "&Sc;"], [0, "&subdot;"], [0, "&supdot;"], [0, "&subplus;"], [0, "&supplus;"], [0, "&submult;"], [0, "&supmult;"], [0, "&subedot;"], [0, "&supedot;"], [0, { v: "&subE;", n: 824, o: "&nsubE;" }], [0, { v: "&supE;", n: 824, o: "&nsupE;" }], [0, "&subsim;"], [0, "&supsim;"], [2, { v: "&subnE;", n: 65024, o: "&varsubsetneqq;" }], [0, { v: "&supnE;", n: 65024, o: "&varsupsetneqq;" }], [2, "&csub;"], [0, "&csup;"], [0, "&csube;"], [0, "&csupe;"], [0, "&subsup;"], [0, "&supsub;"], [0, "&subsub;"], [0, "&supsup;"], [0, "&suphsub;"], [0, "&supdsub;"], [0, "&forkv;"], [0, "&topfork;"], [0, "&mlcp;"], [8, "&Dashv;"], [1, "&Vdashl;"], [0, "&Barv;"], [0, "&vBar;"], [0, "&vBarv;"], [1, "&Vbar;"], [0, "&Not;"], [0, "&bNot;"], [0, "&rnmid;"], [0, "&cirmid;"], [0, "&midcir;"], [0, "&topcir;"], [0, "&nhpar;"], [0, "&parsim;"], [9, { v: "&parsl;", n: 8421, o: "&nparsl;" }], [44343, { n: new Map(/* @__PURE__ */ restoreDiff([[56476, "&Ascr;"], [1, "&Cscr;"], [0, "&Dscr;"], [2, "&Gscr;"], [2, "&Jscr;"], [0, "&Kscr;"], [2, "&Nscr;"], [0, "&Oscr;"], [0, "&Pscr;"], [0, "&Qscr;"], [1, "&Sscr;"], [0, "&Tscr;"], [0, "&Uscr;"], [0, "&Vscr;"], [0, "&Wscr;"], [0, "&Xscr;"], [0, "&Yscr;"], [0, "&Zscr;"], [0, "&ascr;"], [0, "&bscr;"], [0, "&cscr;"], [0, "&dscr;"], [1, "&fscr;"], [1, "&hscr;"], [0, "&iscr;"], [0, "&jscr;"], [0, "&kscr;"], [0, "&lscr;"], [0, "&mscr;"], [0, "&nscr;"], [1, "&pscr;"], [0, "&qscr;"], [0, "&rscr;"], [0, "&sscr;"], [0, "&tscr;"], [0, "&uscr;"], [0, "&vscr;"], [0, "&wscr;"], [0, "&xscr;"], [0, "&yscr;"], [0, "&zscr;"], [52, "&Afr;"], [0, "&Bfr;"], [1, "&Dfr;"], [0, "&Efr;"], [0, "&Ffr;"], [0, "&Gfr;"], [2, "&Jfr;"], [0, "&Kfr;"], [0, "&Lfr;"], [0, "&Mfr;"], [0, "&Nfr;"], [0, "&Ofr;"], [0, "&Pfr;"], [0, "&Qfr;"], [1, "&Sfr;"], [0, "&Tfr;"], [0, "&Ufr;"], [0, "&Vfr;"], [0, "&Wfr;"], [0, "&Xfr;"], [0, "&Yfr;"], [1, "&afr;"], [0, "&bfr;"], [0, "&cfr;"], [0, "&dfr;"], [0, "&efr;"], [0, "&ffr;"], [0, "&gfr;"], [0, "&hfr;"], [0, "&ifr;"], [0, "&jfr;"], [0, "&kfr;"], [0, "&lfr;"], [0, "&mfr;"], [0, "&nfr;"], [0, "&ofr;"], [0, "&pfr;"], [0, "&qfr;"], [0, "&rfr;"], [0, "&sfr;"], [0, "&tfr;"], [0, "&ufr;"], [0, "&vfr;"], [0, "&wfr;"], [0, "&xfr;"], [0, "&yfr;"], [0, "&zfr;"], [0, "&Aopf;"], [0, "&Bopf;"], [1, "&Dopf;"], [0, "&Eopf;"], [0, "&Fopf;"], [0, "&Gopf;"], [1, "&Iopf;"], [0, "&Jopf;"], [0, "&Kopf;"], [0, "&Lopf;"], [0, "&Mopf;"], [1, "&Oopf;"], [3, "&Sopf;"], [0, "&Topf;"], [0, "&Uopf;"], [0, "&Vopf;"], [0, "&Wopf;"], [0, "&Xopf;"], [0, "&Yopf;"], [1, "&aopf;"], [0, "&bopf;"], [0, "&copf;"], [0, "&dopf;"], [0, "&eopf;"], [0, "&fopf;"], [0, "&gopf;"], [0, "&hopf;"], [0, "&iopf;"], [0, "&jopf;"], [0, "&kopf;"], [0, "&lopf;"], [0, "&mopf;"], [0, "&nopf;"], [0, "&oopf;"], [0, "&popf;"], [0, "&qopf;"], [0, "&ropf;"], [0, "&sopf;"], [0, "&topf;"], [0, "&uopf;"], [0, "&vopf;"], [0, "&wopf;"], [0, "&xopf;"], [0, "&yopf;"], [0, "&zopf;"]])) }], [8906, "&fflig;"], [0, "&filig;"], [0, "&fllig;"], [0, "&ffilig;"], [0, "&ffllig;"]]));
 
 // node_modules/entities/lib/esm/escape.js
 var xmlReplacer = /["&'<>$\x80-\uFFFF]/g;
@@ -3097,11 +4929,6 @@ var EntityLevel;
   EntityLevel2[EntityLevel2["XML"] = 0] = "XML";
   EntityLevel2[EntityLevel2["HTML"] = 1] = "HTML";
 })(EntityLevel || (EntityLevel = {}));
-var DecodingMode;
-(function(DecodingMode2) {
-  DecodingMode2[DecodingMode2["Legacy"] = 0] = "Legacy";
-  DecodingMode2[DecodingMode2["Strict"] = 1] = "Strict";
-})(DecodingMode || (DecodingMode = {}));
 var EncodingMode;
 (function(EncodingMode2) {
   EncodingMode2[EncodingMode2["UTF8"] = 0] = "UTF8";
@@ -3447,8 +5274,14 @@ function removeElement(elem) {
     elem.next.prev = elem.prev;
   if (elem.parent) {
     const childs = elem.parent.children;
-    childs.splice(childs.lastIndexOf(elem), 1);
+    const childsIndex = childs.lastIndexOf(elem);
+    if (childsIndex >= 0) {
+      childs.splice(childsIndex, 1);
+    }
   }
+  elem.next = null;
+  elem.prev = null;
+  elem.parent = null;
 }
 function replaceElement(elem, replacement) {
   const prev2 = replacement.prev = elem.prev;
@@ -3466,12 +5299,12 @@ function replaceElement(elem, replacement) {
     elem.parent = null;
   }
 }
-function appendChild(elem, child) {
+function appendChild(parent2, child) {
   removeElement(child);
   child.next = null;
-  child.parent = elem;
-  if (elem.children.push(child) > 1) {
-    const sibling = elem.children[elem.children.length - 2];
+  child.parent = parent2;
+  if (parent2.children.push(child) > 1) {
+    const sibling = parent2.children[parent2.children.length - 2];
     sibling.next = child;
     child.prev = sibling;
   } else {
@@ -3496,12 +5329,12 @@ function append(elem, next2) {
     parent2.children.push(next2);
   }
 }
-function prependChild(elem, child) {
+function prependChild(parent2, child) {
   removeElement(child);
-  child.parent = elem;
+  child.parent = parent2;
   child.prev = null;
-  if (elem.children.unshift(child) !== 1) {
-    const sibling = elem.children[1];
+  if (parent2.children.unshift(child) !== 1) {
+    const sibling = parent2.children[1];
     sibling.prev = child;
     child.next = sibling;
   } else {
@@ -3526,27 +5359,32 @@ function prepend(elem, prev2) {
 
 // node_modules/domutils/lib/esm/querying.js
 function filter(test, node, recurse = true, limit = Infinity) {
-  if (!Array.isArray(node))
-    node = [node];
-  return find(test, node, recurse, limit);
+  return find(test, Array.isArray(node) ? node : [node], recurse, limit);
 }
 function find(test, nodes, recurse, limit) {
   const result = [];
-  for (const elem of nodes) {
+  const nodeStack = [nodes];
+  const indexStack = [0];
+  for (; ; ) {
+    if (indexStack[0] >= nodeStack[0].length) {
+      if (indexStack.length === 1) {
+        return result;
+      }
+      nodeStack.shift();
+      indexStack.shift();
+      continue;
+    }
+    const elem = nodeStack[0][indexStack[0]++];
     if (test(elem)) {
       result.push(elem);
       if (--limit <= 0)
-        break;
+        return result;
     }
     if (recurse && hasChildren(elem) && elem.children.length > 0) {
-      const children2 = find(test, elem.children, recurse, limit);
-      result.push(...children2);
-      limit -= children2.length;
-      if (limit <= 0)
-        break;
+      indexStack.unshift(0);
+      nodeStack.unshift(elem.children);
     }
   }
-  return result;
 }
 function findOneChild(test, nodes) {
   return nodes.find(test);
@@ -3554,34 +5392,43 @@ function findOneChild(test, nodes) {
 function findOne(test, nodes, recurse = true) {
   let elem = null;
   for (let i = 0; i < nodes.length && !elem; i++) {
-    const checked = nodes[i];
-    if (!isTag2(checked)) {
+    const node = nodes[i];
+    if (!isTag2(node)) {
       continue;
-    } else if (test(checked)) {
-      elem = checked;
-    } else if (recurse && checked.children.length > 0) {
-      elem = findOne(test, checked.children, true);
+    } else if (test(node)) {
+      elem = node;
+    } else if (recurse && node.children.length > 0) {
+      elem = findOne(test, node.children, true);
     }
   }
   return elem;
 }
 function existsOne(test, nodes) {
-  return nodes.some((checked) => isTag2(checked) && (test(checked) || checked.children.length > 0 && existsOne(test, checked.children)));
+  return nodes.some((checked) => isTag2(checked) && (test(checked) || existsOne(test, checked.children)));
 }
 function findAll(test, nodes) {
-  var _a2;
   const result = [];
-  const stack = nodes.filter(isTag2);
-  let elem;
-  while (elem = stack.shift()) {
-    const children2 = (_a2 = elem.children) === null || _a2 === void 0 ? void 0 : _a2.filter(isTag2);
-    if (children2 && children2.length > 0) {
-      stack.unshift(...children2);
+  const nodeStack = [nodes];
+  const indexStack = [0];
+  for (; ; ) {
+    if (indexStack[0] >= nodeStack[0].length) {
+      if (nodeStack.length === 1) {
+        return result;
+      }
+      nodeStack.shift();
+      indexStack.shift();
+      continue;
     }
+    const elem = nodeStack[0][indexStack[0]++];
+    if (!isTag2(elem))
+      continue;
     if (test(elem))
       result.push(elem);
+    if (elem.children.length > 0) {
+      indexStack.unshift(0);
+      nodeStack.unshift(elem.children);
+    }
   }
-  return result;
 }
 
 // node_modules/domutils/lib/esm/legacy.js
@@ -3742,11 +5589,11 @@ function getAtomFeed(feedRoot) {
       if (href2) {
         entry.link = href2;
       }
-      const description = fetch("summary", children2) || fetch("content", children2);
+      const description = fetch2("summary", children2) || fetch2("content", children2);
       if (description) {
         entry.description = description;
       }
-      const pubDate = fetch("updated", children2);
+      const pubDate = fetch2("updated", children2);
       if (pubDate) {
         entry.pubDate = new Date(pubDate);
       }
@@ -3760,7 +5607,7 @@ function getAtomFeed(feedRoot) {
     feed.link = href;
   }
   addConditionally(feed, "description", "subtitle", childs);
-  const updated = fetch("updated", childs);
+  const updated = fetch2("updated", childs);
   if (updated) {
     feed.updated = new Date(updated);
   }
@@ -3780,7 +5627,7 @@ function getRssFeed(feedRoot) {
       addConditionally(entry, "title", "title", children2);
       addConditionally(entry, "link", "link", children2);
       addConditionally(entry, "description", "description", children2);
-      const pubDate = fetch("pubDate", children2);
+      const pubDate = fetch2("pubDate", children2) || fetch2("dc:date", children2);
       if (pubDate)
         entry.pubDate = new Date(pubDate);
       return entry;
@@ -3789,7 +5636,7 @@ function getRssFeed(feedRoot) {
   addConditionally(feed, "title", "title", childs);
   addConditionally(feed, "link", "link", childs);
   addConditionally(feed, "description", "description", childs);
-  const updated = fetch("lastBuildDate", childs);
+  const updated = fetch2("lastBuildDate", childs);
   if (updated) {
     feed.updated = new Date(updated);
   }
@@ -3833,11 +5680,11 @@ function getMediaElements(where) {
 function getOneElement(tagName, node) {
   return getElementsByTagName(tagName, node, true, 1)[0];
 }
-function fetch(tagName, where, recurse = false) {
+function fetch2(tagName, where, recurse = false) {
   return textContent(getElementsByTagName(tagName, where, recurse, 1)).trim();
 }
 function addConditionally(obj, prop2, tagName, where, recurse = false) {
-  const val2 = fetch(tagName, where, recurse);
+  const val2 = fetch2(tagName, where, recurse);
   if (val2)
     obj[prop2] = val2;
 }
@@ -4753,10 +6600,10 @@ function parseSelector(subselects2, selector, selectorIndex) {
 }
 
 // node_modules/css-select/lib/esm/index.js
-var import_boolbase5 = __toModule(require_boolbase());
+var import_boolbase6 = __toModule(require_boolbase());
 
 // node_modules/css-select/lib/esm/compile.js
-var import_boolbase4 = __toModule(require_boolbase());
+var import_boolbase5 = __toModule(require_boolbase());
 
 // node_modules/css-select/lib/esm/sort.js
 var procedure = new Map([
@@ -4997,9 +6844,88 @@ var attributeRules = {
   }
 };
 
-// node_modules/css-select/lib/esm/pseudo-selectors/filters.js
-var import_nth_check = __toModule(require_lib());
+// node_modules/nth-check/lib/esm/parse.js
+var whitespace = new Set([9, 10, 12, 13, 32]);
+var ZERO = "0".charCodeAt(0);
+var NINE = "9".charCodeAt(0);
+function parse2(formula) {
+  formula = formula.trim().toLowerCase();
+  if (formula === "even") {
+    return [2, 0];
+  } else if (formula === "odd") {
+    return [2, 1];
+  }
+  let idx = 0;
+  let a = 0;
+  let sign = readSign();
+  let number = readNumber();
+  if (idx < formula.length && formula.charAt(idx) === "n") {
+    idx++;
+    a = sign * (number !== null && number !== void 0 ? number : 1);
+    skipWhitespace();
+    if (idx < formula.length) {
+      sign = readSign();
+      skipWhitespace();
+      number = readNumber();
+    } else {
+      sign = number = 0;
+    }
+  }
+  if (number === null || idx < formula.length) {
+    throw new Error(`n-th rule couldn't be parsed ('${formula}')`);
+  }
+  return [a, sign * number];
+  function readSign() {
+    if (formula.charAt(idx) === "-") {
+      idx++;
+      return -1;
+    }
+    if (formula.charAt(idx) === "+") {
+      idx++;
+    }
+    return 1;
+  }
+  function readNumber() {
+    const start2 = idx;
+    let value = 0;
+    while (idx < formula.length && formula.charCodeAt(idx) >= ZERO && formula.charCodeAt(idx) <= NINE) {
+      value = value * 10 + (formula.charCodeAt(idx) - ZERO);
+      idx++;
+    }
+    return idx === start2 ? null : value;
+  }
+  function skipWhitespace() {
+    while (idx < formula.length && whitespace.has(formula.charCodeAt(idx))) {
+      idx++;
+    }
+  }
+}
+
+// node_modules/nth-check/lib/esm/compile.js
 var import_boolbase2 = __toModule(require_boolbase());
+function compile(parsed) {
+  const a = parsed[0];
+  const b = parsed[1] - 1;
+  if (b < 0 && a <= 0)
+    return import_boolbase2.default.falseFunc;
+  if (a === -1)
+    return (index2) => index2 <= b;
+  if (a === 0)
+    return (index2) => index2 === b;
+  if (a === 1)
+    return b < 0 ? import_boolbase2.default.trueFunc : (index2) => index2 >= b;
+  const absA = Math.abs(a);
+  const bMod = (b % absA + absA) % absA;
+  return a > 1 ? (index2) => index2 >= b && index2 % absA === bMod : (index2) => index2 <= b && index2 % absA === bMod;
+}
+
+// node_modules/nth-check/lib/esm/index.js
+function nthCheck(formula) {
+  return compile(parse2(formula));
+}
+
+// node_modules/css-select/lib/esm/pseudo-selectors/filters.js
+var import_boolbase3 = __toModule(require_boolbase());
 function getChildFunc(next2, adapter2) {
   return (elem) => {
     const parent2 = adapter2.getParent(elem);
@@ -5019,10 +6945,10 @@ var filters = {
     };
   },
   "nth-child"(next2, rule, { adapter: adapter2, equals }) {
-    const func = (0, import_nth_check.default)(rule);
-    if (func === import_boolbase2.default.falseFunc)
-      return import_boolbase2.default.falseFunc;
-    if (func === import_boolbase2.default.trueFunc)
+    const func = nthCheck(rule);
+    if (func === import_boolbase3.default.falseFunc)
+      return import_boolbase3.default.falseFunc;
+    if (func === import_boolbase3.default.trueFunc)
       return getChildFunc(next2, adapter2);
     return function nthChild(elem) {
       const siblings2 = adapter2.getSiblings(elem);
@@ -5038,10 +6964,10 @@ var filters = {
     };
   },
   "nth-last-child"(next2, rule, { adapter: adapter2, equals }) {
-    const func = (0, import_nth_check.default)(rule);
-    if (func === import_boolbase2.default.falseFunc)
-      return import_boolbase2.default.falseFunc;
-    if (func === import_boolbase2.default.trueFunc)
+    const func = nthCheck(rule);
+    if (func === import_boolbase3.default.falseFunc)
+      return import_boolbase3.default.falseFunc;
+    if (func === import_boolbase3.default.trueFunc)
       return getChildFunc(next2, adapter2);
     return function nthLastChild(elem) {
       const siblings2 = adapter2.getSiblings(elem);
@@ -5057,10 +6983,10 @@ var filters = {
     };
   },
   "nth-of-type"(next2, rule, { adapter: adapter2, equals }) {
-    const func = (0, import_nth_check.default)(rule);
-    if (func === import_boolbase2.default.falseFunc)
-      return import_boolbase2.default.falseFunc;
-    if (func === import_boolbase2.default.trueFunc)
+    const func = nthCheck(rule);
+    if (func === import_boolbase3.default.falseFunc)
+      return import_boolbase3.default.falseFunc;
+    if (func === import_boolbase3.default.trueFunc)
       return getChildFunc(next2, adapter2);
     return function nthOfType(elem) {
       const siblings2 = adapter2.getSiblings(elem);
@@ -5077,10 +7003,10 @@ var filters = {
     };
   },
   "nth-last-of-type"(next2, rule, { adapter: adapter2, equals }) {
-    const func = (0, import_nth_check.default)(rule);
-    if (func === import_boolbase2.default.falseFunc)
-      return import_boolbase2.default.falseFunc;
-    if (func === import_boolbase2.default.trueFunc)
+    const func = nthCheck(rule);
+    if (func === import_boolbase3.default.falseFunc)
+      return import_boolbase3.default.falseFunc;
+    if (func === import_boolbase3.default.trueFunc)
       return getChildFunc(next2, adapter2);
     return function nthLastOfType(elem) {
       const siblings2 = adapter2.getSiblings(elem);
@@ -5120,7 +7046,7 @@ function dynamicStatePseudo(name) {
   return function dynamicPseudo(next2, _rule, { adapter: adapter2 }) {
     const func = adapter2[name];
     if (typeof func !== "function") {
-      return import_boolbase2.default.falseFunc;
+      return import_boolbase3.default.falseFunc;
     }
     return function active(elem) {
       return func(elem) && next2(elem);
@@ -5223,11 +7149,11 @@ var aliases = {
 };
 
 // node_modules/css-select/lib/esm/pseudo-selectors/subselects.js
-var import_boolbase3 = __toModule(require_boolbase());
+var import_boolbase4 = __toModule(require_boolbase());
 var PLACEHOLDER_ELEMENT = {};
 function ensureIsTag(next2, adapter2) {
-  if (next2 === import_boolbase3.default.falseFunc)
-    return import_boolbase3.default.falseFunc;
+  if (next2 === import_boolbase4.default.falseFunc)
+    return import_boolbase4.default.falseFunc;
   return (elem) => adapter2.isTag(elem) && next2(elem);
 }
 function getNextSiblings(elem, adapter2) {
@@ -5253,7 +7179,7 @@ function copyOptions(options) {
 }
 var is = (next2, token, options, context, compileToken2) => {
   const func = compileToken2(token, copyOptions(options), context);
-  return func === import_boolbase3.default.trueFunc ? next2 : func === import_boolbase3.default.falseFunc ? import_boolbase3.default.falseFunc : (elem) => func(elem) && next2(elem);
+  return func === import_boolbase4.default.trueFunc ? next2 : func === import_boolbase4.default.falseFunc ? import_boolbase4.default.falseFunc : (elem) => func(elem) && next2(elem);
 };
 var subselects = {
   is,
@@ -5261,7 +7187,7 @@ var subselects = {
   where: is,
   not(next2, token, options, context, compileToken2) {
     const func = compileToken2(token, copyOptions(options), context);
-    return func === import_boolbase3.default.falseFunc ? next2 : func === import_boolbase3.default.trueFunc ? import_boolbase3.default.falseFunc : (elem) => !func(elem) && next2(elem);
+    return func === import_boolbase4.default.falseFunc ? next2 : func === import_boolbase4.default.trueFunc ? import_boolbase4.default.falseFunc : (elem) => !func(elem) && next2(elem);
   },
   has(next2, subselect, options, _context, compileToken2) {
     const { adapter: adapter2 } = options;
@@ -5269,10 +7195,10 @@ var subselects = {
     opts.relativeSelector = true;
     const context = subselect.some((s) => s.some(isTraversal2)) ? [PLACEHOLDER_ELEMENT] : void 0;
     const compiled = compileToken2(subselect, opts, context);
-    if (compiled === import_boolbase3.default.falseFunc)
-      return import_boolbase3.default.falseFunc;
+    if (compiled === import_boolbase4.default.falseFunc)
+      return import_boolbase4.default.falseFunc;
     const hasElement = ensureIsTag(compiled, adapter2);
-    if (context && compiled !== import_boolbase3.default.trueFunc) {
+    if (context && compiled !== import_boolbase4.default.trueFunc) {
       const { shouldTestNextSiblings = false } = compiled;
       return (elem) => {
         if (!next2(elem))
@@ -5454,7 +7380,7 @@ function compileGeneralSelector(next2, selector, options, context, compileToken2
 }
 
 // node_modules/css-select/lib/esm/compile.js
-function compile(selector, options, context) {
+function compile2(selector, options, context) {
   const next2 = compileUnsafe(selector, options, context);
   return ensureIsTag(next2, options.adapter);
 }
@@ -5512,19 +7438,19 @@ function compileToken(token, options, context) {
       }
     }
     return compileRules(rules, options, finalContext);
-  }).reduce(reduceRules, import_boolbase4.default.falseFunc);
+  }).reduce(reduceRules, import_boolbase5.default.falseFunc);
   query.shouldTestNextSiblings = shouldTestNextSiblings;
   return query;
 }
 function compileRules(rules, options, context) {
   var _a2;
-  return rules.reduce((previous, rule) => previous === import_boolbase4.default.falseFunc ? import_boolbase4.default.falseFunc : compileGeneralSelector(previous, rule, options, context, compileToken), (_a2 = options.rootFunc) !== null && _a2 !== void 0 ? _a2 : import_boolbase4.default.trueFunc);
+  return rules.reduce((previous, rule) => previous === import_boolbase5.default.falseFunc ? import_boolbase5.default.falseFunc : compileGeneralSelector(previous, rule, options, context, compileToken), (_a2 = options.rootFunc) !== null && _a2 !== void 0 ? _a2 : import_boolbase5.default.trueFunc);
 }
 function reduceRules(a, b) {
-  if (b === import_boolbase4.default.falseFunc || a === import_boolbase4.default.trueFunc) {
+  if (b === import_boolbase5.default.falseFunc || a === import_boolbase5.default.trueFunc) {
     return a;
   }
-  if (a === import_boolbase4.default.falseFunc || b === import_boolbase4.default.trueFunc) {
+  if (a === import_boolbase5.default.falseFunc || b === import_boolbase5.default.trueFunc) {
     return b;
   }
   return function combine(elem) {
@@ -5535,13 +7461,13 @@ function reduceRules(a, b) {
 // node_modules/css-select/lib/esm/index.js
 var defaultEquals = (a, b) => a === b;
 var defaultOptions = {
-  adapter: esm_exports,
+  adapter: esm_exports2,
   equals: defaultEquals
 };
 function convertOptionFormats(options) {
   var _a2, _b, _c, _d;
   const opts = options !== null && options !== void 0 ? options : defaultOptions;
-  (_a2 = opts.adapter) !== null && _a2 !== void 0 ? _a2 : opts.adapter = esm_exports;
+  (_a2 = opts.adapter) !== null && _a2 !== void 0 ? _a2 : opts.adapter = esm_exports2;
   (_b = opts.equals) !== null && _b !== void 0 ? _b : opts.equals = (_d = (_c = opts.adapter) === null || _c === void 0 ? void 0 : _c.equals) !== null && _d !== void 0 ? _d : defaultEquals;
   return opts;
 }
@@ -5551,7 +7477,7 @@ function wrapCompile(func) {
     return func(selector, opts, context);
   };
 }
-var compile2 = wrapCompile(compile);
+var compile3 = wrapCompile(compile2);
 var _compileUnsafe = wrapCompile(compileUnsafe);
 var _compileToken = wrapCompile(compileToken);
 function getSelectorFunc(searchFunc) {
@@ -5579,11 +7505,11 @@ function appendNextSiblings(elem, adapter2) {
   }
   return elems;
 }
-var selectAll = getSelectorFunc((query, elems, options) => query === import_boolbase5.default.falseFunc || !elems || elems.length === 0 ? [] : options.adapter.findAll(query, elems));
-var selectOne = getSelectorFunc((query, elems, options) => query === import_boolbase5.default.falseFunc || !elems || elems.length === 0 ? null : options.adapter.findOne(query, elems));
+var selectAll = getSelectorFunc((query, elems, options) => query === import_boolbase6.default.falseFunc || !elems || elems.length === 0 ? [] : options.adapter.findAll(query, elems));
+var selectOne = getSelectorFunc((query, elems, options) => query === import_boolbase6.default.falseFunc || !elems || elems.length === 0 ? null : options.adapter.findOne(query, elems));
 
 // node_modules/cheerio-select/lib/esm/index.js
-var boolbase6 = __toModule(require_boolbase());
+var boolbase7 = __toModule(require_boolbase());
 
 // node_modules/cheerio-select/lib/esm/positionals.js
 var filterNames = new Set([
@@ -5772,7 +7698,7 @@ function findFilterElements(root2, selector, options, queryForSelector, totalLim
     if (isTraversal(remainingSelector[0])) {
       const { type } = remainingSelector[0];
       if (type === SelectorType.Sibling || type === SelectorType.Adjacent) {
-        result = prepareContext(result, esm_exports, true);
+        result = prepareContext(result, esm_exports2, true);
       }
       remainingSelector.unshift(UNIVERSAL_SELECTOR);
     }
@@ -5780,8 +7706,8 @@ function findFilterElements(root2, selector, options, queryForSelector, totalLim
       relativeSelector: false,
       rootFunc: (el) => result.includes(el)
     });
-  } else if (options.rootFunc && options.rootFunc !== boolbase6.trueFunc) {
-    options = __spreadProps(__spreadValues({}, options), { rootFunc: boolbase6.trueFunc });
+  } else if (options.rootFunc && options.rootFunc !== boolbase7.trueFunc) {
+    options = __spreadProps(__spreadValues({}, options), { rootFunc: boolbase7.trueFunc });
   }
   return remainingSelector.some(isFilter) ? findFilterElements(result, remainingSelector, options, false, totalLimit) : remainingHasTraversal ? findElements(result, [remainingSelector], options, totalLimit) : filterElements(result, [remainingSelector], options);
 }
@@ -5790,7 +7716,7 @@ function findElements(root2, sel, options, limit) {
   return find2(root2, query, limit);
 }
 function find2(root2, query, limit = Infinity) {
-  const elems = prepareContext(root2, esm_exports, query.shouldTestNextSiblings);
+  const elems = prepareContext(root2, esm_exports2, query.shouldTestNextSiblings);
   return find((node) => isTag2(node) && query(node), elems, true, limit);
 }
 function filterElements(elements, sel, options) {
@@ -5798,7 +7724,7 @@ function filterElements(elements, sel, options) {
   if (els.length === 0)
     return els;
   const query = _compileToken(sel, options);
-  return query === boolbase6.trueFunc ? els : els.filter(query);
+  return query === boolbase7.trueFunc ? els : els.filter(query);
 }
 
 // node_modules/cheerio/lib/esm/api/traversing.js
@@ -6076,7 +8002,7 @@ __export(manipulation_exports, {
 
 // node_modules/cheerio/lib/esm/parse.js
 function getParse(parser) {
-  return function parse5(content, options, isDocument2, context) {
+  return function parse6(content, options, isDocument2, context) {
     if (typeof Buffer !== "undefined" && Buffer.isBuffer(content)) {
       content = content.toString();
     }
@@ -6455,7 +8381,7 @@ function setCss(el, prop2, value, idx) {
 function getCss(el, prop2) {
   if (!el || !isTag2(el))
     return;
-  const styles = parse2(el.attribs["style"]);
+  const styles = parse3(el.attribs["style"]);
   if (typeof prop2 === "string") {
     return styles[prop2];
   }
@@ -6473,7 +8399,7 @@ function getCss(el, prop2) {
 function stringify(obj) {
   return Object.keys(obj).reduce((str, prop2) => `${str}${str ? " " : ""}${prop2}: ${obj[prop2]};`, "");
 }
-function parse2(styles) {
+function parse3(styles) {
   styles = (styles || "").trim();
   if (!styles)
     return {};
@@ -6547,13 +8473,13 @@ Cheerio.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 Object.assign(Cheerio.prototype, attributes_exports, traversing_exports, manipulation_exports, css_exports, forms_exports);
 
 // node_modules/cheerio/lib/esm/load.js
-function getLoad(parse5, render3) {
+function getLoad(parse6, render3) {
   return function load2(content, options, isDocument2 = true) {
     if (content == null) {
       throw new Error("cheerio.load() expects a string");
     }
     const internalOpts = __spreadValues(__spreadValues({}, options_default), flatten(options));
-    const initialRoot = parse5(content, internalOpts, isDocument2, null);
+    const initialRoot = parse6(content, internalOpts, isDocument2, null);
     class LoadedCheerio extends Cheerio {
       _make(selector, context) {
         const cheerio = initialize(selector, context);
@@ -6561,7 +8487,7 @@ function getLoad(parse5, render3) {
         return cheerio;
       }
       _parse(content2, options2, isDocument3, context) {
-        return parse5(content2, options2, isDocument3, context);
+        return parse6(content2, options2, isDocument3, context);
       }
       _render(dom) {
         return render3(dom, this.options);
@@ -6571,13 +8497,13 @@ function getLoad(parse5, render3) {
       if (selector && isCheerio(selector))
         return selector;
       const options2 = __spreadValues(__spreadValues({}, internalOpts), flatten(opts));
-      const r = typeof root2 === "string" ? [parse5(root2, options2, false, null)] : "length" in root2 ? root2 : [root2];
+      const r = typeof root2 === "string" ? [parse6(root2, options2, false, null)] : "length" in root2 ? root2 : [root2];
       const rootInstance = isCheerio(r) ? r : new LoadedCheerio(r, null, options2);
       rootInstance._root = rootInstance;
       if (!selector) {
         return new LoadedCheerio(void 0, rootInstance, options2);
       }
-      const elements = typeof selector === "string" && isHtml(selector) ? parse5(selector, options2, false, null).children : isNode(selector) ? [selector] : Array.isArray(selector) ? selector : void 0;
+      const elements = typeof selector === "string" && isHtml(selector) ? parse6(selector, options2, false, null).children : isNode(selector) ? [selector] : Array.isArray(selector) ? selector : void 0;
       const instance = new LoadedCheerio(elements, rootInstance, options2);
       if (elements) {
         return instance;
@@ -6586,7 +8512,7 @@ function getLoad(parse5, render3) {
         throw new Error("Unexpected type of selector");
       }
       let search = selector;
-      const searchContext = !context ? rootInstance : typeof context === "string" ? isHtml(context) ? new LoadedCheerio([parse5(context, options2, false, null)], rootInstance, options2) : (search = `${context} ${search}`, rootInstance) : isCheerio(context) ? context : new LoadedCheerio(Array.isArray(context) ? context : [context], rootInstance, options2);
+      const searchContext = !context ? rootInstance : typeof context === "string" ? isHtml(context) ? new LoadedCheerio([parse6(context, options2, false, null)], rootInstance, options2) : (search = `${context} ${search}`, rootInstance) : isCheerio(context) ? context : new LoadedCheerio(Array.isArray(context) ? context : [context], rootInstance, options2);
       if (!searchContext)
         return instance;
       return searchContext.find(search);
@@ -6677,7 +8603,7 @@ var CODE_POINTS;
   CODE_POINTS2[CODE_POINTS2["LATIN_SMALL_X"] = 120] = "LATIN_SMALL_X";
   CODE_POINTS2[CODE_POINTS2["LATIN_SMALL_Z"] = 122] = "LATIN_SMALL_Z";
   CODE_POINTS2[CODE_POINTS2["REPLACEMENT_CHARACTER"] = 65533] = "REPLACEMENT_CHARACTER";
-})(CODE_POINTS || (CODE_POINTS = {}));
+})(CODE_POINTS = CODE_POINTS || (CODE_POINTS = {}));
 var SEQUENCES = {
   DASH_DASH: "--",
   CDATA_START: "[CDATA[",
@@ -6765,7 +8691,7 @@ var ERR;
   ERR2["misplacedStartTagForHeadElement"] = "misplaced-start-tag-for-head-element";
   ERR2["nestedNoscriptInHead"] = "nested-noscript-in-head";
   ERR2["eofInElementThatCanContainOnlyText"] = "eof-in-element-that-can-contain-only-text";
-})(ERR || (ERR = {}));
+})(ERR = ERR || (ERR = {}));
 
 // node_modules/parse5/dist/tokenizer/preprocessor.js
 var DEFAULT_BUFFER_WATERLINE = 1 << 16;
@@ -6877,7 +8803,8 @@ var Preprocessor = class {
       this.endOfChunkHit = !this.lastChunkWritten;
       return CODE_POINTS.EOF;
     }
-    return this.html.charCodeAt(pos);
+    const code = this.html.charCodeAt(pos);
+    return code === CODE_POINTS.CARRIAGE_RETURN ? CODE_POINTS.LINE_FEED : code;
   }
   advance() {
     this.pos++;
@@ -6949,7 +8876,7 @@ var TokenType;
   TokenType2[TokenType2["DOCTYPE"] = 6] = "DOCTYPE";
   TokenType2[TokenType2["EOF"] = 7] = "EOF";
   TokenType2[TokenType2["HIBERNATION"] = 8] = "HIBERNATION";
-})(TokenType || (TokenType = {}));
+})(TokenType = TokenType || (TokenType = {}));
 function getTokenAttr(token, attrName) {
   for (let i = token.attrs.length - 1; i >= 0; i--) {
     if (token.attrs[i].name === attrName) {
@@ -6980,7 +8907,7 @@ var NS;
   NS2["XLINK"] = "http://www.w3.org/1999/xlink";
   NS2["XML"] = "http://www.w3.org/XML/1998/namespace";
   NS2["XMLNS"] = "http://www.w3.org/2000/xmlns/";
-})(NS || (NS = {}));
+})(NS = NS || (NS = {}));
 var ATTRS;
 (function(ATTRS2) {
   ATTRS2["TYPE"] = "type";
@@ -6991,13 +8918,13 @@ var ATTRS;
   ATTRS2["COLOR"] = "color";
   ATTRS2["FACE"] = "face";
   ATTRS2["SIZE"] = "size";
-})(ATTRS || (ATTRS = {}));
+})(ATTRS = ATTRS || (ATTRS = {}));
 var DOCUMENT_MODE;
 (function(DOCUMENT_MODE2) {
   DOCUMENT_MODE2["NO_QUIRKS"] = "no-quirks";
   DOCUMENT_MODE2["QUIRKS"] = "quirks";
   DOCUMENT_MODE2["LIMITED_QUIRKS"] = "limited-quirks";
-})(DOCUMENT_MODE || (DOCUMENT_MODE = {}));
+})(DOCUMENT_MODE = DOCUMENT_MODE || (DOCUMENT_MODE = {}));
 var TAG_NAMES;
 (function(TAG_NAMES2) {
   TAG_NAMES2["A"] = "a";
@@ -7122,7 +9049,7 @@ var TAG_NAMES;
   TAG_NAMES2["VAR"] = "var";
   TAG_NAMES2["WBR"] = "wbr";
   TAG_NAMES2["XMP"] = "xmp";
-})(TAG_NAMES || (TAG_NAMES = {}));
+})(TAG_NAMES = TAG_NAMES || (TAG_NAMES = {}));
 var TAG_ID;
 (function(TAG_ID2) {
   TAG_ID2[TAG_ID2["UNKNOWN"] = 0] = "UNKNOWN";
@@ -7248,7 +9175,7 @@ var TAG_ID;
   TAG_ID2[TAG_ID2["VAR"] = 120] = "VAR";
   TAG_ID2[TAG_ID2["WBR"] = 121] = "WBR";
   TAG_ID2[TAG_ID2["XMP"] = 122] = "XMP";
-})(TAG_ID || (TAG_ID = {}));
+})(TAG_ID = TAG_ID || (TAG_ID = {}));
 var TAG_NAME_TO_ID = new Map([
   [TAG_NAMES.A, TAG_ID.A],
   [TAG_NAMES.ADDRESS, TAG_ID.ADDRESS],
@@ -7592,10 +9519,9 @@ var State;
   State3[State3["AMBIGUOUS_AMPERSAND"] = 73] = "AMBIGUOUS_AMPERSAND";
   State3[State3["NUMERIC_CHARACTER_REFERENCE"] = 74] = "NUMERIC_CHARACTER_REFERENCE";
   State3[State3["HEXADEMICAL_CHARACTER_REFERENCE_START"] = 75] = "HEXADEMICAL_CHARACTER_REFERENCE_START";
-  State3[State3["DECIMAL_CHARACTER_REFERENCE_START"] = 76] = "DECIMAL_CHARACTER_REFERENCE_START";
-  State3[State3["HEXADEMICAL_CHARACTER_REFERENCE"] = 77] = "HEXADEMICAL_CHARACTER_REFERENCE";
-  State3[State3["DECIMAL_CHARACTER_REFERENCE"] = 78] = "DECIMAL_CHARACTER_REFERENCE";
-  State3[State3["NUMERIC_CHARACTER_REFERENCE_END"] = 79] = "NUMERIC_CHARACTER_REFERENCE_END";
+  State3[State3["HEXADEMICAL_CHARACTER_REFERENCE"] = 76] = "HEXADEMICAL_CHARACTER_REFERENCE";
+  State3[State3["DECIMAL_CHARACTER_REFERENCE"] = 77] = "DECIMAL_CHARACTER_REFERENCE";
+  State3[State3["NUMERIC_CHARACTER_REFERENCE_END"] = 78] = "NUMERIC_CHARACTER_REFERENCE_END";
 })(State || (State = {}));
 var TokenizerMode = {
   DATA: State.DATA,
@@ -7617,7 +9543,7 @@ function isAsciiLower(cp) {
 function isAsciiLetter(cp) {
   return isAsciiLower(cp) || isAsciiUpper(cp);
 }
-function isAsciiAlphaNumeric(cp) {
+function isAsciiAlphaNumeric2(cp) {
   return isAsciiLetter(cp) || isAsciiDigit(cp);
 }
 function isAsciiUpperHexDigit(cp) {
@@ -7635,8 +9561,8 @@ function toAsciiLower(cp) {
 function isWhitespace2(cp) {
   return cp === CODE_POINTS.SPACE || cp === CODE_POINTS.LINE_FEED || cp === CODE_POINTS.TABULATION || cp === CODE_POINTS.FORM_FEED;
 }
-function isEntityInAttributeInvalidEnd(nextCp) {
-  return nextCp === CODE_POINTS.EQUALS_SIGN || isAsciiAlphaNumeric(nextCp);
+function isEntityInAttributeInvalidEnd2(nextCp) {
+  return nextCp === CODE_POINTS.EQUALS_SIGN || isAsciiAlphaNumeric2(nextCp);
 }
 function isScriptDataDoubleEscapeSequenceEnd(cp) {
   return isWhitespace2(cp) || cp === CODE_POINTS.SOLIDUS || cp === CODE_POINTS.GREATER_THAN_SIGN;
@@ -7734,9 +9660,9 @@ var Tokenizer = class {
     this.consumedAfterSnapshot -= count;
     this.preprocessor.retreat(count);
   }
-  _reconsumeInState(state) {
+  _reconsumeInState(state, cp) {
     this.state = state;
-    this._unconsume(1);
+    this._callState(cp);
   }
   _advanceBy(count) {
     this.consumedAfterSnapshot += count;
@@ -7913,12 +9839,7 @@ var Tokenizer = class {
     this._createCharacterToken(type, ch);
   }
   _emitCodePoint(cp) {
-    let type = TokenType.CHARACTER;
-    if (isWhitespace2(cp)) {
-      type = TokenType.WHITESPACE_CHARACTER;
-    } else if (cp === CODE_POINTS.NULL) {
-      type = TokenType.NULL_CHARACTER;
-    }
+    const type = isWhitespace2(cp) ? TokenType.WHITESPACE_CHARACTER : cp === CODE_POINTS.NULL ? TokenType.NULL_CHARACTER : TokenType.CHARACTER;
     this._appendCharToCurrentCharacterToken(type, String.fromCodePoint(cp));
   }
   _emitChars(ch) {
@@ -7937,7 +9858,7 @@ var Tokenizer = class {
       const masked = current & BinTrieFlags.VALUE_LENGTH;
       if (masked) {
         const valueLength = (masked >> 14) - 1;
-        if (cp !== CODE_POINTS.SEMICOLON && this._isCharacterReferenceInAttribute() && isEntityInAttributeInvalidEnd(this.preprocessor.peek(1))) {
+        if (cp !== CODE_POINTS.SEMICOLON && this._isCharacterReferenceInAttribute() && isEntityInAttributeInvalidEnd2(this.preprocessor.peek(1))) {
           result = [CODE_POINTS.AMPERSAND];
           i += valueLength;
         } else {
@@ -8274,10 +10195,6 @@ var Tokenizer = class {
         this._stateHexademicalCharacterReferenceStart(cp);
         break;
       }
-      case State.DECIMAL_CHARACTER_REFERENCE_START: {
-        this._stateDecimalCharacterReferenceStart(cp);
-        break;
-      }
       case State.HEXADEMICAL_CHARACTER_REFERENCE: {
         this._stateHexademicalCharacterReference(cp);
         break;
@@ -8287,7 +10204,7 @@ var Tokenizer = class {
         break;
       }
       case State.NUMERIC_CHARACTER_REFERENCE_END: {
-        this._stateNumericCharacterReferenceEnd();
+        this._stateNumericCharacterReferenceEnd(cp);
         break;
       }
       default: {
@@ -9510,7 +11427,7 @@ var Tokenizer = class {
         this._emitEOFToken();
         break;
       }
-      default:
+      default: {
         if (this._consumeSequenceIfMatch(SEQUENCES.PUBLIC, false)) {
           this.state = State.AFTER_DOCTYPE_PUBLIC_KEYWORD;
         } else if (this._consumeSequenceIfMatch(SEQUENCES.SYSTEM, false)) {
@@ -9521,6 +11438,7 @@ var Tokenizer = class {
           this.state = State.BOGUS_DOCTYPE;
           this._stateBogusDoctype(cp);
         }
+      }
     }
   }
   _stateAfterDoctypePublicKeyword(cp) {
@@ -9991,12 +11909,12 @@ var Tokenizer = class {
   _stateCharacterReference(cp) {
     if (cp === CODE_POINTS.NUMBER_SIGN) {
       this.state = State.NUMERIC_CHARACTER_REFERENCE;
-    } else if (isAsciiAlphaNumeric(cp)) {
+    } else if (isAsciiAlphaNumeric2(cp)) {
       this.state = State.NAMED_CHARACTER_REFERENCE;
       this._stateNamedCharacterReference(cp);
     } else {
       this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-      this._reconsumeInState(this.returnState);
+      this._reconsumeInState(this.returnState, cp);
     }
   }
   _stateNamedCharacterReference(cp) {
@@ -10013,22 +11931,27 @@ var Tokenizer = class {
     }
   }
   _stateAmbiguousAmpersand(cp) {
-    if (isAsciiAlphaNumeric(cp)) {
+    if (isAsciiAlphaNumeric2(cp)) {
       this._flushCodePointConsumedAsCharacterReference(cp);
     } else {
       if (cp === CODE_POINTS.SEMICOLON) {
         this._err(ERR.unknownNamedCharacterReference);
       }
-      this._reconsumeInState(this.returnState);
+      this._reconsumeInState(this.returnState, cp);
     }
   }
   _stateNumericCharacterReference(cp) {
     this.charRefCode = 0;
     if (cp === CODE_POINTS.LATIN_SMALL_X || cp === CODE_POINTS.LATIN_CAPITAL_X) {
       this.state = State.HEXADEMICAL_CHARACTER_REFERENCE_START;
+    } else if (isAsciiDigit(cp)) {
+      this.state = State.DECIMAL_CHARACTER_REFERENCE;
+      this._stateDecimalCharacterReference(cp);
     } else {
-      this.state = State.DECIMAL_CHARACTER_REFERENCE_START;
-      this._stateDecimalCharacterReferenceStart(cp);
+      this._err(ERR.absenceOfDigitsInNumericCharacterReference);
+      this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
+      this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.NUMBER_SIGN);
+      this._reconsumeInState(this.returnState, cp);
     }
   }
   _stateHexademicalCharacterReferenceStart(cp) {
@@ -10043,17 +11966,6 @@ var Tokenizer = class {
       this.state = this.returnState;
     }
   }
-  _stateDecimalCharacterReferenceStart(cp) {
-    if (isAsciiDigit(cp)) {
-      this.state = State.DECIMAL_CHARACTER_REFERENCE;
-      this._stateDecimalCharacterReference(cp);
-    } else {
-      this._err(ERR.absenceOfDigitsInNumericCharacterReference);
-      this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-      this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.NUMBER_SIGN);
-      this._reconsumeInState(this.returnState);
-    }
-  }
   _stateHexademicalCharacterReference(cp) {
     if (isAsciiUpperHexDigit(cp)) {
       this.charRefCode = this.charRefCode * 16 + cp - 55;
@@ -10066,7 +11978,7 @@ var Tokenizer = class {
     } else {
       this._err(ERR.missingSemicolonAfterCharacterReference);
       this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-      this._stateNumericCharacterReferenceEnd();
+      this._stateNumericCharacterReferenceEnd(cp);
     }
   }
   _stateDecimalCharacterReference(cp) {
@@ -10077,10 +11989,10 @@ var Tokenizer = class {
     } else {
       this._err(ERR.missingSemicolonAfterCharacterReference);
       this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-      this._stateNumericCharacterReferenceEnd();
+      this._stateNumericCharacterReferenceEnd(cp);
     }
   }
-  _stateNumericCharacterReferenceEnd() {
+  _stateNumericCharacterReferenceEnd(cp) {
     if (this.charRefCode === CODE_POINTS.NULL) {
       this._err(ERR.nullCharacterReference);
       this.charRefCode = CODE_POINTS.REPLACEMENT_CHARACTER;
@@ -10100,7 +12012,7 @@ var Tokenizer = class {
       }
     }
     this._flushCodePointConsumedAsCharacterReference(this.charRefCode);
-    this._reconsumeInState(this.returnState);
+    this._reconsumeInState(this.returnState, cp);
   }
 };
 
@@ -10143,7 +12055,10 @@ var TABLE_BODY_CONTEXT = [TAG_ID.TBODY, TAG_ID.TFOOT, TAG_ID.THEAD, TAG_ID.TEMPL
 var TABLE_CONTEXT = [TAG_ID.TABLE, TAG_ID.TEMPLATE, TAG_ID.HTML];
 var TABLE_CELLS = [TAG_ID.TD, TAG_ID.TH];
 var OpenElementStack = class {
-  constructor(document, treeAdapter, handler) {
+  get currentTmplContentOrNode() {
+    return this._isInTemplate() ? this.treeAdapter.getTemplateContent(this.current) : this.current;
+  }
+  constructor(document2, treeAdapter, handler) {
     this.treeAdapter = treeAdapter;
     this.handler = handler;
     this.items = [];
@@ -10151,10 +12066,7 @@ var OpenElementStack = class {
     this.stackTop = -1;
     this.tmplCount = 0;
     this.currentTagId = TAG_ID.UNKNOWN;
-    this.current = document;
-  }
-  get currentTmplContentOrNode() {
-    return this._isInTemplate() ? this.treeAdapter.getTemplateContent(this.current) : this.current;
+    this.current = document2;
   }
   _indexOf(element) {
     return this.items.lastIndexOf(element, this.stackTop);
@@ -10410,7 +12322,7 @@ var EntryType;
 (function(EntryType2) {
   EntryType2[EntryType2["Marker"] = 0] = "Marker";
   EntryType2[EntryType2["Element"] = 1] = "Element";
-})(EntryType || (EntryType = {}));
+})(EntryType = EntryType || (EntryType = {}));
 var MARKER = { type: EntryType.Marker };
 var FormattingElementList = class {
   constructor(treeAdapter) {
@@ -10500,17 +12412,9 @@ var FormattingElementList = class {
 };
 
 // node_modules/parse5/dist/tree-adapters/default.js
-var NodeType;
-(function(NodeType2) {
-  NodeType2["Document"] = "#document";
-  NodeType2["DocumentFragment"] = "#document-fragment";
-  NodeType2["Comment"] = "#comment";
-  NodeType2["Text"] = "#text";
-  NodeType2["DocumentType"] = "#documentType";
-})(NodeType || (NodeType = {}));
 function createTextNode(value) {
   return {
-    nodeName: NodeType.Text,
+    nodeName: "#text",
     value,
     parentNode: null
   };
@@ -10518,14 +12422,14 @@ function createTextNode(value) {
 var defaultTreeAdapter = {
   createDocument() {
     return {
-      nodeName: NodeType.Document,
+      nodeName: "#document",
       mode: DOCUMENT_MODE.NO_QUIRKS,
       childNodes: []
     };
   },
   createDocumentFragment() {
     return {
-      nodeName: NodeType.DocumentFragment,
+      nodeName: "#document-fragment",
       childNodes: []
     };
   },
@@ -10541,7 +12445,7 @@ var defaultTreeAdapter = {
   },
   createCommentNode(data2) {
     return {
-      nodeName: NodeType.Comment,
+      nodeName: "#comment",
       data: data2,
       parentNode: null
     };
@@ -10561,28 +12465,28 @@ var defaultTreeAdapter = {
   getTemplateContent(templateElement) {
     return templateElement.content;
   },
-  setDocumentType(document, name, publicId, systemId) {
-    const doctypeNode = document.childNodes.find((node) => node.nodeName === NodeType.DocumentType);
+  setDocumentType(document2, name, publicId, systemId) {
+    const doctypeNode = document2.childNodes.find((node) => node.nodeName === "#documentType");
     if (doctypeNode) {
       doctypeNode.name = name;
       doctypeNode.publicId = publicId;
       doctypeNode.systemId = systemId;
     } else {
       const node = {
-        nodeName: NodeType.DocumentType,
+        nodeName: "#documentType",
         name,
         publicId,
         systemId,
         parentNode: null
       };
-      defaultTreeAdapter.appendChild(document, node);
+      defaultTreeAdapter.appendChild(document2, node);
     }
   },
-  setDocumentMode(document, mode) {
-    document.mode = mode;
+  setDocumentMode(document2, mode) {
+    document2.mode = mode;
   },
-  getDocumentMode(document) {
-    return document.mode;
+  getDocumentMode(document2) {
+    return document2.mode;
   },
   detachNode(node) {
     if (node.parentNode) {
@@ -10657,7 +12561,7 @@ var defaultTreeAdapter = {
     return node.nodeName === "#comment";
   },
   isDocumentTypeNode(node) {
-    return node.nodeName === NodeType.DocumentType;
+    return node.nodeName === "#documentType";
   },
   isElementNode(node) {
     return Object.prototype.hasOwnProperty.call(node, "tagName");
@@ -11059,7 +12963,7 @@ var defaultParserOptions = {
   onParseError: null
 };
 var Parser = class {
-  constructor(options, document, fragmentContext = null, scriptHandler = null) {
+  constructor(options, document2, fragmentContext = null, scriptHandler = null) {
     this.fragmentContext = fragmentContext;
     this.scriptHandler = scriptHandler;
     this.currentToken = null;
@@ -11081,7 +12985,7 @@ var Parser = class {
     if (this.onParseError) {
       this.options.sourceCodeLocationInfo = true;
     }
-    this.document = document !== null && document !== void 0 ? document : this.treeAdapter.createDocument();
+    this.document = document2 !== null && document2 !== void 0 ? document2 : this.treeAdapter.createDocument();
     this.tokenizer = new Tokenizer(this.options, this);
     this.activeFormattingElements = new FormattingElementList(this.treeAdapter);
     this.fragmentContextID = fragmentContext ? getTagID(this.treeAdapter.getTagName(fragmentContext)) : TAG_ID.UNKNOWN;
@@ -11408,51 +13312,63 @@ var Parser = class {
   _resetInsertionMode() {
     for (let i = this.openElements.stackTop; i >= 0; i--) {
       switch (i === 0 && this.fragmentContext ? this.fragmentContextID : this.openElements.tagIDs[i]) {
-        case TAG_ID.TR:
+        case TAG_ID.TR: {
           this.insertionMode = InsertionMode.IN_ROW;
           return;
+        }
         case TAG_ID.TBODY:
         case TAG_ID.THEAD:
-        case TAG_ID.TFOOT:
+        case TAG_ID.TFOOT: {
           this.insertionMode = InsertionMode.IN_TABLE_BODY;
           return;
-        case TAG_ID.CAPTION:
+        }
+        case TAG_ID.CAPTION: {
           this.insertionMode = InsertionMode.IN_CAPTION;
           return;
-        case TAG_ID.COLGROUP:
+        }
+        case TAG_ID.COLGROUP: {
           this.insertionMode = InsertionMode.IN_COLUMN_GROUP;
           return;
-        case TAG_ID.TABLE:
+        }
+        case TAG_ID.TABLE: {
           this.insertionMode = InsertionMode.IN_TABLE;
           return;
-        case TAG_ID.BODY:
+        }
+        case TAG_ID.BODY: {
           this.insertionMode = InsertionMode.IN_BODY;
           return;
-        case TAG_ID.FRAMESET:
+        }
+        case TAG_ID.FRAMESET: {
           this.insertionMode = InsertionMode.IN_FRAMESET;
           return;
-        case TAG_ID.SELECT:
+        }
+        case TAG_ID.SELECT: {
           this._resetInsertionModeForSelect(i);
           return;
-        case TAG_ID.TEMPLATE:
+        }
+        case TAG_ID.TEMPLATE: {
           this.insertionMode = this.tmplInsertionModeStack[0];
           return;
-        case TAG_ID.HTML:
+        }
+        case TAG_ID.HTML: {
           this.insertionMode = this.headElement ? InsertionMode.AFTER_HEAD : InsertionMode.BEFORE_HEAD;
           return;
+        }
         case TAG_ID.TD:
-        case TAG_ID.TH:
+        case TAG_ID.TH: {
           if (i > 0) {
             this.insertionMode = InsertionMode.IN_CELL;
             return;
           }
           break;
-        case TAG_ID.HEAD:
+        }
+        case TAG_ID.HEAD: {
           if (i > 0) {
             this.insertionMode = InsertionMode.IN_HEAD;
             return;
           }
           break;
+        }
       }
     }
     this.insertionMode = InsertionMode.IN_BODY;
@@ -11481,11 +13397,12 @@ var Parser = class {
     for (let i = this.openElements.stackTop; i >= 0; i--) {
       const openElement = this.openElements.items[i];
       switch (this.openElements.tagIDs[i]) {
-        case TAG_ID.TEMPLATE:
+        case TAG_ID.TEMPLATE: {
           if (this.treeAdapter.getNamespaceURI(openElement) === NS.HTML) {
             return { parent: this.treeAdapter.getTemplateContent(openElement), beforeElement: null };
           }
           break;
+        }
         case TAG_ID.TABLE: {
           const parent2 = this.treeAdapter.getParentNode(openElement);
           if (parent2) {
@@ -11517,52 +13434,65 @@ var Parser = class {
       return;
     }
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         tokenInInitialMode(this, token);
         break;
-      case InsertionMode.BEFORE_HTML:
+      }
+      case InsertionMode.BEFORE_HTML: {
         tokenBeforeHtml(this, token);
         break;
-      case InsertionMode.BEFORE_HEAD:
+      }
+      case InsertionMode.BEFORE_HEAD: {
         tokenBeforeHead(this, token);
         break;
-      case InsertionMode.IN_HEAD:
+      }
+      case InsertionMode.IN_HEAD: {
         tokenInHead(this, token);
         break;
-      case InsertionMode.IN_HEAD_NO_SCRIPT:
+      }
+      case InsertionMode.IN_HEAD_NO_SCRIPT: {
         tokenInHeadNoScript(this, token);
         break;
-      case InsertionMode.AFTER_HEAD:
+      }
+      case InsertionMode.AFTER_HEAD: {
         tokenAfterHead(this, token);
         break;
+      }
       case InsertionMode.IN_BODY:
       case InsertionMode.IN_CAPTION:
       case InsertionMode.IN_CELL:
-      case InsertionMode.IN_TEMPLATE:
+      case InsertionMode.IN_TEMPLATE: {
         characterInBody(this, token);
         break;
+      }
       case InsertionMode.TEXT:
       case InsertionMode.IN_SELECT:
-      case InsertionMode.IN_SELECT_IN_TABLE:
+      case InsertionMode.IN_SELECT_IN_TABLE: {
         this._insertCharacters(token);
         break;
+      }
       case InsertionMode.IN_TABLE:
       case InsertionMode.IN_TABLE_BODY:
-      case InsertionMode.IN_ROW:
+      case InsertionMode.IN_ROW: {
         characterInTable(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         characterInTableText(this, token);
         break;
-      case InsertionMode.IN_COLUMN_GROUP:
+      }
+      case InsertionMode.IN_COLUMN_GROUP: {
         tokenInColumnGroup(this, token);
         break;
-      case InsertionMode.AFTER_BODY:
+      }
+      case InsertionMode.AFTER_BODY: {
         tokenAfterBody(this, token);
         break;
-      case InsertionMode.AFTER_AFTER_BODY:
+      }
+      case InsertionMode.AFTER_AFTER_BODY: {
         tokenAfterAfterBody(this, token);
         break;
+      }
       default:
     }
   }
@@ -11573,41 +13503,52 @@ var Parser = class {
       return;
     }
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         tokenInInitialMode(this, token);
         break;
-      case InsertionMode.BEFORE_HTML:
+      }
+      case InsertionMode.BEFORE_HTML: {
         tokenBeforeHtml(this, token);
         break;
-      case InsertionMode.BEFORE_HEAD:
+      }
+      case InsertionMode.BEFORE_HEAD: {
         tokenBeforeHead(this, token);
         break;
-      case InsertionMode.IN_HEAD:
+      }
+      case InsertionMode.IN_HEAD: {
         tokenInHead(this, token);
         break;
-      case InsertionMode.IN_HEAD_NO_SCRIPT:
+      }
+      case InsertionMode.IN_HEAD_NO_SCRIPT: {
         tokenInHeadNoScript(this, token);
         break;
-      case InsertionMode.AFTER_HEAD:
+      }
+      case InsertionMode.AFTER_HEAD: {
         tokenAfterHead(this, token);
         break;
-      case InsertionMode.TEXT:
+      }
+      case InsertionMode.TEXT: {
         this._insertCharacters(token);
         break;
+      }
       case InsertionMode.IN_TABLE:
       case InsertionMode.IN_TABLE_BODY:
-      case InsertionMode.IN_ROW:
+      case InsertionMode.IN_ROW: {
         characterInTable(this, token);
         break;
-      case InsertionMode.IN_COLUMN_GROUP:
+      }
+      case InsertionMode.IN_COLUMN_GROUP: {
         tokenInColumnGroup(this, token);
         break;
-      case InsertionMode.AFTER_BODY:
+      }
+      case InsertionMode.AFTER_BODY: {
         tokenAfterBody(this, token);
         break;
-      case InsertionMode.AFTER_AFTER_BODY:
+      }
+      case InsertionMode.AFTER_AFTER_BODY: {
         tokenAfterAfterBody(this, token);
         break;
+      }
       default:
     }
   }
@@ -11635,37 +13576,44 @@ var Parser = class {
       case InsertionMode.IN_SELECT_IN_TABLE:
       case InsertionMode.IN_TEMPLATE:
       case InsertionMode.IN_FRAMESET:
-      case InsertionMode.AFTER_FRAMESET:
+      case InsertionMode.AFTER_FRAMESET: {
         appendComment(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         tokenInTableText(this, token);
         break;
-      case InsertionMode.AFTER_BODY:
+      }
+      case InsertionMode.AFTER_BODY: {
         appendCommentToRootHtmlElement(this, token);
         break;
+      }
       case InsertionMode.AFTER_AFTER_BODY:
-      case InsertionMode.AFTER_AFTER_FRAMESET:
+      case InsertionMode.AFTER_AFTER_FRAMESET: {
         appendCommentToDocument(this, token);
         break;
+      }
       default:
     }
   }
   onDoctype(token) {
     this.skipNextNewLine = false;
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         doctypeInInitialMode(this, token);
         break;
+      }
       case InsertionMode.BEFORE_HEAD:
       case InsertionMode.IN_HEAD:
       case InsertionMode.IN_HEAD_NO_SCRIPT:
-      case InsertionMode.AFTER_HEAD:
+      case InsertionMode.AFTER_HEAD: {
         this._err(token, ERR.misplacedDoctype);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         tokenInTableText(this, token);
         break;
+      }
       default:
     }
   }
@@ -11686,72 +13634,94 @@ var Parser = class {
   }
   _startTagOutsideForeignContent(token) {
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         tokenInInitialMode(this, token);
         break;
-      case InsertionMode.BEFORE_HTML:
+      }
+      case InsertionMode.BEFORE_HTML: {
         startTagBeforeHtml(this, token);
         break;
-      case InsertionMode.BEFORE_HEAD:
+      }
+      case InsertionMode.BEFORE_HEAD: {
         startTagBeforeHead(this, token);
         break;
-      case InsertionMode.IN_HEAD:
+      }
+      case InsertionMode.IN_HEAD: {
         startTagInHead(this, token);
         break;
-      case InsertionMode.IN_HEAD_NO_SCRIPT:
+      }
+      case InsertionMode.IN_HEAD_NO_SCRIPT: {
         startTagInHeadNoScript(this, token);
         break;
-      case InsertionMode.AFTER_HEAD:
+      }
+      case InsertionMode.AFTER_HEAD: {
         startTagAfterHead(this, token);
         break;
-      case InsertionMode.IN_BODY:
+      }
+      case InsertionMode.IN_BODY: {
         startTagInBody(this, token);
         break;
-      case InsertionMode.IN_TABLE:
+      }
+      case InsertionMode.IN_TABLE: {
         startTagInTable(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         tokenInTableText(this, token);
         break;
-      case InsertionMode.IN_CAPTION:
+      }
+      case InsertionMode.IN_CAPTION: {
         startTagInCaption(this, token);
         break;
-      case InsertionMode.IN_COLUMN_GROUP:
+      }
+      case InsertionMode.IN_COLUMN_GROUP: {
         startTagInColumnGroup(this, token);
         break;
-      case InsertionMode.IN_TABLE_BODY:
+      }
+      case InsertionMode.IN_TABLE_BODY: {
         startTagInTableBody(this, token);
         break;
-      case InsertionMode.IN_ROW:
+      }
+      case InsertionMode.IN_ROW: {
         startTagInRow(this, token);
         break;
-      case InsertionMode.IN_CELL:
+      }
+      case InsertionMode.IN_CELL: {
         startTagInCell(this, token);
         break;
-      case InsertionMode.IN_SELECT:
+      }
+      case InsertionMode.IN_SELECT: {
         startTagInSelect(this, token);
         break;
-      case InsertionMode.IN_SELECT_IN_TABLE:
+      }
+      case InsertionMode.IN_SELECT_IN_TABLE: {
         startTagInSelectInTable(this, token);
         break;
-      case InsertionMode.IN_TEMPLATE:
+      }
+      case InsertionMode.IN_TEMPLATE: {
         startTagInTemplate(this, token);
         break;
-      case InsertionMode.AFTER_BODY:
+      }
+      case InsertionMode.AFTER_BODY: {
         startTagAfterBody(this, token);
         break;
-      case InsertionMode.IN_FRAMESET:
+      }
+      case InsertionMode.IN_FRAMESET: {
         startTagInFrameset(this, token);
         break;
-      case InsertionMode.AFTER_FRAMESET:
+      }
+      case InsertionMode.AFTER_FRAMESET: {
         startTagAfterFrameset(this, token);
         break;
-      case InsertionMode.AFTER_AFTER_BODY:
+      }
+      case InsertionMode.AFTER_AFTER_BODY: {
         startTagAfterAfterBody(this, token);
         break;
-      case InsertionMode.AFTER_AFTER_FRAMESET:
+      }
+      case InsertionMode.AFTER_AFTER_FRAMESET: {
         startTagAfterAfterFrameset(this, token);
         break;
+      }
       default:
     }
   }
@@ -11766,95 +13736,123 @@ var Parser = class {
   }
   _endTagOutsideForeignContent(token) {
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         tokenInInitialMode(this, token);
         break;
-      case InsertionMode.BEFORE_HTML:
+      }
+      case InsertionMode.BEFORE_HTML: {
         endTagBeforeHtml(this, token);
         break;
-      case InsertionMode.BEFORE_HEAD:
+      }
+      case InsertionMode.BEFORE_HEAD: {
         endTagBeforeHead(this, token);
         break;
-      case InsertionMode.IN_HEAD:
+      }
+      case InsertionMode.IN_HEAD: {
         endTagInHead(this, token);
         break;
-      case InsertionMode.IN_HEAD_NO_SCRIPT:
+      }
+      case InsertionMode.IN_HEAD_NO_SCRIPT: {
         endTagInHeadNoScript(this, token);
         break;
-      case InsertionMode.AFTER_HEAD:
+      }
+      case InsertionMode.AFTER_HEAD: {
         endTagAfterHead(this, token);
         break;
-      case InsertionMode.IN_BODY:
+      }
+      case InsertionMode.IN_BODY: {
         endTagInBody(this, token);
         break;
-      case InsertionMode.TEXT:
+      }
+      case InsertionMode.TEXT: {
         endTagInText(this, token);
         break;
-      case InsertionMode.IN_TABLE:
+      }
+      case InsertionMode.IN_TABLE: {
         endTagInTable(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         tokenInTableText(this, token);
         break;
-      case InsertionMode.IN_CAPTION:
+      }
+      case InsertionMode.IN_CAPTION: {
         endTagInCaption(this, token);
         break;
-      case InsertionMode.IN_COLUMN_GROUP:
+      }
+      case InsertionMode.IN_COLUMN_GROUP: {
         endTagInColumnGroup(this, token);
         break;
-      case InsertionMode.IN_TABLE_BODY:
+      }
+      case InsertionMode.IN_TABLE_BODY: {
         endTagInTableBody(this, token);
         break;
-      case InsertionMode.IN_ROW:
+      }
+      case InsertionMode.IN_ROW: {
         endTagInRow(this, token);
         break;
-      case InsertionMode.IN_CELL:
+      }
+      case InsertionMode.IN_CELL: {
         endTagInCell(this, token);
         break;
-      case InsertionMode.IN_SELECT:
+      }
+      case InsertionMode.IN_SELECT: {
         endTagInSelect(this, token);
         break;
-      case InsertionMode.IN_SELECT_IN_TABLE:
+      }
+      case InsertionMode.IN_SELECT_IN_TABLE: {
         endTagInSelectInTable(this, token);
         break;
-      case InsertionMode.IN_TEMPLATE:
+      }
+      case InsertionMode.IN_TEMPLATE: {
         endTagInTemplate(this, token);
         break;
-      case InsertionMode.AFTER_BODY:
+      }
+      case InsertionMode.AFTER_BODY: {
         endTagAfterBody(this, token);
         break;
-      case InsertionMode.IN_FRAMESET:
+      }
+      case InsertionMode.IN_FRAMESET: {
         endTagInFrameset(this, token);
         break;
-      case InsertionMode.AFTER_FRAMESET:
+      }
+      case InsertionMode.AFTER_FRAMESET: {
         endTagAfterFrameset(this, token);
         break;
-      case InsertionMode.AFTER_AFTER_BODY:
+      }
+      case InsertionMode.AFTER_AFTER_BODY: {
         tokenAfterAfterBody(this, token);
         break;
+      }
       default:
     }
   }
   onEof(token) {
     switch (this.insertionMode) {
-      case InsertionMode.INITIAL:
+      case InsertionMode.INITIAL: {
         tokenInInitialMode(this, token);
         break;
-      case InsertionMode.BEFORE_HTML:
+      }
+      case InsertionMode.BEFORE_HTML: {
         tokenBeforeHtml(this, token);
         break;
-      case InsertionMode.BEFORE_HEAD:
+      }
+      case InsertionMode.BEFORE_HEAD: {
         tokenBeforeHead(this, token);
         break;
-      case InsertionMode.IN_HEAD:
+      }
+      case InsertionMode.IN_HEAD: {
         tokenInHead(this, token);
         break;
-      case InsertionMode.IN_HEAD_NO_SCRIPT:
+      }
+      case InsertionMode.IN_HEAD_NO_SCRIPT: {
         tokenInHeadNoScript(this, token);
         break;
-      case InsertionMode.AFTER_HEAD:
+      }
+      case InsertionMode.AFTER_HEAD: {
         tokenAfterHead(this, token);
         break;
+      }
       case InsertionMode.IN_BODY:
       case InsertionMode.IN_TABLE:
       case InsertionMode.IN_CAPTION:
@@ -11863,25 +13861,30 @@ var Parser = class {
       case InsertionMode.IN_ROW:
       case InsertionMode.IN_CELL:
       case InsertionMode.IN_SELECT:
-      case InsertionMode.IN_SELECT_IN_TABLE:
+      case InsertionMode.IN_SELECT_IN_TABLE: {
         eofInBody(this, token);
         break;
-      case InsertionMode.TEXT:
+      }
+      case InsertionMode.TEXT: {
         eofInText(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         tokenInTableText(this, token);
         break;
-      case InsertionMode.IN_TEMPLATE:
+      }
+      case InsertionMode.IN_TEMPLATE: {
         eofInTemplate(this, token);
         break;
+      }
       case InsertionMode.AFTER_BODY:
       case InsertionMode.IN_FRAMESET:
       case InsertionMode.AFTER_FRAMESET:
       case InsertionMode.AFTER_AFTER_BODY:
-      case InsertionMode.AFTER_AFTER_FRAMESET:
+      case InsertionMode.AFTER_AFTER_FRAMESET: {
         stopParsing(this, token);
         break;
+      }
       default:
     }
   }
@@ -11908,26 +13911,30 @@ var Parser = class {
       case InsertionMode.IN_SELECT:
       case InsertionMode.IN_SELECT_IN_TABLE:
       case InsertionMode.IN_FRAMESET:
-      case InsertionMode.AFTER_FRAMESET:
+      case InsertionMode.AFTER_FRAMESET: {
         this._insertCharacters(token);
         break;
+      }
       case InsertionMode.IN_BODY:
       case InsertionMode.IN_CAPTION:
       case InsertionMode.IN_CELL:
       case InsertionMode.IN_TEMPLATE:
       case InsertionMode.AFTER_BODY:
       case InsertionMode.AFTER_AFTER_BODY:
-      case InsertionMode.AFTER_AFTER_FRAMESET:
+      case InsertionMode.AFTER_AFTER_FRAMESET: {
         whitespaceCharacterInBody(this, token);
         break;
+      }
       case InsertionMode.IN_TABLE:
       case InsertionMode.IN_TABLE_BODY:
-      case InsertionMode.IN_ROW:
+      case InsertionMode.IN_ROW: {
         characterInTable(this, token);
         break;
-      case InsertionMode.IN_TABLE_TEXT:
+      }
+      case InsertionMode.IN_TABLE_TEXT: {
         whitespaceCharacterInTableText(this, token);
         break;
+      }
       default:
     }
   }
@@ -12204,23 +14211,26 @@ function endTagInHead(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      if (p.openElements.tmplCount > 0) {
-        p.openElements.generateImpliedEndTagsThoroughly();
-        if (p.openElements.currentTagId !== TAG_ID.TEMPLATE) {
-          p._err(token, ERR.closingOfElementWithOpenChildElements);
-        }
-        p.openElements.popUntilTagNamePopped(TAG_ID.TEMPLATE);
-        p.activeFormattingElements.clearToLastMarker();
-        p.tmplInsertionModeStack.shift();
-        p._resetInsertionMode();
-      } else {
-        p._err(token, ERR.endTagWithoutMatchingOpenElement);
-      }
+      templateEndTagInHead(p, token);
       break;
     }
     default: {
       p._err(token, ERR.endTagWithoutMatchingOpenElement);
     }
+  }
+}
+function templateEndTagInHead(p, token) {
+  if (p.openElements.tmplCount > 0) {
+    p.openElements.generateImpliedEndTagsThoroughly();
+    if (p.openElements.currentTagId !== TAG_ID.TEMPLATE) {
+      p._err(token, ERR.closingOfElementWithOpenChildElements);
+    }
+    p.openElements.popUntilTagNamePopped(TAG_ID.TEMPLATE);
+    p.activeFormattingElements.clearToLastMarker();
+    p.tmplInsertionModeStack.shift();
+    p._resetInsertionMode();
+  } else {
+    p._err(token, ERR.endTagWithoutMatchingOpenElement);
   }
 }
 function tokenInHead(p, token) {
@@ -12327,7 +14337,7 @@ function endTagAfterHead(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      endTagInHead(p, token);
+      templateEndTagInHead(p, token);
       break;
     }
     default: {
@@ -12959,6 +14969,7 @@ function endTagInBody(p, token) {
     case TAG_ID.MAIN:
     case TAG_ID.MENU:
     case TAG_ID.ASIDE:
+    case TAG_ID.BUTTON:
     case TAG_ID.CENTER:
     case TAG_ID.FIGURE:
     case TAG_ID.FOOTER:
@@ -13018,7 +15029,7 @@ function endTagInBody(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      endTagInHead(p, token);
+      templateEndTagInHead(p, token);
       break;
     }
     default: {
@@ -13176,7 +15187,7 @@ function endTagInTable(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      endTagInHead(p, token);
+      templateEndTagInHead(p, token);
       break;
     }
     case TAG_ID.BODY:
@@ -13302,7 +15313,7 @@ function endTagInColumnGroup(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      endTagInHead(p, token);
+      templateEndTagInHead(p, token);
       break;
     }
     case TAG_ID.COL: {
@@ -13461,8 +15472,9 @@ function endTagInRow(p, token) {
     case TAG_ID.TH: {
       break;
     }
-    default:
+    default: {
       endTagInTable(p, token);
+    }
   }
 }
 function startTagInCell(p, token) {
@@ -13581,7 +15593,7 @@ function endTagInSelect(p, token) {
       break;
     }
     case TAG_ID.TEMPLATE: {
-      endTagInHead(p, token);
+      templateEndTagInHead(p, token);
       break;
     }
     default:
@@ -13620,43 +15632,49 @@ function startTagInTemplate(p, token) {
     case TAG_ID.SCRIPT:
     case TAG_ID.STYLE:
     case TAG_ID.TEMPLATE:
-    case TAG_ID.TITLE:
+    case TAG_ID.TITLE: {
       startTagInHead(p, token);
       break;
+    }
     case TAG_ID.CAPTION:
     case TAG_ID.COLGROUP:
     case TAG_ID.TBODY:
     case TAG_ID.TFOOT:
-    case TAG_ID.THEAD:
+    case TAG_ID.THEAD: {
       p.tmplInsertionModeStack[0] = InsertionMode.IN_TABLE;
       p.insertionMode = InsertionMode.IN_TABLE;
       startTagInTable(p, token);
       break;
-    case TAG_ID.COL:
+    }
+    case TAG_ID.COL: {
       p.tmplInsertionModeStack[0] = InsertionMode.IN_COLUMN_GROUP;
       p.insertionMode = InsertionMode.IN_COLUMN_GROUP;
       startTagInColumnGroup(p, token);
       break;
-    case TAG_ID.TR:
+    }
+    case TAG_ID.TR: {
       p.tmplInsertionModeStack[0] = InsertionMode.IN_TABLE_BODY;
       p.insertionMode = InsertionMode.IN_TABLE_BODY;
       startTagInTableBody(p, token);
       break;
+    }
     case TAG_ID.TD:
-    case TAG_ID.TH:
+    case TAG_ID.TH: {
       p.tmplInsertionModeStack[0] = InsertionMode.IN_ROW;
       p.insertionMode = InsertionMode.IN_ROW;
       startTagInRow(p, token);
       break;
-    default:
+    }
+    default: {
       p.tmplInsertionModeStack[0] = InsertionMode.IN_BODY;
       p.insertionMode = InsertionMode.IN_BODY;
       startTagInBody(p, token);
+    }
   }
 }
 function endTagInTemplate(p, token) {
   if (token.tagID === TAG_ID.TEMPLATE) {
-    endTagInHead(p, token);
+    templateEndTagInHead(p, token);
   }
 }
 function eofInTemplate(p, token) {
@@ -13931,7 +15949,7 @@ function serializeDocumentTypeNode(node, { treeAdapter }) {
 }
 
 // node_modules/parse5/dist/index.js
-function parse3(html3, options) {
+function parse4(html3, options) {
   return Parser.parse(html3, options);
 }
 function parseFragment(fragmentContext, html3, options) {
@@ -14026,24 +16044,24 @@ var adapter = {
   getTemplateContent(templateElement) {
     return templateElement.children[0];
   },
-  setDocumentType(document, name, publicId, systemId) {
+  setDocumentType(document2, name, publicId, systemId) {
     const data2 = serializeDoctypeContent(name, publicId, systemId);
-    let doctypeNode = document.children.find((node) => isDirective(node) && node.name === "!doctype");
+    let doctypeNode = document2.children.find((node) => isDirective(node) && node.name === "!doctype");
     if (doctypeNode) {
       doctypeNode.data = data2 !== null && data2 !== void 0 ? data2 : null;
     } else {
       doctypeNode = new ProcessingInstruction("!doctype", data2);
-      adapter.appendChild(document, doctypeNode);
+      adapter.appendChild(document2, doctypeNode);
     }
     doctypeNode["x-name"] = name !== null && name !== void 0 ? name : void 0;
     doctypeNode["x-publicId"] = publicId !== null && publicId !== void 0 ? publicId : void 0;
     doctypeNode["x-systemId"] = systemId !== null && systemId !== void 0 ? systemId : void 0;
   },
-  setDocumentMode(document, mode) {
-    document["x-mode"] = mode;
+  setDocumentMode(document2, mode) {
+    document2["x-mode"] = mode;
   },
-  getDocumentMode(document) {
-    return document["x-mode"];
+  getDocumentMode(document2) {
+    return document2["x-mode"];
   },
   detachNode(node) {
     if (node.parent) {
@@ -14150,7 +16168,7 @@ function parseWithParse5(content, options, isDocument2, context) {
     treeAdapter: adapter,
     sourceCodeLocationInfo: options.sourceCodeLocationInfo
   };
-  return isDocument2 ? parse3(content, opts) : parseFragment(context, content, opts);
+  return isDocument2 ? parse4(content, opts) : parseFragment(context, content, opts);
 }
 var renderOpts = { treeAdapter: adapter };
 function renderWithParse5(dom) {
@@ -14178,7 +16196,7 @@ var CharCodes2;
   CharCodes3[CharCodes3["CarriageReturn"] = 13] = "CarriageReturn";
   CharCodes3[CharCodes3["Space"] = 32] = "Space";
   CharCodes3[CharCodes3["ExclamationMark"] = 33] = "ExclamationMark";
-  CharCodes3[CharCodes3["Num"] = 35] = "Num";
+  CharCodes3[CharCodes3["Number"] = 35] = "Number";
   CharCodes3[CharCodes3["Amp"] = 38] = "Amp";
   CharCodes3[CharCodes3["SingleQuote"] = 39] = "SingleQuote";
   CharCodes3[CharCodes3["DoubleQuote"] = 34] = "DoubleQuote";
@@ -14238,7 +16256,7 @@ function isWhitespace3(c) {
 function isEndOfTagSection(c) {
   return c === CharCodes2.Slash || c === CharCodes2.Gt || isWhitespace3(c);
 }
-function isNumber(c) {
+function isNumber2(c) {
   return c >= CharCodes2.Zero && c <= CharCodes2.Nine;
 }
 function isASCIIAlpha(c) {
@@ -14273,6 +16291,7 @@ var Tokenizer2 = class {
     this.isSpecial = false;
     this.running = true;
     this.offset = 0;
+    this.currentSequence = void 0;
     this.sequenceIndex = 0;
     this.trieIndex = 0;
     this.trieCurrent = 0;
@@ -14473,6 +16492,7 @@ var Tokenizer2 = class {
   stateAfterClosingTagName(c) {
     if (c === CharCodes2.Gt || this.fastForwardTo(CharCodes2.Gt)) {
       this.state = State2.Text;
+      this.baseState = State2.Text;
       this.sectionStart = this.index + 1;
     }
   }
@@ -14622,7 +16642,7 @@ var Tokenizer2 = class {
   stateBeforeEntity(c) {
     this.entityExcess = 1;
     this.entityResult = 0;
-    if (c === CharCodes2.Num) {
+    if (c === CharCodes2.Number) {
       this.state = State2.BeforeNumericEntity;
     } else if (c === CharCodes2.Amp) {
     } else {
@@ -14668,12 +16688,14 @@ var Tokenizer2 = class {
     }
     const valueLength = (this.entityTrie[this.entityResult] & BinTrieFlags.VALUE_LENGTH) >> 14;
     switch (valueLength) {
-      case 1:
+      case 1: {
         this.emitCodePoint(this.entityTrie[this.entityResult] & ~BinTrieFlags.VALUE_LENGTH);
         break;
-      case 2:
+      }
+      case 2: {
         this.emitCodePoint(this.entityTrie[this.entityResult + 1]);
         break;
+      }
       case 3: {
         this.emitCodePoint(this.entityTrie[this.entityResult + 1]);
         this.emitCodePoint(this.entityTrie[this.entityResult + 2]);
@@ -14704,7 +16726,7 @@ var Tokenizer2 = class {
   stateInNumericEntity(c) {
     if (c === CharCodes2.Semi) {
       this.emitNumericEntity(true);
-    } else if (isNumber(c)) {
+    } else if (isNumber2(c)) {
       this.entityResult = this.entityResult * 10 + (c - CharCodes2.Zero);
       this.entityExcess++;
     } else {
@@ -14719,7 +16741,7 @@ var Tokenizer2 = class {
   stateInHexEntity(c) {
     if (c === CharCodes2.Semi) {
       this.emitNumericEntity(true);
-    } else if (isNumber(c)) {
+    } else if (isNumber2(c)) {
       this.entityResult = this.entityResult * 16 + (c - CharCodes2.Zero);
       this.entityExcess++;
     } else if (isHexDigit(c)) {
@@ -14754,64 +16776,122 @@ var Tokenizer2 = class {
   parse() {
     while (this.shouldContinue()) {
       const c = this.buffer.charCodeAt(this.index - this.offset);
-      if (this.state === State2.Text) {
-        this.stateText(c);
-      } else if (this.state === State2.SpecialStartSequence) {
-        this.stateSpecialStartSequence(c);
-      } else if (this.state === State2.InSpecialTag) {
-        this.stateInSpecialTag(c);
-      } else if (this.state === State2.CDATASequence) {
-        this.stateCDATASequence(c);
-      } else if (this.state === State2.InAttributeValueDq) {
-        this.stateInAttributeValueDoubleQuotes(c);
-      } else if (this.state === State2.InAttributeName) {
-        this.stateInAttributeName(c);
-      } else if (this.state === State2.InCommentLike) {
-        this.stateInCommentLike(c);
-      } else if (this.state === State2.InSpecialComment) {
-        this.stateInSpecialComment(c);
-      } else if (this.state === State2.BeforeAttributeName) {
-        this.stateBeforeAttributeName(c);
-      } else if (this.state === State2.InTagName) {
-        this.stateInTagName(c);
-      } else if (this.state === State2.InClosingTagName) {
-        this.stateInClosingTagName(c);
-      } else if (this.state === State2.BeforeTagName) {
-        this.stateBeforeTagName(c);
-      } else if (this.state === State2.AfterAttributeName) {
-        this.stateAfterAttributeName(c);
-      } else if (this.state === State2.InAttributeValueSq) {
-        this.stateInAttributeValueSingleQuotes(c);
-      } else if (this.state === State2.BeforeAttributeValue) {
-        this.stateBeforeAttributeValue(c);
-      } else if (this.state === State2.BeforeClosingTagName) {
-        this.stateBeforeClosingTagName(c);
-      } else if (this.state === State2.AfterClosingTagName) {
-        this.stateAfterClosingTagName(c);
-      } else if (this.state === State2.BeforeSpecialS) {
-        this.stateBeforeSpecialS(c);
-      } else if (this.state === State2.InAttributeValueNq) {
-        this.stateInAttributeValueNoQuotes(c);
-      } else if (this.state === State2.InSelfClosingTag) {
-        this.stateInSelfClosingTag(c);
-      } else if (this.state === State2.InDeclaration) {
-        this.stateInDeclaration(c);
-      } else if (this.state === State2.BeforeDeclaration) {
-        this.stateBeforeDeclaration(c);
-      } else if (this.state === State2.BeforeComment) {
-        this.stateBeforeComment(c);
-      } else if (this.state === State2.InProcessingInstruction) {
-        this.stateInProcessingInstruction(c);
-      } else if (this.state === State2.InNamedEntity) {
-        this.stateInNamedEntity(c);
-      } else if (this.state === State2.BeforeEntity) {
-        this.stateBeforeEntity(c);
-      } else if (this.state === State2.InHexEntity) {
-        this.stateInHexEntity(c);
-      } else if (this.state === State2.InNumericEntity) {
-        this.stateInNumericEntity(c);
-      } else {
-        this.stateBeforeNumericEntity(c);
+      switch (this.state) {
+        case State2.Text: {
+          this.stateText(c);
+          break;
+        }
+        case State2.SpecialStartSequence: {
+          this.stateSpecialStartSequence(c);
+          break;
+        }
+        case State2.InSpecialTag: {
+          this.stateInSpecialTag(c);
+          break;
+        }
+        case State2.CDATASequence: {
+          this.stateCDATASequence(c);
+          break;
+        }
+        case State2.InAttributeValueDq: {
+          this.stateInAttributeValueDoubleQuotes(c);
+          break;
+        }
+        case State2.InAttributeName: {
+          this.stateInAttributeName(c);
+          break;
+        }
+        case State2.InCommentLike: {
+          this.stateInCommentLike(c);
+          break;
+        }
+        case State2.InSpecialComment: {
+          this.stateInSpecialComment(c);
+          break;
+        }
+        case State2.BeforeAttributeName: {
+          this.stateBeforeAttributeName(c);
+          break;
+        }
+        case State2.InTagName: {
+          this.stateInTagName(c);
+          break;
+        }
+        case State2.InClosingTagName: {
+          this.stateInClosingTagName(c);
+          break;
+        }
+        case State2.BeforeTagName: {
+          this.stateBeforeTagName(c);
+          break;
+        }
+        case State2.AfterAttributeName: {
+          this.stateAfterAttributeName(c);
+          break;
+        }
+        case State2.InAttributeValueSq: {
+          this.stateInAttributeValueSingleQuotes(c);
+          break;
+        }
+        case State2.BeforeAttributeValue: {
+          this.stateBeforeAttributeValue(c);
+          break;
+        }
+        case State2.BeforeClosingTagName: {
+          this.stateBeforeClosingTagName(c);
+          break;
+        }
+        case State2.AfterClosingTagName: {
+          this.stateAfterClosingTagName(c);
+          break;
+        }
+        case State2.BeforeSpecialS: {
+          this.stateBeforeSpecialS(c);
+          break;
+        }
+        case State2.InAttributeValueNq: {
+          this.stateInAttributeValueNoQuotes(c);
+          break;
+        }
+        case State2.InSelfClosingTag: {
+          this.stateInSelfClosingTag(c);
+          break;
+        }
+        case State2.InDeclaration: {
+          this.stateInDeclaration(c);
+          break;
+        }
+        case State2.BeforeDeclaration: {
+          this.stateBeforeDeclaration(c);
+          break;
+        }
+        case State2.BeforeComment: {
+          this.stateBeforeComment(c);
+          break;
+        }
+        case State2.InProcessingInstruction: {
+          this.stateInProcessingInstruction(c);
+          break;
+        }
+        case State2.InNamedEntity: {
+          this.stateInNamedEntity(c);
+          break;
+        }
+        case State2.BeforeEntity: {
+          this.stateBeforeEntity(c);
+          break;
+        }
+        case State2.InHexEntity: {
+          this.stateInHexEntity(c);
+          break;
+        }
+        case State2.InNumericEntity: {
+          this.stateInNumericEntity(c);
+          break;
+        }
+        default: {
+          this.stateBeforeNumericEntity(c);
+        }
       }
       this.index++;
     }
@@ -14988,10 +17068,10 @@ var Parser2 = class {
   }
   ontextentity(cp) {
     var _a2, _b;
-    const idx = this.tokenizer.getSectionStart();
-    this.endIndex = idx - 1;
+    const index2 = this.tokenizer.getSectionStart();
+    this.endIndex = index2 - 1;
     (_b = (_a2 = this.cbs).ontext) === null || _b === void 0 ? void 0 : _b.call(_a2, fromCodePoint(cp));
-    this.startIndex = idx;
+    this.startIndex = index2;
   }
   isVoidElement(name) {
     return !this.options.xmlMode && voidElements.has(name);
@@ -15011,8 +17091,8 @@ var Parser2 = class {
     const impliesClose = !this.options.xmlMode && openImpliesClose.get(name);
     if (impliesClose) {
       while (this.stack.length > 0 && impliesClose.has(this.stack[this.stack.length - 1])) {
-        const el = this.stack.pop();
-        (_b = (_a2 = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a2, el, true);
+        const element = this.stack.pop();
+        (_b = (_a2 = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a2, element, true);
       }
     }
     if (!this.isVoidElement(name)) {
@@ -15114,8 +17194,8 @@ var Parser2 = class {
     this.attribvalue = "";
   }
   getInstructionName(value) {
-    const idx = value.search(reNameEnd);
-    let name = idx < 0 ? value : value.substr(0, idx);
+    const index2 = value.search(reNameEnd);
+    let name = index2 < 0 ? value : value.substr(0, index2);
     if (this.lowerCaseTagNames) {
       name = name.toLowerCase();
     }
@@ -15164,7 +17244,7 @@ var Parser2 = class {
     var _a2, _b;
     if (this.cbs.onclosetag) {
       this.endIndex = this.startIndex;
-      for (let i = this.stack.length; i > 0; this.cbs.onclosetag(this.stack[--i], true))
+      for (let index2 = this.stack.length; index2 > 0; this.cbs.onclosetag(this.stack[--index2], true))
         ;
     }
     (_b = (_a2 = this.cbs).onend) === null || _b === void 0 ? void 0 : _b.call(_a2);
@@ -15193,12 +17273,12 @@ var Parser2 = class {
     while (start2 - this.bufferOffset >= this.buffers[0].length) {
       this.shiftBuffer();
     }
-    let str = this.buffers[0].slice(start2 - this.bufferOffset, end3 - this.bufferOffset);
+    let slice2 = this.buffers[0].slice(start2 - this.bufferOffset, end3 - this.bufferOffset);
     while (end3 - this.bufferOffset > this.buffers[0].length) {
       this.shiftBuffer();
-      str += this.buffers[0].slice(0, end3 - this.bufferOffset);
+      slice2 += this.buffers[0].slice(0, end3 - this.bufferOffset);
     }
-    return str;
+    return slice2;
   }
   shiftBuffer() {
     this.bufferOffset += this.buffers[0].length;
@@ -15220,7 +17300,7 @@ var Parser2 = class {
   end(chunk) {
     var _a2, _b;
     if (this.ended) {
-      (_b = (_a2 = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a2, Error(".end() after done!"));
+      (_b = (_a2 = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a2, new Error(".end() after done!"));
       return;
     }
     if (chunk)
@@ -15255,62 +17335,9 @@ function parseDocument(data2, options) {
 }
 
 // node_modules/cheerio/lib/esm/index.js
-var parse4 = getParse((content, options, isDocument2, context) => options.xmlMode || options._useHtmlParser2 ? parseDocument(content, options) : parseWithParse5(content, options, isDocument2, context));
-var load = getLoad(parse4, (dom, options) => options.xmlMode || options._useHtmlParser2 ? esm_default(dom, options) : renderWithParse5(dom));
+var parse5 = getParse((content, options, isDocument2, context) => options.xmlMode || options._useHtmlParser2 ? parseDocument(content, options) : parseWithParse5(content, options, isDocument2, context));
+var load = getLoad(parse5, (dom, options) => options.xmlMode || options._useHtmlParser2 ? esm_default(dom, options) : renderWithParse5(dom));
 var esm_default2 = load([]);
-
-// src/org/wanxp/douban/data/model/SearchPage.ts
-var SearchPage = class extends SearchPageInfo {
-  constructor(total, pageNum, pageSize, list) {
-    super(total, pageNum, pageSize);
-    this._list = list;
-  }
-  get list() {
-    return this._list;
-  }
-};
-
-// src/org/wanxp/utils/Logutil.ts
-var import_obsidian = __toModule(require("obsidian"));
-var Logger = class {
-  error(msg, e) {
-    new import_obsidian.Notice(msg);
-    console.log(`OB-Douban: ${msg}`);
-    console.error(e);
-    return e;
-  }
-  notice(e) {
-    new import_obsidian.Notice(e);
-    console.error(`OB-Douban: ${e}`);
-    return e;
-  }
-  warn(e) {
-    new import_obsidian.Notice(e);
-    console.warn(`OB-Douban: ${e}`);
-    return e;
-  }
-  info(e) {
-    console.log(`OB-Douban:${typeof e == "string" ? e : JSON.stringify(e)}`);
-    return e;
-  }
-  debug(e) {
-    if (e instanceof Error) {
-      console.error(e);
-    } else {
-      console.log(`OB-Douban:${(0, import_obsidian.moment)(new Date()).format("YYYY-MM-DD HH:mm:SS")}:${typeof e == "string" ? e : JSON.stringify(e)}`);
-    }
-    return e;
-  }
-  trace(e) {
-    console.log(`OB-Douban:${typeof e == "string" ? e : JSON.stringify(e)}`);
-    return e;
-  }
-  traceN(notion, e) {
-    console.log(`${notion} ${typeof e == "string" ? e : JSON.stringify(e)}`);
-    return e;
-  }
-};
-var log = new Logger();
 
 // src/org/wanxp/douban/data/search/SearchParser.ts
 var SearchParserHandler = class {
@@ -15336,6 +17363,7 @@ var SearchParserHandler = class {
         desc: desc ? desc : "-",
         url: urlResult ? decodeURIComponent(urlResult[0]) : "https://www.douban.com",
         image: "",
+        imageUrl: "",
         publisher: "",
         datePublished: void 0,
         genre: []
@@ -15343,73 +17371,93 @@ var SearchParserHandler = class {
       return result;
     });
   }
-  static parseSearchJson(result, start2) {
+  static parseSearchJson(result, type, start2) {
     log.debug("\u89E3\u6790\u7ED9\u591A\u9875\u9762\u7ED3\u679C");
     const data2 = JSON.parse(result);
     const list = data2.items;
     const resultList = list.map((e) => load(e)).map((e) => this.parseSearch(e)).map((e) => e ? e[0] : null);
-    return new SearchPage(data2.total, start2 / data2.limit, data2.limit, resultList);
+    return new SearchPage(data2.total, start2 / data2.limit, data2.limit, type, resultList);
   }
 };
 
-// src/org/wanxp/douban/data/search/Search.ts
-var Searcher = class {
-  static search(searchItem, doubanSettings, settingsManager) {
-    const myHeaders = JSON.parse(doubanSettings.searchHeaders);
-    if (doubanSettings.loginCookiesContent) {
-      myHeaders.Cookie = doubanSettings.loginCookiesContent;
-    }
-    let requestUrlParam = {
-      url: DEFAULT_SETTINGS.searchUrl + searchItem,
-      method: "GET",
-      headers: myHeaders,
-      throw: true
-    };
-    return (0, import_obsidian2.requestUrl)(requestUrlParam).then((requestUrlResponse) => {
-      if (requestUrlResponse.status == 403) {
-        throw new Error(i18nHelper.getMessage("130106"));
-      }
-      return requestUrlResponse.text;
-    }).then(load).then(SearchParserHandler.parseSearch).catch((e) => {
-      if (e.toString().indexOf("403") > 0) {
-        throw new Error(i18nHelper.getMessage("130106"));
-      } else {
-        throw log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e);
-      }
-    });
-    ;
+// src/org/wanxp/douban/data/search/parser/NotAllPageSearchResultPageParser.ts
+var NotAllPageSearchResultPageParser = class {
+  support(type, pageNum) {
+    return type != SupportType.ALL && !(pageNum == 1 && type == SupportType.NOTE);
   }
-  static loadSearchItem(searchItem, start2, doubanSettings, settingsManager) {
-    const myHeaders = JSON.parse(doubanSettings.searchHeaders);
-    if (doubanSettings.loginCookiesContent) {
-      myHeaders.Cookie = doubanSettings.loginCookiesContent;
+  parse(source, type, pageNum, pageSize) {
+    log.debug("\u89E3\u6790\u7ED9\u591A\u9875\u9762\u7ED3\u679C");
+    if (!source) {
+      return new SearchPage(0, 0, 0, type, []);
     }
-    const url = `https://www.douban.com/j/search?q=${searchItem}&start=${start2}&subtype=item`;
-    log.debug(`\u8BF7\u6C42\u66F4\u591A\u9875\u9762:${url}`);
-    let requestUrlParam = {
-      url,
-      method: "GET",
-      headers: myHeaders,
-      throw: true
-    };
-    return (0, import_obsidian2.requestUrl)(requestUrlParam).then((requestUrlResponse) => {
-      if (requestUrlResponse.status == 403) {
-        throw new Error(i18nHelper.getMessage("130106"));
-      }
-      return requestUrlResponse.text;
-    }).then((e) => SearchParserHandler.parseSearchJson(e, start2)).catch((e) => {
-      if (e.toString().indexOf("403") > 0) {
-        throw new Error(i18nHelper.getMessage("130106"));
-      } else {
-        throw log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e);
-      }
+    return SearchParserHandler.parseSearchJson(source, type, pageNum);
+  }
+};
+
+// src/org/wanxp/douban/data/search/parser/NoteFirstPageSearchResultPageParser.ts
+var NoteFirstPageSearchResultPageParser = class {
+  support(type, pageNum) {
+    return pageNum == 1 && type == SupportType.NOTE;
+  }
+  parse(source, type, pageNum, pageSize) {
+    const pageData = load(source);
+    if (!pageData) {
+      return SearchPage.empty(type);
+    }
+    const doubanSearchResultSubjects = pageData(".result").get().map((item) => {
+      const title = pageData(item).find("h3 a").text();
+      const url = pageData(item).find("h3 a").attr("href");
+      const id = url.match(/(\d){5,10}/g)[0];
+      const author = pageData(item).find(".info").text();
+      const content = pageData(item).find("p").text();
+      const data2 = {
+        id: id != null ? id : "",
+        title: title ? title.replaceAll("\n", "").replaceAll(/\s+/g, "") : "-",
+        score: null,
+        cast: author ? author.replaceAll("\n", "").replaceAll(/\s+/g, "") : "",
+        type: "\u65E5\u8BB0",
+        desc: content ? content.replaceAll("\n", "").replaceAll(/\s+/g, "") : "-",
+        url: url != null ? url : "https://www.douban.com",
+        image: "",
+        imageUrl: "",
+        publisher: "",
+        datePublished: void 0,
+        genre: []
+      };
+      return data2;
     });
-    ;
+    return new SearchPage(2e3, pageNum, pageSize, type, doubanSearchResultSubjects);
+  }
+};
+
+// src/org/wanxp/douban/data/search/parser/SearchResultPageParser.ts
+var SearchResultPageParser = class {
+  constructor() {
+    this.parsers = [];
+    this.parsers.push(new AllFirstPageSearchResultPageParser());
+    this.parsers.push(new OtherAllPageSearchResultPageParser());
+    this.parsers.push(new NotAllPageSearchResultPageParser());
+    this.parsers.push(new NoteFirstPageSearchResultPageParser());
+  }
+  parse(source, type, pageNum, pageSize) {
+    for (const parser of this.parsers) {
+      if (parser.support(type, pageNum)) {
+        return parser.parse(source, type, pageNum, pageSize);
+      }
+    }
+    throw new Error(`not support type:${type} pageNum:${pageNum}`);
+  }
+};
+
+// src/org/wanxp/douban/data/search/SearchV2.ts
+var SearcherV2 = class {
+  static search(searchItem, searchType, pageNum, pageSize, doubanSettings, settingsManager) {
+    return new SearchPageFetcher(settingsManager).fetch(searchItem, searchType, pageNum, pageSize).then((e) => new SearchResultPageParser().parse(e, searchType, pageNum, pageSize));
   }
 };
 
 // src/org/wanxp/douban/data/search/DoubanSearchFuzzySuggestModal.ts
-var DoubanFuzzySuggester = class extends import_obsidian3.FuzzySuggestModal {
+var DoubanFuzzySuggester = class extends import_obsidian4.FuzzySuggestModal {
   constructor(plugin, context, searchItem) {
     super(app);
     this.plugin = plugin;
@@ -15465,32 +17513,39 @@ var DoubanFuzzySuggester = class extends import_obsidian3.FuzzySuggestModal {
           break;
       }
       if (result) {
-        const searchPageResult = yield Searcher.loadSearchItem(this.searchItem, currentPage.start, this.plugin.settings, this.plugin.settingsManager);
-        this.context.searchPage = new SearchPageInfo(searchPageResult.total, currentPage.pageNum, searchPageResult.pageSize);
+        const searchPageResult = yield SearcherV2.search(this.searchItem, currentPage.type, currentPage.pageNum, SEARCH_ITEM_PAGE_SIZE, this.plugin.settings, this.plugin.settingsManager);
+        this.context.searchPage = searchPageResult;
         this.updatePageResult(searchPageResult);
       }
       return result;
     });
   }
   updatePageResult(searchPageResult) {
-    this.initItems(searchPageResult.list);
+    this.initItems(searchPageResult);
   }
-  showSearchList(doubanSearchResultExtractList) {
-    this.initItems(doubanSearchResultExtractList);
+  showSearchPage(searchPage) {
+    this.initItems(searchPage);
     this.start();
   }
-  initItems(doubanSearchResultExtractList) {
-    let doubanList = doubanSearchResultExtractList;
-    const { searchPage } = this.context;
+  initItems(searchPage) {
+    const doubanList = searchPage.list;
     if (searchPage.hasNext) {
       if (this.plugin.userComponent.isLogin()) {
-        doubanList.push(DoubanSearchResultSubjectNextPage);
+        if (searchPage.type == SupportType.ALL && searchPage.pageNum == 1) {
+          doubanList.push(DoubanSearchGroupPublishResultSubjectNextPage);
+        } else {
+          doubanList.push(DoubanSearchResultSubjectNextPage);
+        }
       } else {
         doubanList.push(DoubanSearchResultSubjectNextPageNeedLogin);
       }
     }
     if (searchPage.hasPrevious) {
-      doubanList.unshift(DoubanSearchResultSubjectPreviousPage);
+      if (searchPage.type == SupportType.ALL && searchPage.pageNum == 2) {
+        doubanList.unshift(DoubanSearchGroupPublishResultSubjectPreviousPage);
+      } else {
+        doubanList.unshift(DoubanSearchResultSubjectPreviousPage);
+      }
     }
     this.doubanSearchResultExtract = doubanList;
   }
@@ -15504,46 +17559,35 @@ var DoubanFuzzySuggester = class extends import_obsidian3.FuzzySuggestModal {
 };
 
 // src/org/wanxp/douban/data/model/DoubanSubject.ts
+var DoubanSubject = class {
+  constructor() {
+    this.handledStatus = SubjectHandledStatus.init;
+  }
+};
 var ParameterMap = new Map([
   ["id", ""]
 ]);
-var DoubanParameter = {
-  ID: "{{id}}",
-  TITLE: "{{title}}",
-  TYPE: "{{type}}",
-  SCORE: "{{score}}",
-  IMAGE: "{{image}}",
-  URL: "{{url}}",
-  DESC: "{{desc}}",
-  PUBLISHER: "{{publisher}}",
-  DATE_PUBLISHED: "{{datePublished}}",
-  TIME_PUBLISHED: "{{timePublished}}",
-  YEAR_PUBLISHED: "{{yearPublished}}",
-  GENRE: "{{genre}}",
-  CURRENT_DATE: "{{currentDate}}",
-  CURRENT_TIME: "{{currentTime}}"
+var DoubanParameterName = {
+  ID: "id",
+  TITLE: "title",
+  TYPE: "type",
+  SCORE: "score",
+  SCORE_STAR: "scoreStar",
+  IMAGE: "image",
+  IMAGE_URL: "imageData.url",
+  URL: "url",
+  DESC: "desc",
+  PUBLISHER: "publisher",
+  DATE_PUBLISHED: "datePublished",
+  TIME_PUBLISHED: "timePublished",
+  YEAR_PUBLISHED: "yearPublished",
+  GENRE: "genre",
+  CURRENT_DATE: "currentDate",
+  CURRENT_TIME: "currentTime"
 };
 
 // src/org/wanxp/douban/data/handler/DoubanAbstractLoadHandler.ts
 var import_obsidian5 = __toModule(require("obsidian"));
-
-// src/org/wanxp/utils/YamlUtil.ts
-var YamlUtil = class {
-  static hasSpecialChar(str) {
-    return SPECIAL_CHAR_REG.test(str);
-  }
-  static handleSpecialChar(text3) {
-    return '"' + text3 + '"';
-  }
-  static handleText(text3) {
-    return YamlUtil.hasSpecialChar(text3) ? YamlUtil.handleSpecialChar(text3.replaceAll('"', '\\"')).replaceAll("\n", "\u3002").replaceAll("\u3002\u3002", "\u3002") : text3;
-  }
-};
-var SPECIAL_CHAR_REG = /[{}\[\]&*#?|\-<>=!%@:"`,\n]/;
-var TITLE_ALIASES_SPECIAL_CHAR_REG_G = /[{}\[\]&*#?|\-<>=!%@:"`,， \n]/g;
-var SPECIAL_CHAR_REG_REPLACE = new Map([
-  ["{", "\\{"]
-]);
 
 // src/org/wanxp/constant/DefaultTemplateContent.ts
 var DEFAULT_TEMPLATE_CONTENT = {
@@ -15552,13 +17596,15 @@ doubanId: {{id}}
 title: {{title}}
 type: {{type}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 originalTitle: {{originalTitle}}
 genre: {{genre}}
 datePublished: {{datePublished}}
 director: {{director}}
 actor: {{actor}}
 author: {{author}}
-tags: {{type}}
+tags: 
+  - {{type}}
 url: {{url}}
 aliases: {{aliases}}
 country: {{country}}
@@ -15580,6 +17626,7 @@ series: {{series}}
 type: {{type}}
 author: {{author}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 datePublished: {{datePublished}}
 translator: {{translator}}
 publisher: {{publisher}}
@@ -15588,7 +17635,8 @@ isbn: {{isbn}}
 url: {{url}}
 totalPage: {{totalPage}}
 price: {{price}}
-tags: Book
+tags:  
+  - {{type}}
 binding: {{binding}}
 createTime: {{currentDate}} {{currentTime}}
 desc: {{desc}}
@@ -15604,6 +17652,7 @@ title: {{title}}
 type: {{type}}
 actor: {{actor}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 genre: {{genre}}
 medium: {{medium}}
 albumType: {{albumType}}
@@ -15612,7 +17661,8 @@ publisher: {{publisher}}
 barcode: {{barcode}}
 url: {{url}}
 records: {{records}}
-tags: Music
+tags:  
+  - {{type}}
 createTime: {{currentDate}} {{currentTime}}
 desc: {{desc}}
 ---
@@ -15627,7 +17677,8 @@ author: {{author}}
 authorUrl: {{authorUrl}}
 dateTimePublished: {{datePublished}} {{timePublished}}
 url: {{url}}
-tags: Article
+tags:  
+  - {{type}}
 createTime: {{currentDate}} {{currentTime}}
 desc: {{desc}}
 ---
@@ -15640,13 +17691,15 @@ title: {{title}}
 aliases: {{aliases}}
 type: {{type}}  
 score: {{score}}
+scoreStar: {{scoreStar}}
 dateTimePublished: {{datePublished}}
 publisher: {{publisher}}
 genre: {{genre}}
 developer: {{developer}}
 platform: {{platform}}
 url: {{url}}
-tags: Game
+tags:  
+  - {{type}}
 createTime: {{currentDate}} {{currentTime}}
 desc: {{desc}}
 ---
@@ -15658,13 +17711,15 @@ doubanId: {{id}}
 title: {{title}}
 type: {{type}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 originalTitle: {{originalTitle}}
 genre: {{genre}}
 datePublished: {{datePublished}}
 director: {{director}}
 actor: {{actor}}
 author: {{author}}
-tags: {{type}}
+tags:  
+  - {{type}}
 url: {{url}}
 aliases: {{aliases}}
 country: {{country}}
@@ -15685,14 +17740,16 @@ doubanId: {{id}}
 title: {{title}}
 type: {{type}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
 originalTitle: {{originalTitle}}
 genre: {{genre}}
 datePublished: {{datePublished}}
 director: {{director}}
 actor: {{actor}}
 author: {{author}}
-tags: {{type}}, {{myTags}}
+tags: {{myTags}}
 state: {{myState}}
 url: {{url}}
 aliases: {{aliases}}
@@ -15720,7 +17777,9 @@ series: {{series}}
 type: {{type}}
 author: {{author}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
 datePublished: {{datePublished}}
 translator: {{translator}}
 publisher: {{publisher}}
@@ -15729,7 +17788,7 @@ isbn: {{isbn}}
 url: {{url}}
 totalPage: {{totalPage}}
 price: {{price}}
-tags: Book, {{myTags}}
+tags: {{myTags}}
 state: {{myState}}
 binding: {{binding}}
 createTime: {{currentDate}} {{currentTime}}
@@ -15751,7 +17810,9 @@ title: {{title}}
 type: {{type}}
 actor: {{actor}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
 genre: {{genre}}
 medium: {{medium}}
 albumType: {{albumType}}
@@ -15760,7 +17821,7 @@ publisher: {{publisher}}
 barcode: {{barcode}}
 url: {{url}}
 records: {{records}}
-tags: Music, {{myTags}}
+tags: {{myTags}}
 state: {{myState}}
 createTime: {{currentDate}} {{currentTime}}
 collectionDate: {{myCollectionDate}}
@@ -15782,7 +17843,8 @@ author: {{author}}
 authorUrl: {{authorUrl}}
 dateTimePublished: {{datePublished}} {{timePublished}}
 url: {{url}}
-tags: Article
+tags: 
+  - {{type}}
 createTime: {{currentDate}} {{currentTime}}
 desc: {{desc}}
 ---
@@ -15795,14 +17857,16 @@ title: {{title}}
 aliases: {{aliases}}
 type: {{type}}  
 score: {{score}}
+scoreStar: {{scoreStar}}
 myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
 dateTimePublished: {{datePublished}}
 publisher: {{publisher}}
 genre: {{genre}}
 developer: {{developer}}
 platform: {{platform}}
 url: {{url}}
-tags: Game, {{myTags}}
+tags: {{myTags}}
 state: {{myState}}
 createTime: {{currentDate}} {{currentTime}}
 collectionDate: {{myCollectionDate}}
@@ -15820,14 +17884,16 @@ doubanId: {{id}}
 title: {{title}}
 type: {{type}}
 score: {{score}}
+scoreStar: {{scoreStar}}
 myRating: {{myRating}}
+myRatingStar: {{myRatingStar}}
 originalTitle: {{originalTitle}}
 genre: {{genre}}
 datePublished: {{datePublished}}
 director: {{director}}
 actor: {{actor}}
 author: {{author}}
-tags: {{type}}, {{myTags}}
+tags: {{myTags}}
 state: {{myState}}
 url: {{url}}
 aliases: {{aliases}}
@@ -15852,38 +17918,6 @@ function getDefaultTemplateContent(key, useStateTemplate = true) {
   return useStateTemplate ? DEFAULT_TEMPLATE_CONTENT_WITH_STATE[key + "Content"] : DEFAULT_TEMPLATE_CONTENT[key + "Content"];
 }
 
-// src/org/wanxp/utils/StringUtil.ts
-var StringUtil = class {
-  static isBlank(str) {
-    return str == null || str.trim().length == 0;
-  }
-  static defaultIfBlank(str, defaultStr) {
-    return StringUtil.isBlank(str) ? defaultStr : str;
-  }
-  static analyzeIdByUrl(url) {
-    let idPattern = /(\d){5,10}/g;
-    let idE = idPattern.exec(url);
-    let id = idE ? idE[0] : "";
-    return id;
-  }
-  static confuse(text3) {
-    if (!text3) {
-      return;
-    }
-    let texts = Array.from(text3);
-    const length = texts.length;
-    const newTexts = [];
-    for (let i = 0; i < length; i++) {
-      let val2 = text3[i];
-      if (i >= length / 3 && i <= length * 2 / 3) {
-        val2 = "*";
-      }
-      newTexts[i] = val2;
-    }
-    return newTexts.join("");
-  }
-};
-
 // src/org/wanxp/douban/data/model/UserStateSubject.ts
 var DoubanUserParameter = {
   MY_TAGS: "{{myTags}}",
@@ -15891,6 +17925,14 @@ var DoubanUserParameter = {
   MY_STATE: "{{myState}}",
   MY_COMMENT: "{{myComment}}",
   MY_COLLECTION_DATE: "{{myCollectionDate}}"
+};
+var DoubanUserParameterName = {
+  MY_TAGS: "myTags",
+  MY_RATING: "myRating",
+  MY_RATING_STAR: "myRatingStar",
+  MY_STATE: "myState",
+  MY_COMMENT: "myComment",
+  MY_COLLECTION_DATE: "myCollectionDate"
 };
 
 // src/org/wanxp/constant/DoubanUserState.ts
@@ -15943,6 +17985,12 @@ var DoubanSubjectStateRecords_TELEPLAY = {
   [DoubanSubjectState.do]: i18nHelper.getMessage("500703"),
   [DoubanSubjectState.collect]: i18nHelper.getMessage("500704")
 };
+var DoubanSubjectStateRecords_THEATER = {
+  [DoubanSubjectState.not]: i18nHelper.getMessage("500701"),
+  [DoubanSubjectState.wish]: i18nHelper.getMessage("500702"),
+  [DoubanSubjectState.do]: i18nHelper.getMessage("500703"),
+  [DoubanSubjectState.collect]: i18nHelper.getMessage("500704")
+};
 var DoubanSubjectStateRecords = {
   [SupportType.ALL]: DoubanSubjectStateRecords_ALL,
   [SupportType.MOVIE]: DoubanSubjectStateRecords_MOVIE,
@@ -15950,10 +17998,17 @@ var DoubanSubjectStateRecords = {
   [SupportType.MUSIC]: DoubanSubjectStateRecords_MUSIC,
   [SupportType.NOTE]: DoubanSubjectStateRecords_NOTE,
   [SupportType.GAME]: DoubanSubjectStateRecords_GAME,
-  [SupportType.TELEPLAY]: DoubanSubjectStateRecords_TELEPLAY
+  [SupportType.TELEPLAY]: DoubanSubjectStateRecords_TELEPLAY,
+  [SupportType.THEATER]: DoubanSubjectStateRecords_THEATER
 };
 var ALL = "ALL";
 var DoubanSubjectStateRecords_MOVIE_SYNC = {
+  [ALL]: i18nHelper.getMessage("500004"),
+  [DoubanSubjectState.wish]: i18nHelper.getMessage("500202"),
+  [DoubanSubjectState.do]: i18nHelper.getMessage("500203"),
+  [DoubanSubjectState.collect]: i18nHelper.getMessage("500204")
+};
+var DoubanSubjectStateRecords_TELEPLAY_SYNC = {
   [ALL]: i18nHelper.getMessage("500004"),
   [DoubanSubjectState.wish]: i18nHelper.getMessage("500202"),
   [DoubanSubjectState.do]: i18nHelper.getMessage("500203"),
@@ -15977,74 +18032,328 @@ var DoubanSubjectStateRecords_MUSIC_SYNC = {
   [DoubanSubjectState.do]: i18nHelper.getMessage("500403"),
   [DoubanSubjectState.collect]: i18nHelper.getMessage("500404")
 };
+var DoubanSubjectStateRecords_KEY_WORD_TYPE = new Map([
+  ["\u6211\u770B\u8FC7\u8FD9\u90E8\u7535\u89C6\u5267", SupportType.TELEPLAY],
+  ["\u6211\u6700\u8FD1\u770B\u8FC7\u8FD9\u90E8\u7535\u89C6\u5267", SupportType.TELEPLAY],
+  ["\u6211\u60F3\u770B\u8FD9\u90E8\u7535\u89C6\u5267", SupportType.TELEPLAY],
+  ["\u6211\u5728\u770B\u8FD9\u90E8\u7535\u89C6\u5267", SupportType.TELEPLAY],
+  ["\u6211\u6700\u8FD1\u5728\u770B\u8FD9\u90E8\u7535\u89C6\u5267", SupportType.TELEPLAY],
+  ["\u6211\u6700\u8FD1\u770B\u8FC7\u8FD9\u90E8\u7535\u5F71", SupportType.MOVIE],
+  ["\u6211\u770B\u8FC7\u8FD9\u90E8\u7535\u5F71", SupportType.MOVIE],
+  ["\u6211\u60F3\u770B\u8FD9\u90E8\u7535\u5F71", SupportType.MOVIE],
+  ["\u6211\u8BFB\u8FC7\u8FD9\u672C\u4E66", SupportType.BOOK],
+  ["\u6211\u60F3\u8BFB\u8FD9\u672C\u4E66", SupportType.BOOK],
+  ["\u6211\u5728\u8BFB\u8FD9\u672C\u4E66", SupportType.BOOK],
+  ["\u6211\u6700\u8FD1\u5728\u8BFB\u8FD9\u672C\u4E66", SupportType.BOOK],
+  ["\u6211\u6700\u8FD1\u542C\u8FC7\u8FD9\u5F20\u5531\u7247", SupportType.MUSIC],
+  ["\u6211\u542C\u8FC7\u8FD9\u5F20\u5531\u7247", SupportType.MUSIC],
+  ["\u6211\u60F3\u542C\u8FD9\u5F20\u5531\u7247", SupportType.MUSIC],
+  ["\u6211\u5728\u542C\u8FD9\u5F20\u5531\u7247", SupportType.MUSIC],
+  ["\u6211\u6700\u8FD1\u5728\u542C\u8FD9\u5F20\u5531\u7247", SupportType.MUSIC],
+  ["\u6211\u6700\u8FD1\u73A9\u8FC7\u8FD9\u4E2A\u6E38\u620F", SupportType.GAME],
+  ["\u6211\u73A9\u8FC7\u8FD9\u4E2A\u6E38\u620F", SupportType.GAME],
+  ["\u6211\u60F3\u73A9\u8FD9\u4E2A\u6E38\u620F", SupportType.GAME],
+  ["\u6211\u5728\u73A9\u8FD9\u4E2A\u6E38\u620F", SupportType.GAME],
+  ["\u6211\u6700\u8FD1\u5728\u73A9\u8FD9\u4E2A\u6E38\u620F", SupportType.GAME]
+]);
 
-// src/org/wanxp/douban/component/DoubanHumanCheckModel.ts
-var import_obsidian4 = __toModule(require("obsidian"));
-var DoubanHumanCheckModel = class {
-  constructor(url) {
-    this.url = url;
-    const { remote } = require("electron");
-    const { BrowserWindow: RemoteBrowserWindow } = remote;
-    this.modal = new RemoteBrowserWindow({
-      parent: remote.getCurrentWindow(),
-      width: 960,
-      height: 540,
-      show: false
-    });
-    this.modal.once("ready-to-show", () => {
-      this.modal.setTitle(i18nHelper.getMessage("100102"));
-      this.modal.show();
-    });
-    const session = this.modal.webContents.session;
-    const filter4 = {
-      urls: [this.url]
-    };
-    session.webRequest.onSendHeaders(filter4, (details) => __async(this, null, function* () {
-      const cookies = details.requestHeaders["Cookie"];
-      const cookieArr = this.parseCookies(cookies);
-      if (cookieArr) {
-        this.onClose();
+// src/org/wanxp/utils/HtmlUtil.ts
+var HtmlUtil = class {
+  static getHtmlText(html3, selector) {
+    if (!selector) {
+      return null;
+    }
+    if (typeof selector == "string") {
+      return html3(selector).text().trim();
+    } else {
+      let s = "", text3 = "";
+      for (s of selector) {
+        text3 = this.getHtmlText(html3, s);
+        if (text3) {
+          return text3;
+        }
+      }
+    }
+  }
+  static strToHtml(str) {
+    let result = str.replace(/\n/g, "<br/>");
+    result.replace(/\s/g, "&nbsp;");
+    return result;
+  }
+};
+
+// src/org/wanxp/douban/setting/model/ArraySetting.ts
+var ArraySettingFieldName;
+(function(ArraySettingFieldName3) {
+  ArraySettingFieldName3["index"] = "index";
+  ArraySettingFieldName3["arrayName"] = "arrayName";
+  ArraySettingFieldName3["arrayStart"] = "arrayStart";
+  ArraySettingFieldName3["arrayElementStart"] = "arrayElementStart";
+  ArraySettingFieldName3["arraySpiltV2"] = "arraySpiltV2";
+  ArraySettingFieldName3["arrayElementEnd"] = "arrayElementEnd";
+  ArraySettingFieldName3["arrayEnd"] = "arrayEnd";
+})(ArraySettingFieldName || (ArraySettingFieldName = {}));
+var DEFAULT_SETTINGS_ARRAY_NAME = "default";
+var ARRAY_NAME_PREFIX_NAME = "ArrayType";
+
+// src/org/wanxp/utils/YamlUtil.ts
+var YamlUtil = class {
+  static hasSpecialChar(str) {
+    return SPECIAL_CHAR_REG.test(str);
+  }
+  static handleSpecialChar(text3) {
+    return '"' + text3 + '"';
+  }
+  static handleText(text3) {
+    return YamlUtil.hasSpecialChar(text3) ? YamlUtil.handleSpecialChar(text3.replaceAll('"', '\\"')).replaceAll(/\s+/g, " ").replaceAll("\n", "\u3002").replaceAll("\u3002\u3002", "\u3002").replace(/^" /, '"').replace(/ "$/, '"') : text3;
+  }
+};
+var SPECIAL_CHAR_REG = /[{}\[\]&*#?|\-<>=!%@:"`,\n]/;
+var TITLE_ALIASES_SPECIAL_CHAR_REG_G = /[{}\[\]&*#?|\-<>=!%@:"`,， \n]/g;
+var SPECIAL_CHAR_REG_REPLACE = new Map([
+  ["{", "\\{"]
+]);
+
+// src/org/wanxp/utils/model/FieldVariable.ts
+var FieldVariable = class {
+  constructor(key, variable, outTypeName) {
+    this._key = key;
+    this._variable = variable;
+    this._outTypeName = outTypeName;
+  }
+  get key() {
+    return this._key;
+  }
+  get variable() {
+    return this._variable;
+  }
+  get outTypeName() {
+    return this._outTypeName;
+  }
+};
+
+// src/org/wanxp/utils/VariableUtil.ts
+var VariableUtil = class {
+  static replaceSubject(obj, content, subjectType, settingManager) {
+    if (!content || !obj) {
+      return content;
+    }
+    const allVariables = this.getAllVariables(content, settingManager);
+    if (!allVariables || allVariables.length == 0) {
+      return content;
+    }
+    if (obj instanceof Map) {
+      this.handleCustomVariable(subjectType, obj, settingManager);
+      content = this.replaceMap(obj, allVariables, content, settingManager);
+    } else {
+      const map2 = this.objToMap(obj);
+      this.handleCustomVariable(subjectType, map2, settingManager);
+      content = this.replaceMap(map2, allVariables, content, settingManager);
+    }
+    return content;
+  }
+  static replace(obj, content, settingManager) {
+    if (!content || !obj) {
+      return content;
+    }
+    const allVariables = this.getAllVariables(content, settingManager);
+    if (!allVariables || allVariables.length == 0) {
+      return content;
+    }
+    if (obj instanceof Map) {
+      content = this.replaceMap(obj, allVariables, content, settingManager);
+    } else {
+      const map2 = this.objToMap(obj);
+      content = this.replaceMap(map2, allVariables, content, settingManager);
+    }
+    return content;
+  }
+  static replaceVariable(variable, value, content, settingManager) {
+    if (!content) {
+      return content;
+    }
+    if (value instanceof Array) {
+      content = this.replaceArray(variable, value, content, settingManager);
+    } else if (value instanceof DataField) {
+      content = this.replaceDataField(variable, value, content, settingManager);
+    } else {
+      content = this.replaceString(variable, value, content, settingManager);
+    }
+    return content;
+  }
+  static replaceArray(variable, value, content, settingManager) {
+    if (!content) {
+      return content;
+    }
+    const variableStr = variable.variable;
+    const outTypeName = variable.outTypeName;
+    if (!value) {
+      return content.replaceAll(variableStr, "");
+    }
+    const arraySettings = this.getArraySetting(outTypeName, settingManager);
+    if (!arraySettings) {
+      log.warn(i18nHelper.getMessage(`130107`, variable.variable, outTypeName));
+      return content;
+    }
+    const strValues = value.map((v) => {
+      if (typeof v === "string") {
+        return v;
       } else {
-        this.onReload();
+        return v ? v.toString() : null;
       }
-    }));
+    }).filter((v) => v).map((v) => YamlUtil.handleText(v));
+    const arrayValue = StringUtil.handleArray(strValues, arraySettings);
+    content = content.replaceAll(variableStr, arrayValue);
+    return content;
   }
-  parseCookies(cookies) {
-    return cookies;
+  static keyToVariable(key) {
+    return `{{${key}}}`;
   }
-  load() {
-    return __async(this, null, function* () {
-      try {
-        yield this.modal.loadURL(this.url);
-      } catch (error) {
-        log.error(i18nHelper.getMessage("100101"), error);
+  static replaceString(variable, value, content, settingManager) {
+    if (!content) {
+      return content;
+    }
+    let strValue = value ? value.toString() : "";
+    strValue = YamlUtil.handleText(strValue);
+    return content.replaceAll(variable.variable, strValue);
+  }
+  static getAllVariables(content, settingManager) {
+    const reg = /\{\{[a-zA-Z-0-9_.]+([(a-zA-Z-0-9)]+)?}}/g;
+    const result = content.match(reg);
+    if (!result) {
+      return [];
+    }
+    return result.map((v) => {
+      const reg2 = new RegExp(`[a-zA-Z-0-9_.]+`, "g");
+      const result2 = v.match(reg2);
+      if (!result2) {
+        return null;
       }
+      if (result2.length == 1) {
+        return new FieldVariable(result2[0], v, null);
+      }
+      return new FieldVariable(result2[0], v, result2[1]);
+    }).filter((v) => v);
+  }
+  static getArraySetting(outTypeName, settingManager) {
+    if (!outTypeName) {
+      return settingManager.getArraySetting(DEFAULT_SETTINGS_ARRAY_NAME);
+    } else {
+      return settingManager.getArraySetting(outTypeName);
+    }
+  }
+  static replaceMap(obj, allVariables, content, settingManager) {
+    allVariables.forEach((variable) => {
+      const value = obj.get(variable.key);
+      content = this.replaceVariable(variable, value, content, settingManager);
+    });
+    return content;
+  }
+  static getType(value) {
+    if (typeof value === "number") {
+      return DataValueType.number;
+    } else if (typeof value === "string") {
+      if (value.startsWith("http://") || value.startsWith("https://")) {
+        return DataValueType.url;
+      } else if (/^(\/|\.\/|\.\.\/|~\/|.*\.[a-zA-Z0-9]+$)/.test(value)) {
+        return DataValueType.path;
+      }
+      return DataValueType.string;
+    } else if (value instanceof Date) {
+      return DataValueType.date;
+    } else if (value instanceof Array) {
+      return DataValueType.array;
+    } else {
+      return DataValueType.string;
+    }
+  }
+  static replaceDataField(variable, value, content, settingManager) {
+    if (!content) {
+      return content;
+    }
+    const variableStr = variable.variable;
+    if (!value) {
+      return content.replaceAll(variableStr, "");
+    }
+    switch (value.type) {
+      case DataValueType.string:
+        content = this.replaceString(variable, value.value, content, settingManager);
+        break;
+      case DataValueType.number:
+        content = content.replaceAll(variableStr, value.value.toString());
+        break;
+      case DataValueType.date:
+        content = content.replaceAll(variableStr, value.value);
+        break;
+      case DataValueType.array:
+        content = this.replaceArray(variable, value.value, content, settingManager);
+        break;
+      default:
+        content = content.replaceAll(variableStr, value.value);
+        break;
+    }
+    return content;
+  }
+  static handleCustomVariable(subjectType, variableMap, settingMananger) {
+    const customProperties = settingMananger.getSetting("customProperties");
+    if (!customProperties) {
+      return;
+    }
+    const customPropertiesMap = new Map();
+    customProperties.filter((customProperty) => customProperty.name && customProperty.field && (customProperty.field.toLowerCase() == SupportType.ALL || customProperty.field.toLowerCase() == subjectType)).forEach((customProperty) => {
+      customPropertiesMap.set(customProperty.name, customProperty.value);
+    });
+    customPropertiesMap.forEach((value, key) => {
+      variableMap.set(key, new DataField(key, DataValueType.string, value, VariableUtil.replace(variableMap, value, settingMananger)));
     });
   }
-  loadUrl(url) {
-    return __async(this, null, function* () {
-      try {
-        yield this.modal.loadURL(url);
-      } catch (error) {
-        log.error(i18nHelper.getMessage("100101"), error);
-      }
+  static objToMap(obj) {
+    const map2 = new Map();
+    Object.keys(obj).forEach((key) => {
+      map2.set(key, obj[key]);
     });
+    return map2;
   }
-  loadHtml(html3) {
-    return __async(this, null, function* () {
-      try {
-        yield this.modal.loadURL(`data:text/html;charset=utf-8,${html3}`);
-      } catch (error) {
-        log.error(i18nHelper.getMessage("100101"), error);
+};
+
+// src/org/wanxp/utils/NumberUtil.ts
+var NumberUtil = class {
+  static getRandomNum(min2, max2) {
+    const range = max2 - min2;
+    const rand = Math.random();
+    return min2 + Math.round(rand * range);
+  }
+  static getRateStar(rate, rateMax, options) {
+    if (rate > rateMax) {
+      this.getRateStarMaxRate(1, options);
+    }
+    return this.getRateStarMaxRate(rate / rateMax, options);
+  }
+  static getRateStarMaxRate(star, options) {
+    let result = "";
+    const scoreSetting = options && options.scoreSetting ? options.scoreSetting : DEFAULT_SETTINGS.scoreSetting;
+    const starFull = scoreSetting && scoreSetting.starFull ? scoreSetting.starFull : "\u2605";
+    const starEmpty = scoreSetting && scoreSetting.starEmpty ? scoreSetting.starEmpty : "\u2606";
+    const displayStarEmpty = scoreSetting && scoreSetting.displayStarEmpty != null ? scoreSetting.displayStarEmpty : true;
+    const rateStarMax = scoreSetting && scoreSetting.maxStar ? scoreSetting.maxStar : 5;
+    star = Math.floor(star * rateStarMax);
+    for (let i = 0; i < rateStarMax; i++) {
+      if (i < star) {
+        result += starFull;
+      } else if (displayStarEmpty) {
+        result += starEmpty;
       }
-    });
+    }
+    return result;
   }
-  onClose() {
-    this.modal.close();
-    new import_obsidian4.Notice(i18nHelper.getMessage("100103"));
+  static isNumber(value) {
+    return !isNaN(Number(value));
   }
-  onReload() {
-    this.modal.reload();
+  static isInt(value) {
+    return Number.isInteger(Number(value));
+  }
+  static value(value) {
+    return Number(value);
   }
 };
 
@@ -16055,10 +18364,10 @@ var DoubanAbstractLoadHandler = class {
   }
   parse(extract, context) {
     return __async(this, null, function* () {
-      let template = yield this.getTemplate(extract, context);
+      const template = yield this.getTemplate(extract, context);
       yield this.saveImage(extract, context);
-      let frontMatterStart = template.indexOf(BasicConst.YAML_FRONT_MATTER_SYMBOL, 0);
-      let frontMatterEnd = template.indexOf(BasicConst.YAML_FRONT_MATTER_SYMBOL, frontMatterStart + 1);
+      const frontMatterStart = template.indexOf(BasicConst.YAML_FRONT_MATTER_SYMBOL, 0);
+      const frontMatterEnd = template.indexOf(BasicConst.YAML_FRONT_MATTER_SYMBOL, frontMatterStart + 1);
       let frontMatter = "";
       let frontMatterBefore = "";
       let frontMatterAfter = "";
@@ -16095,64 +18404,44 @@ var DoubanAbstractLoadHandler = class {
     const { dataFileNamePath } = context.settings;
     return dataFileNamePath ? dataFileNamePath : DEFAULT_SETTINGS.dataFileNamePath;
   }
-  handleSpecialText(text3, textMode) {
-    let result = text3;
-    switch (textMode) {
-      case TemplateTextMode.YAML:
-        result = YamlUtil.handleText(text3);
-        break;
-    }
-    return result;
-  }
-  handleContentArray(array, context, textMode) {
-    let result;
-    switch (textMode) {
-      default:
-        result = array.join(context.settings.arraySpilt);
-    }
-    return result;
-  }
-  handleSpecialContent(value, textMode = TemplateTextMode.NORMAL, context = null) {
-    let result;
-    if (!value) {
-      return "";
-    }
-    if (value instanceof Array) {
-      result = this.handleContentArray(value, context, textMode);
-    } else if (value instanceof Number) {
-      result = value.toString();
-    } else {
-      result = this.handleSpecialText(value, textMode);
-    }
-    return result;
-  }
-  handle(url, context) {
+  handle(id, context) {
     return __async(this, null, function* () {
-      let headers = JSON.parse(context.settings.searchHeaders);
-      headers.Cookie = context.settings.loginCookiesContent;
+      const url = this.getSubjectUrl(id);
       context.plugin.settingsManager.debug(`\u5F00\u59CB\u8BF7\u6C42\u5730\u5740:${url}`);
-      context.plugin.settingsManager.debug(`(\u6CE8\u610F:\u8BF7\u52FF\u5411\u4EFB\u4F55\u4EBA\u900F\u9732\u4F60\u7684Cookie,\u6B64\u5904\u82E5\u9700\u8981\u622A\u56FE\u8BF7**\u6253\u7801**)\u8BF7\u6C42cookie:${context.settings.loginCookiesContent}`);
-      const requestUrlParam = {
-        url,
-        method: "GET",
-        headers,
-        throw: true
-      };
-      yield (0, import_obsidian5.request)(requestUrlParam).then((s) => this.humanCheck(s, url)).then(load).then((data2) => this.analysisUserState(data2, context)).then(({ data: data2, userState }) => {
-        let sub = this.parseSubjectFromHtml(data2, context);
+      context.plugin.settingsManager.debug(`(\u6CE8\u610F:\u8BF7\u52FF\u5411\u4EFB\u4F55\u4EBA\u900F\u9732\u4F60\u7684Cookie,\u6B64\u5904\u82E5\u9700\u8981\u622A\u56FE\u8BF7**\u6253\u7801**)\u8BF7\u6C42header:${context.settings.loginHeadersContent}`);
+      return yield HttpUtil.httpRequestGet(url, context.plugin.settingsManager.getHeaders(), context.plugin.settingsManager).then(load).then((data2) => this.analysisUserState(data2, context)).then(({ data: data2, userState }) => {
+        let guessType = this.getSupportType();
+        if (context.syncActive) {
+          guessType = this.getGuessType(data2);
+        }
+        const sub = this.parseSubjectFromHtml(data2, context);
         sub.userState = userState;
+        sub.guessType = guessType;
         return sub;
       }).then((content) => this.toEditor(context, content)).catch((e) => {
         log.error(i18nHelper.getMessage("130101", e.toString()), e);
         if (url) {
-          let id = StringUtil.analyzeIdByUrl(url);
-          context.syncStatusHolder ? context.syncStatusHolder.syncStatus.fail(id, "") : null;
+          const id2 = StringUtil.analyzeIdByUrl(url);
+          context.syncStatusHolder ? context.syncStatusHolder.syncStatus.fail(id2, "") : null;
         } else {
           context.syncStatusHolder ? context.syncStatusHolder.syncStatus.handled(1) : null;
         }
+        return e;
       });
-      ;
     });
+  }
+  getGuessType(data2) {
+    if (data2) {
+      const text3 = data2.html();
+      if (text3) {
+        for (const [key, value] of DoubanSubjectStateRecords_KEY_WORD_TYPE) {
+          if (text3.indexOf(key) >= 0) {
+            return value;
+          }
+        }
+      }
+    }
+    return null;
   }
   toEditor(context, extract) {
     return __async(this, null, function* () {
@@ -16176,7 +18465,7 @@ var DoubanAbstractLoadHandler = class {
         resultName = chineseName;
         break;
       case PersonNameMode.EN_NAME:
-        resultName = originalName.trim().replaceAll(chineseName, "").trim();
+        resultName = originalName.trim().replace(chineseName, "").trim();
         if (!resultName) {
           resultName = originalName;
         }
@@ -16194,7 +18483,7 @@ var DoubanAbstractLoadHandler = class {
     let regValue;
     switch (personNameMode) {
       case PersonNameMode.CH_NAME:
-        regValue = /[\u4e00-\u9fa50-9\. ·\:\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5\(\)]{2,}/g.exec(name);
+        regValue = /[\u4e00-\u9fa50-9. ·:\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5()]{2,}/g.exec(name);
         resultName = regValue ? regValue[0] : name;
         break;
       case PersonNameMode.EN_NAME:
@@ -16237,12 +18526,29 @@ var DoubanAbstractLoadHandler = class {
     return s;
   }
   parsePartText(template, extract, context, textMode = TemplateTextMode.NORMAL) {
-    let resultContent = this.handleCustomVariable(template, context);
-    resultContent = resultContent.replaceAll(DoubanParameter.ID, extract.id).replaceAll(DoubanParameter.TITLE, this.handleSpecialContent(extract.title, textMode)).replaceAll(DoubanParameter.TYPE, extract.type).replaceAll(DoubanParameter.SCORE, this.handleSpecialContent(extract.score)).replaceAll(DoubanParameter.IMAGE, extract.image).replaceAll(DoubanParameter.URL, extract.url).replaceAll(DoubanParameter.DESC, this.handleSpecialContent(extract.desc, textMode)).replaceAll(DoubanParameter.PUBLISHER, extract.publisher).replaceAll(DoubanParameter.YEAR_PUBLISHED, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format("yyyy") : "").replaceAll(DoubanParameter.DATE_PUBLISHED, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format(context.settings.dateFormat) : "").replaceAll(DoubanParameter.TIME_PUBLISHED, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format(context.settings.timeFormat) : "").replaceAll(DoubanParameter.CURRENT_DATE, (0, import_obsidian5.moment)(new Date()).format(context.settings.dateFormat)).replaceAll(DoubanParameter.CURRENT_TIME, (0, import_obsidian5.moment)(new Date()).format(context.settings.timeFormat)).replaceAll(DoubanParameter.GENRE, this.handleSpecialContent(extract.genre, textMode, context));
-    resultContent = this.parseUserInfo(resultContent, extract, context, textMode);
-    return this.parseText(resultContent, extract, context, textMode);
+    const variableMap = new Map();
+    for (const [key, value] of Object.entries(extract)) {
+      if (!value) {
+        continue;
+      }
+      const type = VariableUtil.getType(value);
+      if (key == "score") {
+        variableMap.set(DoubanParameterName.SCORE_STAR, new DataField(DoubanParameterName.SCORE_STAR, DataValueType.string, value, NumberUtil.getRateStar(value, 10, { scoreSetting: context.settings.scoreSetting })));
+      }
+      variableMap.set(key, new DataField(key, type, value, value));
+    }
+    variableMap.set(DoubanParameterName.IMAGE_URL, new DataField(DoubanParameterName.IMAGE_URL, DataValueType.url, extract.imageUrl, extract.imageUrl));
+    variableMap.set(DoubanParameterName.YEAR_PUBLISHED, new DataField(DoubanParameterName.YEAR_PUBLISHED, DataValueType.date, extract.datePublished, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format("yyyy") : ""));
+    variableMap.set(DoubanParameterName.DATE_PUBLISHED, new DataField(DoubanParameterName.DATE_PUBLISHED, DataValueType.date, extract.datePublished, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format(context.settings.dateFormat) : ""));
+    variableMap.set(DoubanParameterName.TIME_PUBLISHED, new DataField(DoubanParameterName.TIME_PUBLISHED, DataValueType.date, extract.datePublished, extract.datePublished ? (0, import_obsidian5.moment)(extract.datePublished).format(context.settings.timeFormat) : ""));
+    const currentDate = new Date();
+    variableMap.set(DoubanParameterName.CURRENT_DATE, new DataField(DoubanParameterName.CURRENT_DATE, DataValueType.date, currentDate, (0, import_obsidian5.moment)(currentDate).format(context.settings.dateFormat)));
+    variableMap.set(DoubanParameterName.CURRENT_TIME, new DataField(DoubanParameterName.CURRENT_TIME, DataValueType.date, currentDate, (0, import_obsidian5.moment)(currentDate).format(context.settings.timeFormat)));
+    this.parseUserInfo(template, variableMap, extract, context, textMode);
+    this.parseVariable(template, variableMap, extract, context, textMode);
+    return VariableUtil.replaceSubject(variableMap, template, this.getSupportType(), this.doubanPlugin.settingsManager);
   }
-  parseUserInfo(resultContent, extract, context, textMode) {
+  parseUserInfo(resultContent, variableMap, extract, context, textMode) {
     const userState = extract.userState;
     if ((resultContent.indexOf(DoubanUserParameter.MY_TAGS) >= 0 || resultContent.indexOf(DoubanUserParameter.MY_RATING) >= 0 || resultContent.indexOf(DoubanUserParameter.MY_STATE) >= 0 || resultContent.indexOf(DoubanUserParameter.MY_COMMENT) >= 0 || resultContent.indexOf(DoubanUserParameter.MY_COLLECTION_DATE) >= 0) && !this.doubanPlugin.userComponent.isLogin()) {
       log.warn(i18nHelper.getMessage("100113"));
@@ -16251,18 +18557,34 @@ var DoubanAbstractLoadHandler = class {
     if (!userState) {
       return resultContent;
     }
-    return resultContent.replaceAll(DoubanUserParameter.MY_TAGS, this.handleSpecialContent(userState.tags, textMode, context)).replaceAll(DoubanUserParameter.MY_RATING, this.handleSpecialContent(userState.rate, textMode)).replaceAll(DoubanUserParameter.MY_STATE, this.getUserStateName(userState.state)).replaceAll(DoubanUserParameter.MY_COMMENT, this.handleSpecialContent(userState.comment, textMode)).replaceAll(DoubanUserParameter.MY_COLLECTION_DATE, userState.collectionDate ? (0, import_obsidian5.moment)(userState.collectionDate).format(context.settings.dateFormat) : "");
-  }
-  handleCustomVariable(template, context) {
-    let customProperties = context.settings.customProperties;
-    let resultContent = template;
-    if (!customProperties) {
-      return resultContent;
+    let tags = [];
+    if (userState.tags && userState.tags.length > 0) {
+      tags = [extract.type, ...userState.tags.map((tag) => tag.trim())];
+    } else {
+      tags = [extract.type];
     }
-    customProperties.filter((customProperty) => customProperty.name && customProperty.field && (customProperty.field == SupportType.ALL || customProperty.field == this.getSupportType())).forEach((customProperty) => {
-      resultContent = resultContent.replaceAll(`{{${customProperty.name}}}`, customProperty.value);
+    Object.entries(userState).forEach(([key, value]) => {
+      if (!value) {
+        return;
+      }
+      variableMap.set(key, new DataField(key, VariableUtil.getType(value), value, value));
     });
-    return resultContent;
+    if (userState.tags && userState.tags.length > 0) {
+      variableMap.set(DoubanUserParameterName.MY_TAGS, new DataField(DoubanUserParameterName.MY_TAGS, DataValueType.array, tags, tags));
+    }
+    if (userState.comment) {
+      variableMap.set(DoubanUserParameterName.MY_COMMENT, new DataField(DoubanUserParameterName.MY_COMMENT, DataValueType.string, userState.comment, userState.comment));
+    }
+    if (userState.state) {
+      variableMap.set(DoubanUserParameterName.MY_STATE, new DataField(DoubanUserParameterName.MY_STATE, DataValueType.string, userState.state, this.getUserStateName(userState.state)));
+    }
+    if (userState.rate) {
+      variableMap.set(DoubanUserParameterName.MY_RATING, new DataField(DoubanUserParameterName.MY_RATING, DataValueType.number, userState.rate, userState.rate));
+      variableMap.set(DoubanUserParameterName.MY_RATING_STAR, new DataField(DoubanUserParameterName.MY_RATING_STAR, DataValueType.string, userState.rate, NumberUtil.getRateStar(userState.rate, 5, { scoreSetting: context.settings.scoreSetting })));
+    }
+    if (userState.collectionDate) {
+      variableMap.set(DoubanUserParameterName.MY_COLLECTION_DATE, new DataField(DoubanUserParameterName.MY_COLLECTION_DATE, DataValueType.date, userState.collectionDate, userState.collectionDate ? (0, import_obsidian5.moment)(userState.collectionDate).format(context.settings.dateFormat) : ""));
+    }
   }
   getTemplateKey() {
     let templateKey;
@@ -16309,7 +18631,7 @@ var DoubanAbstractLoadHandler = class {
         return getDefaultTemplateContent(tempKey, useUserState);
       }
       const defaultContent = getDefaultTemplateContent(tempKey, useUserState);
-      let firstLinkpathDest = this.doubanPlugin.app.metadataCache.getFirstLinkpathDest(templatePath, "");
+      const firstLinkpathDest = this.doubanPlugin.app.metadataCache.getFirstLinkpathDest(templatePath, "");
       if (!firstLinkpathDest) {
         return defaultContent;
       } else {
@@ -16347,7 +18669,7 @@ var DoubanAbstractLoadHandler = class {
     if (!state) {
       return "";
     }
-    let v = DoubanSubjectStateRecords[this.getSupportType()];
+    const v = DoubanSubjectStateRecords[this.getSupportType()];
     switch (state) {
       case DoubanSubjectState.wish:
         return v.wish;
@@ -16395,20 +18717,8 @@ var DoubanAbstractLoadHandler = class {
       }
     });
   }
-  humanCheck(html3, url) {
-    return __async(this, null, function* () {
-      this.doubanPlugin.settingsManager.debug(html3);
-      if (html3 && html3.indexOf("<title>\u7981\u6B62\u8BBF\u95EE</title>") != -1) {
-        const loginModel = new DoubanHumanCheckModel(url);
-        yield loginModel.load();
-        return "";
-      } else {
-        return html3;
-      }
-    });
-  }
   handlePersonNameByMeta(html3, movie, context, metaProperty, objectProperty) {
-    let metaProperties = html3(`head > meta[property='${metaProperty}']`).get().map((e) => {
+    const metaProperties = html3(`head > meta[property='${metaProperty}']`).get().map((e) => {
       return html3(e).attr("content");
     });
     movie[objectProperty].filter((p) => p.name).map((p) => {
@@ -16418,21 +18728,24 @@ var DoubanAbstractLoadHandler = class {
       }
     });
   }
+  getPropertyValue(html3, name) {
+    return HtmlUtil.getHtmlText(html3, this.doubanPlugin.settingsManager.getSelector(this.getSupportType(), name));
+  }
 };
 
 // src/org/wanxp/douban/data/model/DoubanBookSubject.ts
 var DoubanBookParameter = {
-  author: "{{author}}",
-  translator: "{{translator}}",
-  isbn: "{{isbn}}",
-  originalTitle: "{{originalTitle}}",
-  subTitle: "{{subTitle}}",
-  totalPage: "{{totalPage}}",
-  series: "{{series}}",
-  menu: "{{menu}}",
-  price: "{{price}}",
-  binding: "{{binding}}",
-  producer: "{{producer}}"
+  author: "author",
+  translator: "translator",
+  isbn: "isbn",
+  originalTitle: "originalTitle",
+  subTitle: "subTitle",
+  totalPage: "totalPage",
+  series: "series",
+  menu: "menu",
+  price: "price",
+  binding: "binding",
+  producer: "producer"
 };
 
 // src/org/wanxp/douban/data/handler/DoubanBookLoadHandler.ts
@@ -16447,46 +18760,52 @@ var DoubanBookLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img9.doubanio.com/view/subject/l/public/${fileName}`;
   }
-  parseText(beforeContent, extract, context, textMode) {
-    return beforeContent.replaceAll(DoubanBookParameter.author, super.handleSpecialContent(extract.author.map(this.handleSpecialAuthorName), textMode, context)).replaceAll(DoubanBookParameter.translator, super.handleSpecialContent(extract.translator, textMode, context)).replaceAll(DoubanBookParameter.isbn, extract.isbn).replaceAll(DoubanBookParameter.originalTitle, super.handleSpecialContent(extract.originalTitle, textMode)).replaceAll(DoubanBookParameter.subTitle, super.handleSpecialContent(extract.subTitle, textMode)).replaceAll(DoubanBookParameter.totalPage, super.handleSpecialContent(extract.totalPage, textMode)).replaceAll(DoubanBookParameter.menu, extract.menu.join("\n")).replaceAll(DoubanBookParameter.price, super.handleSpecialContent(extract.price, textMode)).replaceAll(DoubanBookParameter.series, super.handleSpecialContent(extract.series, textMode)).replaceAll(DoubanBookParameter.binding, super.handleSpecialContent(extract.binding, textMode)).replaceAll(DoubanBookParameter.producer, super.handleSpecialContent(extract.producer, textMode));
+  getSubjectUrl(id) {
+    return `https://book.douban.com/subject/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context, textMode) {
+    variableMap.set(DoubanBookParameter.author, new DataField(DoubanBookParameter.author, DataValueType.array, extract.author, extract.author.map(this.handleSpecialAuthorName)));
   }
   support(extract) {
-    return extract && extract.type && (extract.type.contains("\u4E66\u7C4D") || extract.type.contains("Book") || extract.type.contains("book"));
+    return extract && extract.type && (extract.type.contains("\u56FE\u4E66") || extract.type.contains("\u4E66\u7C4D") || extract.type.contains("Book") || extract.type.contains("book"));
   }
   handleSpecialAuthorName(authorName) {
     return authorName.replace(/\[/g, "").replace("]", "/");
   }
   analysisUser(html3, context) {
-    let rate = html3("input#n_rating").val();
-    let tagsStr = html3("span#rating").next().text().trim();
-    let tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
-    let stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
-    let collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10").next().text().trim();
-    let userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-    let component = html3("span#rating").next().next().next().text().trim();
+    const rate = html3("input#n_rating").val();
+    const tagsStr = html3("span#rating").next().text().trim();
+    const tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
+    const stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
+    const collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10").next().text().trim();
+    const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
+    const comment = this.getComment(html3);
     const userState = {
       tags,
       rate: rate ? Number(rate) : null,
       state: userState1,
       collectionDate: collectionDateStr ? (0, import_obsidian6.moment)(collectionDateStr, "YYYY-MM-DD").toDate() : null,
-      comment: component
+      comment
     };
     return { data: html3, userState };
   }
   parseSubjectFromHtml(html3, context) {
-    let desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
-    let image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
+    let desc = html3(".intro p").text();
+    if (!desc) {
+      desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
+    }
+    const image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
     let item = html3(html3("head > script[type='application/ld+json']").get(0)).text();
     item = super.html_decode(item);
-    let obj = JSON.parse(item.replace(/[\r\n\s+]/g, ""));
-    let title = obj.name;
-    let url = obj.url;
-    let author = obj.author.map((a) => a.name);
-    let isbn = obj.isbn;
-    let score = html3(html3("#interest_sectl > div > div.rating_self.clearfix > strong[property= 'v:average']").get(0)).text();
-    let detailDom = html3(html3("#info").get(0));
-    let publish = detailDom.find("span.pl");
-    let valueMap = new Map();
+    const obj = JSON.parse(item.replace(/[\r\n\s+]/g, ""));
+    const title = obj.name;
+    const url = obj.url;
+    const author = obj.author.map((a) => a.name);
+    const isbn = obj.isbn;
+    const score = html3(html3("#interest_sectl > div > div.rating_self.clearfix > strong[property= 'v:average']").get(0)).text();
+    const detailDom = html3(html3("#info").get(0));
+    const publish = detailDom.find("span.pl");
+    const valueMap = new Map();
     publish.map((index2, info) => {
       let key = html3(info).text().trim();
       let value;
@@ -16510,6 +18829,7 @@ var DoubanBookLoadHandler = class extends DoubanAbstractLoadHandler {
       author,
       translator: valueMap.has("translator") ? valueMap.get("translator") : [],
       image,
+      imageUrl: image,
       datePublished: valueMap.has("datePublished") ? new Date(valueMap.get("datePublished")) : void 0,
       isbn,
       publisher: valueMap.has("publisher") ? valueMap.get("publisher") : "",
@@ -16521,7 +18841,7 @@ var DoubanBookLoadHandler = class extends DoubanAbstractLoadHandler {
       menu,
       price: valueMap.has("price") ? Number(valueMap.get("price").replace("\u5143", "")) : null,
       id,
-      type: "Book",
+      type: this.getSupportType(),
       title,
       desc,
       url,
@@ -16530,6 +18850,13 @@ var DoubanBookLoadHandler = class extends DoubanAbstractLoadHandler {
       producer: valueMap.has("producer") ? valueMap.get("producer") : ""
     };
     return result;
+  }
+  getComment(html3) {
+    let comment = html3("span#rating").next().next().next().text().trim();
+    if (comment) {
+      return comment;
+    }
+    return this.getPropertyValue(html3, PropertyName.comment);
   }
 };
 var BookKeyValueMap = new Map([
@@ -16577,9 +18904,14 @@ var DoubanMovieLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img9.doubanio.com/view/photo/l/public/${fileName}`;
   }
-  parseText(beforeContent, extract, context) {
-    const { settings } = context;
-    return beforeContent.replaceAll("{{originalTitle}}", extract.originalTitle ? extract.originalTitle : "").replaceAll("{{director}}", extract.director ? extract.director.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{actor}}", extract.actor ? extract.actor.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{author}}", extract.author ? extract.author.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{aliases}}", extract.aliases ? extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_")).join(settings.arraySpilt) : "").replaceAll("{{country}}", extract.country ? extract.country.join(settings.arraySpilt) : "").replaceAll("{{language}}", extract.language ? extract.language.join(settings.arraySpilt) : "").replaceAll("{{IMDb}}", extract.IMDb ? extract.IMDb : "").replaceAll("{{time}}", extract.time ? extract.time : "");
+  getSubjectUrl(id) {
+    return `https://movie.douban.com/subject/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context) {
+    variableMap.set("director", new DataField("director", DataValueType.array, extract.director, extract.director.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("actor", new DataField("actor", DataValueType.array, extract.actor, extract.actor.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("author", new DataField("author", DataValueType.array, extract.author, extract.author.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c)));
+    variableMap.set("aliases", new DataField("aliases", DataValueType.array, extract.aliases, extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_"))));
   }
   support(extract) {
     return extract && extract.type && (extract.type.contains("\u7535\u5F71") || extract.type.contains("Movie") || extract.type.contains("movie"));
@@ -16591,7 +18923,7 @@ var DoubanMovieLoadHandler = class extends DoubanAbstractLoadHandler {
     let stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
     let collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date").text().trim();
     let userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-    let component = html3("div#interest_sect_level > div.a_stars > span.color_gray").next().next().text().trim();
+    let component = this.getComment(html3, context);
     const userState = {
       tags,
       rate: rate ? Number(rate) : null,
@@ -16601,21 +18933,28 @@ var DoubanMovieLoadHandler = class extends DoubanAbstractLoadHandler {
     };
     return { data: html3, userState };
   }
+  getComment(html3, context) {
+    const component = html3("div#interest_sect_level > div.a_stars > span.color_gray").next().next().text().trim();
+    if (component) {
+      return component;
+    }
+    return this.getPropertyValue(html3, PropertyName.comment);
+  }
   parseSubjectFromHtml(html3, context) {
     const movie = html3("script").get().filter((scd) => html3(scd).attr("type") == "application/ld+json").map((i) => {
       var _a2, _b;
       let item = html3(i).text();
       item = super.html_decode(item);
-      let obj = JSON.parse(item.replace(/[\r\n\s+]/g, ""));
-      let idPattern = /(\d){5,10}/g;
-      let id = idPattern.exec(obj.url);
-      let name = obj.name;
-      let title = (_a2 = super.getTitleNameByMode(name, PersonNameMode.CH_NAME, context)) != null ? _a2 : name;
-      let originalTitle = (_b = super.getTitleNameByMode(name, PersonNameMode.EN_NAME, context)) != null ? _b : name;
+      const obj = JSON.parse(item.replace(/[\r\n]+/g, ""));
+      const idPattern = /(\d){5,10}/g;
+      const id = idPattern.exec(obj.url);
+      const name = obj.name;
+      const title = (_a2 = super.getTitleNameByMode(name, PersonNameMode.CH_NAME, context)) != null ? _a2 : name;
+      const originalTitle = (_b = super.getTitleNameByMode(name, PersonNameMode.EN_NAME, context)) != null ? _b : name;
       const result = {
         id: id ? id[0] : "",
         title,
-        type: "Movie",
+        type: this.getSupportType(),
         score: obj.aggregateRating ? obj.aggregateRating.ratingValue : void 0,
         originalTitle,
         desc: obj.description,
@@ -16626,6 +18965,7 @@ var DoubanMovieLoadHandler = class extends DoubanAbstractLoadHandler {
         aggregateRating: obj.aggregateRating,
         datePublished: obj.datePublished ? new Date(obj.datePublished) : void 0,
         image: obj.image,
+        imageUrl: obj.image,
         genre: obj.genre,
         publisher: "",
         aliases: [""],
@@ -16638,14 +18978,18 @@ var DoubanMovieLoadHandler = class extends DoubanAbstractLoadHandler {
     })[0];
     this.handlePersonNameByMeta(html3, movie, context, "video:actor", "actor");
     this.handlePersonNameByMeta(html3, movie, context, "video:director", "director");
-    let detailDom = html3(html3("#info").get(0));
-    let publish = detailDom.find("span.pl");
-    let valueMap = new Map();
+    const desc = html3("span[property='v:summary']").text();
+    if (desc) {
+      movie.desc = desc;
+    }
+    const detailDom = html3(html3("#info").get(0));
+    const publish = detailDom.find("span.pl");
+    const valueMap = new Map();
     publish.map((index2, info) => {
-      let key = html3(info).text().trim();
+      const key = html3(info).text().trim();
       let value;
       if (key.indexOf("\u53C8\u540D") >= 0 || key.indexOf("\u8BED\u8A00") >= 0 || key.indexOf("\u5236\u7247\u56FD\u5BB6") >= 0) {
-        let vas = html3(info.next).text().trim();
+        const vas = html3(info.next).text().trim();
         value = vas.split("/").map((v) => v.trim());
       } else if (key.indexOf("\u7247\u957F") >= 0) {
         value = html3(info.next.next).text().trim();
@@ -16682,21 +19026,22 @@ var DoubanMusicLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img1.doubanio.com/view/subject/m/public/${fileName}`;
   }
-  parseText(beforeContent, extract, context) {
-    const { settings } = context;
-    return beforeContent.replaceAll("{{actor}}", extract.actor ? extract.actor.join(settings.arraySpilt) : "").replaceAll("{{barcode}}", extract.barcode ? extract.barcode : "").replaceAll("{{medium}}", extract.medium ? extract.medium : "").replaceAll("{{albumType}}", extract.albumType ? extract.albumType : "").replaceAll("{{records}}", extract.records ? extract.records + "" : "");
+  getSubjectUrl(id) {
+    return `https://music.douban.com/subject/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context) {
   }
   support(extract) {
     return extract && extract.type && (extract.type.contains("\u97F3\u4E50") || extract.type.contains("Music") || extract.type.contains("music"));
   }
   analysisUser(html3, context) {
-    let rate = html3("input#n_rating").val();
-    let tagsStr = html3("span#rating").next().next().text().trim();
-    let tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
-    let stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
-    let collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10").next().text().trim();
-    let userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-    let component = html3("span#rating").next().next().next().next().text().trim();
+    const rate = html3("input#n_rating").val();
+    const tagsStr = html3("span#rating").next().next().text().trim();
+    const tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
+    const stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
+    const collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10").next().text().trim();
+    const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
+    const component = html3("span#rating").next().next().next().next().text().trim();
     const userState = {
       tags,
       rate: rate ? Number(rate) : null,
@@ -16707,19 +19052,25 @@ var DoubanMusicLoadHandler = class extends DoubanAbstractLoadHandler {
     return { data: html3, userState };
   }
   parseSubjectFromHtml(html3, context) {
-    let title = html3(html3("head > meta[property= 'og:title']").get(0)).attr("content");
-    let desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
-    let url = html3(html3("head > meta[property= 'og:url']").get(0)).attr("content");
-    let image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
-    let score = html3(html3("#interest_sectl > div > div.rating_self.clearfix > strong[property= 'v:average']").get(0)).text();
-    let detailDom = html3(html3("#info").get(0));
-    let publish = detailDom.find("span.pl");
-    let valueMap = new Map();
+    const title = html3(html3("head > meta[property= 'og:title']").get(0)).attr("content");
+    let desc = html3("span.all.hidden").text();
+    if (!desc) {
+      desc = html3("span[property='v:summary']").text();
+    }
+    if (!desc) {
+      desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
+    }
+    const url = html3(html3("head > meta[property= 'og:url']").get(0)).attr("content");
+    const image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
+    const score = html3(html3("#interest_sectl > div > div.rating_self.clearfix > strong[property= 'v:average']").get(0)).text();
+    const detailDom = html3(html3("#info").get(0));
+    const publish = detailDom.find("span.pl");
+    const valueMap = new Map();
     publish.map((index2, info) => {
       let key = html3(info).text().trim();
       let value = "";
       if (key.indexOf("\u8868\u6F14\u8005") >= 0) {
-        let vas = key.split("\n                                    \n                                    ");
+        const vas = key.split("\n                                    \n                                    ");
         value = vas && vas.length > 1 ? vas[1] : "";
         key = vas && vas.length > 0 ? vas[0] : "";
       } else {
@@ -16727,16 +19078,17 @@ var DoubanMusicLoadHandler = class extends DoubanAbstractLoadHandler {
       }
       valueMap.set(MusicKeyValueMap.get(key), value);
     });
-    let idPattern = /(\d){5,10}/g;
-    let id = idPattern.exec(url);
+    const idPattern = /(\d){5,10}/g;
+    const id = idPattern.exec(url);
     const result = {
       image,
+      imageUrl: image,
       datePublished: valueMap.has("datePublished") ? new Date(valueMap.get("datePublished")) : void 0,
       publisher: valueMap.has("publisher") ? valueMap.get("publisher") : "",
       score: Number(score),
       records: valueMap.has("records") ? Number(valueMap.get("records")) : null,
       id: id ? id[0] : "",
-      type: "Music",
+      type: this.getSupportType(),
       title,
       desc,
       url,
@@ -16772,32 +19124,35 @@ var DoubanNoteLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return ``;
   }
-  parseText(beforeContent, extract, context) {
-    return beforeContent.replaceAll("{{authorUrl}}", extract.authorUrl ? extract.authorUrl : "").replaceAll("{{content}}", extract.content ? extract.content : "").replaceAll("{{author}}", extract.author ? extract.author : "");
+  getSubjectUrl(id) {
+    return `https://www.douban.com/note/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context) {
   }
   support(extract) {
-    return extract && extract.type && (extract.type.contains("\u65E5\u8BB0") || extract.type.contains("Note") || extract.type.contains("Article"));
+    return extract && extract.type && (extract.type.contains("\u65E5\u8BB0") || extract.type.contains("Note") || extract.type.contains("Article") || extract.type.contains("note") || extract.type.contains("article"));
   }
   analysisUser(html3, context) {
     return { data: html3, userState: null };
   }
   parseSubjectFromHtml(html3, context) {
-    let title = html3(html3("head > meta[property= 'og:title']").get(0)).attr("content");
-    let desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
-    let url = html3(html3("head > meta[property= 'og:url']").get(0)).attr("content");
-    let image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
-    let type = html3(html3("head > meta[property= 'og:type']").get(0)).attr("content");
-    let authorA = html3(html3("a.note-author").get(0));
-    let timePublished = html3(html3(".pub-date").get(0)).text();
-    let content = html3(html3(".note").get(1));
-    let idPattern = /(\d){5,10}/g;
-    let id = idPattern.exec(url);
+    const title = html3(html3("head > meta[property= 'og:title']").get(0)).attr("content");
+    const desc = html3(html3("head > meta[property= 'og:description']").get(0)).attr("content");
+    const url = html3(html3("head > meta[property= 'og:url']").get(0)).attr("content");
+    const image = html3(html3("head > meta[property= 'og:image']").get(0)).attr("content");
+    const type = html3(html3("head > meta[property= 'og:type']").get(0)).attr("content");
+    const authorA = html3(html3("a.note-author").get(0));
+    const timePublished = html3(html3(".pub-date").get(0)).text();
+    const content = html3(html3(".note").get(1));
+    const idPattern = /(\d){5,10}/g;
+    const id = idPattern.exec(url);
     const result = {
       image,
+      imageUrl: image,
       datePublished: timePublished ? new Date(timePublished) : void 0,
       content: content ? (0, import_html2markdown.default)(content.toString()) : "",
       id: id ? id[0] : "",
-      type: "Article",
+      type: this.getSupportType(),
       title,
       desc,
       url,
@@ -16816,9 +19171,8 @@ var DoubanOtherLoadHandler = class extends DoubanAbstractLoadHandler {
   getSupportType() {
     return SupportType.ALL;
   }
-  parseText(beforeContent, extract, context) {
+  parseVariable(beforeContent, variableMap, extract, context) {
     log.warn(i18nHelper.getMessage("140101"));
-    return "";
   }
   support(extract) {
     return false;
@@ -16826,10 +19180,15 @@ var DoubanOtherLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img9.doubanio.com/view/photo/l/public/${fileName}`;
   }
+  getSubjectUrl(id) {
+    return `https://book.douban.com/subject/${id}/`;
+  }
   parseSubjectFromHtml(data2, context) {
+    log.notice(i18nHelper.getMessage("140101"));
     return void 0;
   }
   analysisUser(html3, context) {
+    log.notice(i18nHelper.getMessage("140101"));
     return { data: void 0, userState: void 0 };
   }
 };
@@ -16843,9 +19202,11 @@ var DoubanTeleplayLoadHandler = class extends DoubanAbstractLoadHandler {
   getSupportType() {
     return SupportType.TELEPLAY;
   }
-  parseText(beforeContent, extract, context) {
-    const { settings } = context;
-    return beforeContent.replaceAll("{{originalTitle}}", extract.originalTitle ? extract.originalTitle : "").replaceAll("{{director}}", extract.director ? extract.director.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{actor}}", extract.actor ? extract.actor.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{author}}", extract.author ? extract.author.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c).join(settings.arraySpilt) : "").replaceAll("{{aliases}}", extract.aliases ? extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_")).join(settings.arraySpilt) : "").replaceAll("{{country}}", extract.country ? extract.country.join(settings.arraySpilt) : "").replaceAll("{{language}}", extract.language ? extract.language.join(settings.arraySpilt) : "").replaceAll("{{IMDb}}", extract.IMDb ? extract.IMDb : "").replaceAll("{{time}}", extract.time ? extract.time : "").replaceAll("{{episode}}", extract.episode ? extract.episode : "");
+  parseVariable(beforeContent, variableMap, extract, context) {
+    variableMap.set("director", new DataField("director", DataValueType.array, extract.director, extract.director.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("actor", new DataField("actor", DataValueType.array, extract.actor, extract.actor.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("author", new DataField("author", DataValueType.array, extract.author, extract.author.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c)));
+    variableMap.set("aliases", new DataField("aliases", DataValueType.array, extract.aliases, extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_"))));
   }
   support(extract) {
     return extract && extract.type && (extract.type.contains("\u7535\u89C6\u5267") || extract.type.contains("Teleplay") || extract.type.contains("teleplay"));
@@ -16853,15 +19214,18 @@ var DoubanTeleplayLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img9.doubanio.com/view/photo/l/public/${fileName}`;
   }
+  getSubjectUrl(id) {
+    return `https://movie.douban.com/subject/${id}/`;
+  }
   analysisUser(html3, context) {
-    let rate = html3("input#n_rating").val();
+    const rate = html3("input#n_rating").val();
     const rating = html3("span#rating");
-    let tagsStr = rating.next().next().text().trim();
-    let tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
-    let stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
-    let collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date").text().trim();
-    let userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
-    let component = rating.next().next().next().next().text().trim();
+    const tagsStr = rating.next().next().text().trim();
+    const tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
+    const stateWord = html3("div#interest_sect_level > div.a_stars > span.mr10").text().trim();
+    const collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date").text().trim();
+    const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
+    const component = rating.next().next().next().next().text().trim();
     const userState = {
       tags,
       rate: rate ? Number(rate) : null,
@@ -16876,15 +19240,15 @@ var DoubanTeleplayLoadHandler = class extends DoubanAbstractLoadHandler {
       var _a2, _b;
       let item = html3(i).text();
       item = super.html_decode(item);
-      let obj = JSON.parse(item.replace(/[\r\n\s+]/g, ""));
-      let idPattern = /(\d){5,10}/g;
-      let id = idPattern.exec(obj.url);
-      let name = obj.name;
-      let title = (_a2 = super.getTitleNameByMode(name, PersonNameMode.CH_NAME, context)) != null ? _a2 : name;
-      let originalTitle = (_b = super.getTitleNameByMode(name, PersonNameMode.EN_NAME, context)) != null ? _b : name;
+      const obj = JSON.parse(item.replace(/[\r\n]+/g, ""));
+      const idPattern = /(\d){5,10}/g;
+      const id = idPattern.exec(obj.url);
+      const name = obj.name;
+      const title = (_a2 = super.getTitleNameByMode(name, PersonNameMode.CH_NAME, context)) != null ? _a2 : name;
+      const originalTitle = (_b = super.getTitleNameByMode(name, PersonNameMode.EN_NAME, context)) != null ? _b : name;
       const result = {
         id: id ? id[0] : "",
-        type: "Teleplay",
+        type: this.getSupportType(),
         title,
         originalTitle,
         desc: obj.description,
@@ -16895,6 +19259,7 @@ var DoubanTeleplayLoadHandler = class extends DoubanAbstractLoadHandler {
         aggregateRating: obj.aggregateRating,
         datePublished: obj.datePublished ? new Date(obj.datePublished) : void 0,
         image: obj.image,
+        imageUrl: obj.image,
         genre: obj.genre,
         score: obj.aggregateRating ? obj.aggregateRating.ratingValue : void 0,
         publisher: "",
@@ -16909,14 +19274,18 @@ var DoubanTeleplayLoadHandler = class extends DoubanAbstractLoadHandler {
     })[0];
     this.handlePersonNameByMeta(html3, teleplay, context, "video:actor", "actor");
     this.handlePersonNameByMeta(html3, teleplay, context, "video:director", "director");
-    let detailDom = html3(html3("#info").get(0));
-    let publish = detailDom.find("span.pl");
-    let valueMap = new Map();
+    const desc = html3("span[property='v:summary']").text();
+    if (desc) {
+      teleplay.desc = desc;
+    }
+    const detailDom = html3(html3("#info").get(0));
+    const publish = detailDom.find("span.pl");
+    const valueMap = new Map();
     publish.map((index2, info) => {
-      let key = html3(info).text().trim();
+      const key = html3(info).text().trim();
       let value;
       if (key.indexOf("\u53C8\u540D") >= 0 || key.indexOf("\u8BED\u8A00") >= 0 || key.indexOf("\u5236\u7247\u56FD\u5BB6") >= 0) {
-        let vas = html3(info.next).text().trim();
+        const vas = html3(info.next).text().trim();
         value = vas.split("/").map((v) => v.trim());
       } else {
         value = html3(info.next).text().trim();
@@ -16953,9 +19322,11 @@ var DoubanGameLoadHandler = class extends DoubanAbstractLoadHandler {
   getHighQuantityImageUrl(fileName) {
     return `https://img9.doubanio.com/lpic/${fileName}`;
   }
-  parseText(beforeContent, extract, context) {
-    const { settings } = context;
-    return beforeContent.replaceAll("{{platform}}", extract.platform ? extract.platform.join(settings.arraySpilt) : "").replaceAll("{{aliases}}", extract.aliases ? extract.aliases.join(settings.arraySpilt) : "").replaceAll("{{developer}}", extract.developer ? extract.developer : "");
+  getSubjectUrl(id) {
+    return `https://www.douban.com/game/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context) {
+    variableMap.set("aliases", new DataField("aliases", DataValueType.array, extract.aliases, extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_"))));
   }
   support(extract) {
     return extract && extract.type && (extract.type.contains("\u6E38\u620F") || extract.type.contains("Game") || extract.type.contains("game"));
@@ -17011,12 +19382,13 @@ var DoubanGameLoadHandler = class extends DoubanAbstractLoadHandler {
     });
     const result = {
       id,
-      type: "Game",
+      type: this.getSupportType(),
       title,
       desc,
       url,
       genre: valueMap.has("genre") ? valueMap.get("genre") : [],
       image,
+      imageUrl: image,
       datePublished: valueMap.has("datePublished") ? new Date(valueMap.get("datePublished")) : void 0,
       publisher: valueMap.has("publisher") ? valueMap.get("publisher") : "",
       score: Number(score),
@@ -17036,6 +19408,60 @@ var GameKeyValueMap = new Map([
   ["\u53D1\u884C\u65E5\u671F:", "datePublished"]
 ]);
 
+// src/org/wanxp/douban/data/handler/DoubanTheaterLoadHandler.ts
+var import_obsidian11 = __toModule(require("obsidian"));
+
+// src/org/wanxp/douban/data/model/DoubanTheaterSubject.ts
+var DoubanTheaterSubject = class extends DoubanSubject {
+};
+
+// src/org/wanxp/douban/data/handler/DoubanTheaterLoadHandler.ts
+var DoubanTheaterLoadHandler = class extends DoubanAbstractLoadHandler {
+  constructor(doubanPlugin) {
+    super(doubanPlugin);
+  }
+  getSupportType() {
+    return SupportType.THEATER;
+  }
+  getHighQuantityImageUrl(fileName) {
+    return `https://img9.doubanio.com/view/photo/l/public/${fileName}`;
+  }
+  getSubjectUrl(id) {
+    return `https://www.douban.com/location/drama/${id}/`;
+  }
+  parseVariable(beforeContent, variableMap, extract, context) {
+    variableMap.set("director", new DataField("director", DataValueType.array, extract.director, extract.director.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("actor", new DataField("actor", DataValueType.array, extract.actor, extract.actor.map(SchemaOrg.getPersonName).filter((c) => c)));
+    variableMap.set("author", new DataField("author", DataValueType.array, extract.author, extract.author.map(SchemaOrg.getPersonName).map((name) => super.getPersonName(name, context)).filter((c) => c)));
+    variableMap.set("aliases", new DataField("aliases", DataValueType.array, extract.aliases, extract.aliases.map((a) => a.replace(TITLE_ALIASES_SPECIAL_CHAR_REG_G, "_"))));
+  }
+  support(extract) {
+    return extract && extract.type && (extract.type.contains("\u821E\u53F0\u5267") || extract.type.contains("\u821E\u5267") || extract.type.contains("Theater") || extract.type.contains("theater"));
+  }
+  analysisUser(html3, context) {
+    const rate = html3("input#n_rating").val();
+    const tagsStr = html3("div#interest_sect_level > div.a_stars > span.color_gray").text().trim();
+    const tags = tagsStr ? tagsStr.replace("\u6807\u7B7E:", "").trim().split(" ") : null;
+    const stateWord = html3("#interest_sect_level > h2").text().trim();
+    const collectionDateStr = html3("div#interest_sect_level > div.a_stars > span.mr10 > span.collection_date").text().trim();
+    const userState1 = DoubanAbstractLoadHandler.getUserState(stateWord);
+    const component = this.getPropertyValue(html3, PropertyName.comment);
+    const userState = {
+      tags,
+      rate: rate ? Number(rate) : null,
+      state: userState1,
+      collectionDate: collectionDateStr ? (0, import_obsidian11.moment)(collectionDateStr, "YYYY-MM-DD").toDate() : null,
+      comment: component
+    };
+    return { data: html3, userState };
+  }
+  parseSubjectFromHtml(html3, context) {
+    const obj = new DoubanTheaterSubject();
+    obj.id = this.getPropertyValue(html3, PropertyName.id);
+    return obj;
+  }
+};
+
 // src/org/wanxp/douban/data/handler/DoubanSearchChooseItemHandler.ts
 var DoubanSearchChooseItemHandler = class {
   constructor(app2, doubanPlugin) {
@@ -17049,6 +19475,7 @@ var DoubanSearchChooseItemHandler = class {
       new DoubanMusicLoadHandler(doubanPlugin),
       new DoubanNoteLoadHandler(doubanPlugin),
       new DoubanGameLoadHandler(doubanPlugin),
+      new DoubanTheaterLoadHandler(doubanPlugin),
       this._doubanSubjectHandlerDefault
     ];
   }
@@ -17059,20 +19486,19 @@ var DoubanSearchChooseItemHandler = class {
       }
       let doubanSubjectHandlers = this._doubanSubjectHandlers.filter((h) => h.support(searchExtract));
       if (doubanSubjectHandlers && doubanSubjectHandlers.length > 0) {
-        yield doubanSubjectHandlers[0].handle(searchExtract.url, context);
+        yield doubanSubjectHandlers[0].handle(searchExtract.id, context);
       } else {
-        yield this._doubanSubjectHandlerDefault.handle(searchExtract.url, context);
+        yield this._doubanSubjectHandlerDefault.handle(searchExtract.id, context);
       }
     });
   }
   parseText(extract, context) {
     return __async(this, null, function* () {
-      let doubanSubjectHandlers = this._doubanSubjectHandlers.filter((h) => h.support(extract));
-      let result = "";
+      const doubanSubjectHandlers = this._doubanSubjectHandlers.filter((h) => h.support(extract));
       if (doubanSubjectHandlers && doubanSubjectHandlers.length > 0) {
-        let result2 = yield doubanSubjectHandlers.map((h) => h.parse(extract, context));
-        if (result2 && result2.length > 0) {
-          return result2[0];
+        const result = yield doubanSubjectHandlers.map((h) => h.parse(extract, context));
+        if (result && result.length > 0) {
+          return result[0];
         } else {
           return { content: "" };
         }
@@ -17084,63 +19510,127 @@ var DoubanSearchChooseItemHandler = class {
 };
 
 // src/org/wanxp/douban/data/search/DoubanSearchModal.ts
-var import_obsidian11 = __toModule(require("obsidian"));
-var DoubanSearchModal = class extends import_obsidian11.Modal {
+var import_obsidian12 = __toModule(require("obsidian"));
+
+// src/org/wanxp/utils/TimeUtil.ts
+var TimeUtil = class {
+  static estimateTime(needHandled, overSlowSize) {
+    if (needHandled <= 0) {
+      return 0;
+    }
+    let times = 0;
+    if (overSlowSize) {
+      if (needHandled <= BasicConst.SLOW_SIZE) {
+        times = ESTIMATE_TIME_PER_WITH_REQUEST * needHandled;
+      } else {
+        times = ESTIMATE_TIME_PER_WITH_REQUEST * BasicConst.SLOW_SIZE + ESTIMATE_TIME_PER_WITH_REQUEST_SLOW * Math.max(needHandled - BasicConst.SLOW_SIZE, 0);
+      }
+    } else {
+      times = ESTIMATE_TIME_PER_WITH_REQUEST * needHandled;
+    }
+    return times;
+  }
+  static estimateTimeMsg(needHandled, overSlowSize) {
+    const times = this.estimateTime(needHandled, overSlowSize);
+    if (times <= 0) {
+      return 0 + i18nHelper.getMessage("SECOND");
+    }
+    return this.formatDuring(times);
+  }
+  static formatDuring(mss) {
+    let show = false;
+    let message = "";
+    const days = Math.floor(mss / (1e3 * 60 * 60 * 24));
+    const hours = Math.floor(mss % (1e3 * 60 * 60 * 24) / (1e3 * 60 * 60));
+    const minutes = Math.floor(mss % (1e3 * 60 * 60) / (1e3 * 60));
+    const seconds = Math.floor(mss % (1e3 * 60) / 1e3);
+    if (days > 0) {
+      show = true;
+      message += days + i18nHelper.getMessage("DAY");
+    }
+    if (hours > 0 || show) {
+      show = true;
+      message += hours + i18nHelper.getMessage("HOUR");
+    }
+    if (minutes > 0 || show) {
+      show = true;
+      message += minutes + i18nHelper.getMessage("MINUTE");
+    }
+    if (seconds > 0 || show) {
+      message += seconds + i18nHelper.getMessage("SECOND");
+    }
+    return message;
+  }
+};
+var sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+var sleepRange = (msMin, msMax) => {
+  const msTime = NumberUtil.getRandomNum(msMin, msMax);
+  return new Promise((resolve) => setTimeout(resolve, msTime));
+};
+
+// src/org/wanxp/douban/data/search/DoubanSearchModal.ts
+var DoubanSearchModal = class extends import_obsidian12.Modal {
   constructor(app2, plugin, context) {
     super(app2);
+    this.searchType = SupportType.ALL;
     this.plugin = plugin;
     this.context = context;
   }
   onOpen() {
     let { contentEl } = this;
     contentEl.createEl("h3", { text: i18nHelper.getMessage("110003") });
-    const inputs = contentEl.createDiv("inputs");
-    const searchInput = new import_obsidian11.TextComponent(inputs).onChange((searchTerm) => {
+    const content = contentEl.createDiv("content");
+    const inputs = content.createDiv("inputs");
+    const searchInput = new import_obsidian12.TextComponent(inputs).onChange((searchTerm) => {
       this.searchTerm = searchTerm;
     });
-    searchInput.inputEl.addClass("obsidian_douban_search_input");
-    searchInput.inputEl.focus();
+    inputs.addClass("obsidian_douban_search_input_content");
+    searchInput.inputEl.size = 40;
     searchInput.inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
+        sleep(1e3);
         this.close();
       }
     });
-    const controls = contentEl.createDiv("controls");
-    const searchButton = controls.createEl("button", {
-      text: i18nHelper.getMessage("110004"),
-      cls: "mod-cta",
-      attr: {
-        autofocus: true
-      }
+    inputs.addClass("obsidian_douban_search_input");
+    const typeSelect = content.createDiv("type-select");
+    const typeSelectInput = new import_obsidian12.DropdownComponent(typeSelect).addOptions(SearchTypeRecords).setValue(SupportType.ALL).onChange((value) => {
+      this.searchType = value;
     });
-    searchButton.addClass("obsidian_douban_search_button");
-    searchButton.addEventListener("click", this.close.bind(this));
-    const cancelButton = controls.createEl("button", { text: i18nHelper.getMessage("110005") });
-    cancelButton.addEventListener("click", this.close.bind(this));
-    cancelButton.addClass("obsidian_douban_search_button");
+    typeSelect.addClass("obsidian_douban_search_input_type");
+    const controls = contentEl.createDiv("controls");
+    controls.addClass("obsidian_douban_search_controls");
+    new import_obsidian12.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110004")).setCta().onClick(() => {
+      this.close();
+    }).setClass("obsidian_douban_search_button");
+    new import_obsidian12.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110005")).onClick(() => {
+      this.close();
+    }).setClass("obsidian_douban_cancel_button");
   }
   onClose() {
     return __async(this, null, function* () {
       let { contentEl } = this;
       contentEl.empty();
       if (this.searchTerm) {
-        yield this.plugin.search(this.searchTerm, this.context);
+        yield this.plugin.search(this.searchTerm, this.searchType, this.context);
       }
     });
   }
 };
 
 // src/org/wanxp/douban/setting/DoubanSettingTab.ts
-var import_obsidian21 = __toModule(require("obsidian"));
+var import_obsidian25 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/setting/OutputSettingsHelper.ts
-var import_obsidian16 = __toModule(require("obsidian"));
+var import_obsidian18 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/setting/model/FileSuggest.ts
-var import_obsidian13 = __toModule(require("obsidian"));
+var import_obsidian14 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/setting/model/TextInputSuggest.ts
-var import_obsidian12 = __toModule(require("obsidian"));
+var import_obsidian13 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/setting/model/Suggest.ts
 var wrapAround = (value, size) => {
@@ -18789,7 +21279,7 @@ var TextInputSuggest = class {
   constructor(app2, inputEl) {
     this.app = app2;
     this.inputEl = inputEl;
-    this.scope = new import_obsidian12.Scope();
+    this.scope = new import_obsidian13.Scope();
     this.suggestEl = createDiv("suggestion-container");
     const suggestion = this.suggestEl.createDiv("suggestion");
     this.suggest = new Suggest(this, suggestion, this.scope);
@@ -18847,7 +21337,7 @@ var FileSuggest = class extends TextInputSuggest {
     const files = [];
     const lowerCaseInputStr = inputStr.toLowerCase();
     abstractFiles.forEach((file) => {
-      if (file instanceof import_obsidian13.TFile && file.extension === "md" && file.path.toLowerCase().contains(lowerCaseInputStr)) {
+      if (file instanceof import_obsidian14.TFile && file.extension === "md" && file.path.toLowerCase().contains(lowerCaseInputStr)) {
         files.push(file);
       }
     });
@@ -18864,17 +21354,17 @@ var FileSuggest = class extends TextInputSuggest {
 };
 
 // src/org/wanxp/douban/setting/TemplateSettingHelper.ts
-var import_obsidian15 = __toModule(require("obsidian"));
+var import_obsidian16 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/setting/model/FolderSuggest.ts
-var import_obsidian14 = __toModule(require("obsidian"));
+var import_obsidian15 = __toModule(require("obsidian"));
 var FolderSuggest = class extends TextInputSuggest {
   getSuggestions(inputStr) {
     const abstractFiles = this.app.vault.getAllLoadedFiles();
     const folders = [];
     const lowerCaseInputStr = inputStr.toLowerCase();
     abstractFiles.forEach((folder) => {
-      if (folder instanceof import_obsidian14.TFolder && folder.path.toLowerCase().contains(lowerCaseInputStr)) {
+      if (folder instanceof import_obsidian15.TFolder && folder.path.toLowerCase().contains(lowerCaseInputStr)) {
         folders.push(folder);
       }
     });
@@ -18894,13 +21384,13 @@ var FolderSuggest = class extends TextInputSuggest {
 function constructTemplateUI(containerEl, manager) {
   containerEl.createEl("h3", { text: i18nHelper.getMessage("1203") });
   containerEl.createEl("p", { text: i18nHelper.getMessage("1204") });
-  new import_obsidian15.Setting(containerEl).setDesc(i18nHelper.getMessage("1205"));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "120101", desc: "120102", placeholder: "121701", key: "movieTemplateFile", manager }));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "120201", desc: "120202", placeholder: "121701", key: "bookTemplateFile", manager }));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "120301", desc: "120302", placeholder: "121701", key: "musicTemplateFile", manager }));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "120401", desc: "120402", placeholder: "121701", key: "noteTemplateFile", manager }));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "121301", desc: "121302", placeholder: "121701", key: "gameTemplateFile", manager }));
-  new import_obsidian15.Setting(containerEl).then(createFileSelectionSetting({ name: "121801", desc: "121802", placeholder: "121701", key: "teleplayTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).setDesc(i18nHelper.getMessage("1205"));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "120101", desc: "120102", placeholder: "121701", key: "movieTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "120201", desc: "120202", placeholder: "121701", key: "bookTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "120301", desc: "120302", placeholder: "121701", key: "musicTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "120401", desc: "120402", placeholder: "121701", key: "noteTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "121301", desc: "121302", placeholder: "121701", key: "gameTemplateFile", manager }));
+  new import_obsidian16.Setting(containerEl).then(createFileSelectionSetting({ name: "121801", desc: "121802", placeholder: "121701", key: "teleplayTemplateFile", manager }));
 }
 function createFileSelectionSetting({
   name,
@@ -18943,7 +21433,7 @@ function createFolderSelectionSetting({
   placeholder,
   key,
   manager
-}) {
+}, filePathDisplayExample) {
   return (setting) => {
     setting.setName(i18nHelper.getMessage(name));
     setting.setDesc(i18nHelper.getMessage(desc));
@@ -18956,27 +21446,110 @@ function createFolderSelectionSetting({
       new FolderSuggest(manager.app, search.inputEl);
       search.setValue(v).setPlaceholder(i18nHelper.getMessage(placeholder)).onChange((value) => __async(this, null, function* () {
         manager.updateSetting(key, value);
+        if (filePathDisplayExample) {
+          showFileExample(filePathDisplayExample, manager);
+        }
       }));
     }));
   };
 }
 
+// src/org/wanxp/utils/FileUtil.ts
+var import_obsidian17 = __toModule(require("obsidian"));
+var FileUtil = {
+  parse(pathString) {
+    const regex = /(?<dir>([^/\\]+[/\\])*)(?<name>[^/\\]*$)/;
+    const match = String(pathString).match(regex);
+    const { dir, name } = match && match.groups;
+    const nameWithoutSpChar = this.replaceSpecialCharactersForFileName(name);
+    return { dir, name: nameWithoutSpChar || "Untitled_" + new Date().getTime(), extension: "md" };
+  },
+  join(...strings) {
+    const parts = strings.map((s) => String(s).trim()).filter((s) => s != null);
+    return (0, import_obsidian17.normalizePath)(parts.join("/"));
+  },
+  replaceSpecialCharactersForFileName(fileName) {
+    return fileName.replaceAll(/[\\/:*?"<>|]/g, "_");
+  }
+};
+
 // src/org/wanxp/douban/setting/OutputSettingsHelper.ts
+function showStarExample(containerEl, manager) {
+  containerEl.empty();
+  const document2 = new DocumentFragment();
+  document2.createDiv("score-show-title").innerHTML = `score: ${NumberUtil.getRateStar(EXAMPLE_RATE, EXAMPLE_RATE_MAX, { scoreSetting: manager.plugin.settings.scoreSetting })}`;
+  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("120603")).setDesc(document2);
+}
+function showFileExample(containerEl, manager) {
+  containerEl.empty();
+  const document2 = new DocumentFragment();
+  document2.createDiv("file-path-example").innerHTML = `${i18nHelper.getMessage("121604")}<a href="https://book.douban.com/subject/2253379/">\u300A\u7B80\u7231\u300B</a>: ${VariableUtil.replaceSubject(EXAMPLE_SUBJECT_MAP, FileUtil.join(manager.plugin.settings.dataFilePath, manager.plugin.settings.dataFileNamePath + ".md"), SupportType.BOOK, manager)}`;
+  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("120603")).setDesc(document2);
+}
+function scoreSettingDisplay(containerEl, manager) {
+  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("1243")).setDesc(i18nHelper.getMessage("124310", EXAMPLE_RATE, EXAMPLE_RATE_MAX));
+  const scoreSettingsUI = containerEl.createDiv("score-settings");
+  const scoreShowUI = containerEl.createDiv("score-show");
+  const scoreSetting = manager.getSetting("scoreSetting");
+  scoreSettingsUI.createEl("span", { text: i18nHelper.getMessage("124120") });
+  const starFullUI = new import_obsidian18.TextComponent(scoreSettingsUI);
+  starFullUI.setPlaceholder(DEFAULT_SETTINGS.scoreSetting.starFull).setValue(scoreSetting.starFull).onChange((value) => __async(this, null, function* () {
+    scoreSetting.starFull = value;
+    yield manager.plugin.saveSettings();
+    showStarExample(scoreShowUI, manager);
+  }));
+  const starFullEl = starFullUI.inputEl;
+  starFullEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  starFullEl.addClass("obsidian_douban_settings_input");
+  scoreSettingsUI.appendChild(starFullEl).appendText("  ");
+  scoreSettingsUI.createEl("span", { text: i18nHelper.getMessage("124121") });
+  const starEmptyUI = new import_obsidian18.TextComponent(scoreSettingsUI);
+  starEmptyUI.setPlaceholder(DEFAULT_SETTINGS.scoreSetting.starEmpty).setValue(scoreSetting.starEmpty).onChange((value) => __async(this, null, function* () {
+    scoreSetting.starEmpty = value;
+    yield manager.plugin.saveSettings();
+    showStarExample(scoreShowUI, manager);
+  }));
+  const starEmptyEl = starEmptyUI.inputEl;
+  starEmptyEl.addClass("obsidian_douban_settings_input");
+  starEmptyEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  scoreSettingsUI.appendChild(starEmptyEl).appendText("  ");
+  scoreSettingsUI.createEl("span", { text: i18nHelper.getMessage("124311") });
+  const maxStarUI = new import_obsidian18.TextComponent(scoreSettingsUI);
+  maxStarUI.setPlaceholder(i18nHelper.getMessage("124312") + DEFAULT_SETTINGS.scoreSetting.maxStar).setValue(scoreSetting.maxStar + "").onChange((value) => __async(this, null, function* () {
+    if (!NumberUtil.isInt(value) && NumberUtil.value(value) > MAX_STAR_NUMBER && NumberUtil.value(value) < 1) {
+      return;
+    }
+    scoreSetting.maxStar = NumberUtil.value(value);
+    yield manager.plugin.saveSettings();
+    showStarExample(scoreShowUI, manager);
+  }));
+  const maxStarEl = maxStarUI.inputEl;
+  maxStarEl.addClass("obsidian_douban_settings_input");
+  maxStarEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  scoreSettingsUI.appendChild(maxStarEl).appendText("  ");
+  scoreSettingsUI.createEl("span", { text: i18nHelper.getMessage("124122") });
+  const displayEmptyStarUI = new import_obsidian18.ToggleComponent(scoreSettingsUI);
+  displayEmptyStarUI.setValue(scoreSetting.displayStarEmpty).onChange((value) => __async(this, null, function* () {
+    scoreSetting.displayStarEmpty = value;
+    yield manager.plugin.saveSettings();
+    showStarExample(scoreShowUI, manager);
+  }));
+  const displayEmptyStarEl = displayEmptyStarUI.toggleEl;
+  displayEmptyStarEl.addClass("obsidian_douban_settings_input");
+  scoreSettingsUI.appendChild(displayEmptyStarEl).appendText("  ");
+  showStarExample(scoreShowUI, manager);
+}
 function constructOutUI(containerEl, manager) {
   containerEl.createEl("h3", { text: i18nHelper.getMessage("1220") });
-  new import_obsidian16.Setting(containerEl);
-  let attachmentFileSetting = containerEl.createDiv({ cls: "settings-item-attachment" });
+  new import_obsidian18.Setting(containerEl);
+  const attachmentFileSetting = containerEl.createDiv({ cls: "settings-item-attachment" });
   constructAttachmentFileSettingsUI(attachmentFileSetting, manager);
-  new import_obsidian16.Setting(containerEl).then(createFolderSelectionSetting({ name: "121501", desc: "121502", placeholder: "121503", key: "dataFilePath", manager }));
-  let outfolder = containerEl.createDiv({ cls: "settings-item" });
-  constructOutputFileNameUI(outfolder, manager);
-  new import_obsidian16.Setting(containerEl).setName(i18nHelper.getMessage("120601")).setDesc(i18nHelper.getMessage("120602")).addText((textField) => {
-    textField.setPlaceholder(DEFAULT_SETTINGS.arraySpilt).setValue(manager.plugin.settings.arraySpilt).onChange((value) => __async(this, null, function* () {
-      manager.plugin.settings.arraySpilt = value;
-      yield manager.plugin.saveSettings();
-    }));
-  });
-  new import_obsidian16.Setting(containerEl).setName(i18nHelper.getMessage("121201")).then((setting) => {
+  const folder = new import_obsidian18.Setting(containerEl);
+  const outFolder = containerEl.createDiv({ cls: "settings-item" });
+  const filePathDisplayExample = containerEl.createDiv("filePath-display-example");
+  folder.then(createFolderSelectionSetting({ name: "121501", desc: "121502", placeholder: "121503", key: "dataFilePath", manager }, filePathDisplayExample));
+  constructOutputFileNameUI(outFolder, filePathDisplayExample, manager);
+  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("121201")).then((setting) => {
     setting.addDropdown((dropdwon) => {
       setting.descEl.appendChild(createFragment((frag) => {
         frag.appendText(i18nHelper.getMessage("121202"));
@@ -18997,26 +21570,30 @@ function constructOutUI(containerEl, manager) {
       }));
     });
   });
+  scoreSettingDisplay(containerEl, manager);
 }
-function constructOutputFileNameUI(containerEl, manager) {
+function constructOutputFileNameUI(containerEl, filePathDisplayExample, manager) {
   containerEl.empty();
-  const dataFilePathSetting = new import_obsidian16.Setting(containerEl).setName(i18nHelper.getMessage("121601")).setDesc(i18nHelper.getMessage("121602")).addText((textField) => {
+  const dataFilePathSetting = new import_obsidian18.Setting(containerEl);
+  dataFilePathSetting.setName(i18nHelper.getMessage("121601")).setDesc(i18nHelper.getMessage("121602")).addText((textField) => {
     textField.setPlaceholder(DEFAULT_SETTINGS.dataFileNamePath).setValue(manager.plugin.settings.dataFileNamePath).onChange((value) => __async(this, null, function* () {
       manager.plugin.settings.dataFileNamePath = value;
       yield manager.plugin.saveSettings();
+      showFileExample(filePathDisplayExample, manager);
     }));
   });
   dataFilePathSetting.addExtraButton((button) => {
     button.setIcon("reset").setTooltip(i18nHelper.getMessage("121902")).onClick(() => __async(this, null, function* () {
       manager.plugin.settings.dataFileNamePath = DEFAULT_SETTINGS.dataFileNamePath;
       yield manager.plugin.saveSettings();
-      constructOutputFileNameUI(containerEl, manager);
+      constructOutputFileNameUI(containerEl, filePathDisplayExample, manager);
     }));
   });
+  showFileExample(filePathDisplayExample, manager);
 }
 function constructAttachmentFileSettingsUI(containerEl, manager) {
   containerEl.empty();
-  new import_obsidian16.Setting(containerEl).setName(i18nHelper.getMessage("121430")).setDesc(i18nHelper.getMessage("121431")).addToggle((toggleComponent) => {
+  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("121430")).setDesc(i18nHelper.getMessage("121431")).addToggle((toggleComponent) => {
     toggleComponent.setValue(manager.plugin.settings.cacheImage).onChange((value) => __async(this, null, function* () {
       manager.plugin.settings.cacheImage = value;
       yield manager.plugin.saveSettings();
@@ -19024,8 +21601,8 @@ function constructAttachmentFileSettingsUI(containerEl, manager) {
     }));
   });
   if (manager.plugin.settings.cacheImage) {
-    new import_obsidian16.Setting(containerEl).then(createFolderSelectionSetting({ name: "121432", desc: "121433", placeholder: "121434", key: "attachmentPath", manager }));
-    new import_obsidian16.Setting(containerEl).setName(i18nHelper.getMessage("121435")).setDesc(i18nHelper.getMessage("121436")).addToggle((toggleComponent) => {
+    new import_obsidian18.Setting(containerEl).then(createFolderSelectionSetting({ name: "121432", desc: "121433", placeholder: "121434", key: "attachmentPath", manager }));
+    new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("121435")).setDesc(i18nHelper.getMessage("121436")).addToggle((toggleComponent) => {
       toggleComponent.setTooltip(i18nHelper.getMessage("121437")).setValue(manager.plugin.settings.cacheHighQuantityImage).onChange((value) => __async(this, null, function* () {
         manager.plugin.settings.cacheHighQuantityImage = value;
         yield manager.plugin.saveSettings();
@@ -19036,7 +21613,7 @@ function constructAttachmentFileSettingsUI(containerEl, manager) {
 }
 
 // src/org/wanxp/douban/setting/BasicSettingsHelper.ts
-var import_obsidian17 = __toModule(require("obsidian"));
+var import_obsidian19 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/component/DoubanLoginModel.ts
 var DoubanLoginModel = class {
@@ -19076,15 +21653,14 @@ var DoubanLoginModel = class {
     }));
     const session = this.modal.webContents.session;
     const filter4 = {
-      urls: ["https://www.douban.com/", "https://accounts.douban.com/", "https://accounts.douban.com/passport/login"]
+      urls: ["https://www.douban.com/"]
     };
     session.webRequest.onSendHeaders(filter4, (details) => __async(this, null, function* () {
       this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u754C\u9762\u8BF7\u6C42\u5934\u68C0\u6D4B:${details.url}`);
-      const cookies = details.requestHeaders["Cookie"];
-      const cookieArr = this.parseCookies(cookies);
-      if (cookieArr) {
+      const headers = details.requestHeaders;
+      if (headers) {
         this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u754C\u9762\u8BF7\u6C42\u68C0\u6D4B\uFF0C\u83B7\u53D6\u5230Cookie`);
-        let user = yield settingsManager.plugin.userComponent.loginCookie(cookieArr);
+        let user = yield settingsManager.plugin.userComponent.loginHeaders(headers);
         if (user && user.login) {
           this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u754C\u9762\u8C46\u74E3\u767B\u5F55\u6210\u529F, \u4FE1\u606F:id:${StringUtil.confuse(user.id)}:, \u7528\u6237\u540D:${StringUtil.confuse(user.name)}`);
           session.clearStorageData(() => {
@@ -19093,7 +21669,7 @@ var DoubanLoginModel = class {
           this.onClose();
           return;
         }
-        this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u754C\u9762\u8C46\u74E3\u767B\u5F55\u5931\u8D25, cookies\u672A\u80FD\u6210\u529F\u83B7\u53D6\u7528\u6237\u4FE1\u606F`);
+        this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u754C\u9762\u8C46\u74E3\u767B\u5F55\u5931\u8D25, headers\u672A\u80FD\u6210\u529F\u83B7\u53D6\u7528\u6237\u4FE1\u606F`);
       }
     }));
   }
@@ -19133,7 +21709,7 @@ function constructBasicUI(containerEl, manager) {
   containerEl.createDiv("login-setting", (loginSettingEl) => __async(this, null, function* () {
     constructDoubanTokenSettingsUI(loginSettingEl, manager);
   }));
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("120501")).then((setting) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("120501")).then((setting) => {
     setting.addMomentFormat((mf) => {
       setting.descEl.appendChild(createFragment((frag) => {
         frag.appendText(i18nHelper.getMessage("120503"));
@@ -19158,7 +21734,7 @@ function constructBasicUI(containerEl, manager) {
       }));
     });
   });
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("120502")).then((setting) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("120502")).then((setting) => {
     setting.addMomentFormat((mf) => {
       setting.descEl.appendChild(createFragment((frag) => {
         frag.appendText(i18nHelper.getMessage("120504"));
@@ -19183,7 +21759,7 @@ function constructBasicUI(containerEl, manager) {
       }));
     });
   });
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("121401")).setDesc(i18nHelper.getMessage("121402")).addToggle((toggleComponent) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("121401")).setDesc(i18nHelper.getMessage("121402")).addToggle((toggleComponent) => {
     toggleComponent.setValue(manager.plugin.settings.statusBar).onChange((value) => __async(this, null, function* () {
       manager.plugin.settings.statusBar = value;
       yield manager.plugin.saveSettings();
@@ -19194,7 +21770,7 @@ function constructDoubanTokenSettingsUI(containerEl, manager) {
   containerEl.empty();
   let login = manager.plugin.userComponent.isLogin();
   manager.debug(`\u914D\u7F6E\u754C\u9762:\u5C55\u793A\u8C46\u74E3\u72B6\u6001:${login ? "\u5DF2\u767B\u5F55" : "\u672A\u767B\u5F55"}`);
-  if (import_obsidian17.Platform.isDesktopApp) {
+  if (import_obsidian19.Platform.isDesktopApp) {
     if (login) {
       constructHasLoginSettingsUI(containerEl, manager);
     } else {
@@ -19212,7 +21788,7 @@ function constructLoginSettingsUI(containerEl, manager) {
   manager.debug(`\u914D\u7F6E\u754C\u9762:\u672A\u767B\u5F55-\u5C55\u793A\u767B\u5F55\u6309\u94AE`);
   let loginSetting = containerEl.createDiv("login-button");
   let loginCookie = containerEl.createDiv("login-button-cookie");
-  new import_obsidian17.Setting(loginSetting).setName(i18nHelper.getMessage("100131")).addButton((button) => {
+  new import_obsidian19.Setting(loginSetting).setName(i18nHelper.getMessage("100131")).addButton((button) => {
     return button.setButtonText(i18nHelper.getMessage("100130")).onClick(() => __async(this, null, function* () {
       button.setDisabled(true);
       manager.debug(`\u914D\u7F6E\u754C\u9762:\u70B9\u51FB\u767B\u5F55\u6309\u94AE`);
@@ -19220,7 +21796,7 @@ function constructLoginSettingsUI(containerEl, manager) {
       yield loginModel.doLogin();
     }));
   });
-  const loginCookieSetting = new import_obsidian17.Setting(loginSetting).setName(i18nHelper.getMessage("100133"));
+  const loginCookieSetting = new import_obsidian19.Setting(loginSetting).setName(i18nHelper.getMessage("100133"));
   loginCookieSetting.addButton((button) => {
     loginCookieSetting.descEl.appendChild(createFragment((frag) => {
       frag.appendText(i18nHelper.getMessage("100134"));
@@ -19241,7 +21817,7 @@ function constructLoginSettingsUI(containerEl, manager) {
 }
 function constructLoginCookieSettingsUI(containerEl, parentContainerEl, manager) {
   manager.debug(`\u914D\u7F6E\u754C\u9762:\u767B\u5F55\u5F02\u5E38\u5904\u7406\u6309\u94AE-\u5C55\u793ACookie\u8F93\u5165\u6846`);
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("100136")).setClass("obsidian_douban_settings_cookie_login").addTextArea((text3) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("100136")).setClass("obsidian_douban_settings_cookie_login").addTextArea((text3) => {
     text3.onChange((value) => manager.updateCookieTemp(value));
     return text3;
   }).addExtraButton((button) => {
@@ -19270,7 +21846,7 @@ ${i18nHelper.getMessage("100123")}: <a href="https://www.douban.com/people/${use
 		${i18nHelper.getMessage("100124")}: ${user.name}<br>
 ${i18nHelper.getMessage("100125")}`;
   manager.debug(`\u914D\u7F6E\u754C\u9762:\u5C55\u793A\u8C46\u74E3\u767B\u5F55\u4FE1\u606F:id:${StringUtil.confuse(user.id)}, \u7528\u6237\u540D:${StringUtil.confuse(user.name)}`);
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(userDom).addButton((button) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(userDom).addButton((button) => {
     return button.setButtonText(i18nHelper.getMessage("100128")).setCta().onClick(() => __async(this, null, function* () {
       button.setDisabled(true);
       manager.debug(`\u914D\u7F6E\u754C\u9762:\u70B9\u51FB\u9000\u51FA\u767B\u5F55\u6309\u94AE\uFF0C\u51C6\u5907\u9000\u51FA\u767B\u5F55`);
@@ -19281,7 +21857,7 @@ ${i18nHelper.getMessage("100125")}`;
   });
 }
 function showMobileLogin(containerEl, manager) {
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(i18nHelper.getMessage("100129"));
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(i18nHelper.getMessage("100129"));
 }
 function showMobileLogout(containerEl, manager) {
   const user = manager.plugin.userComponent.getUser();
@@ -19290,17 +21866,18 @@ function showMobileLogout(containerEl, manager) {
 ${i18nHelper.getMessage("100123")}: <a href="https://www.douban.com/people/${user.id}/">${user.id}</a><br>
 		${i18nHelper.getMessage("100124")}: ${user.name}<br>
 ${i18nHelper.getMessage("100125")}`;
-  new import_obsidian17.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(userDom).addButton((button) => {
+  new import_obsidian19.Setting(containerEl).setName(i18nHelper.getMessage("100126")).setDesc(userDom).addButton((button) => {
     return button.setButtonText(i18nHelper.getMessage("100128")).setCta().onClick(() => __async(this, null, function* () {
       button.setDisabled(true);
       manager.updateSetting("loginCookiesContent", "");
+      manager.updateSetting("loginHeadersContent", "");
       constructDoubanTokenSettingsUI(containerEl, manager);
     }));
   });
 }
 
 // src/org/wanxp/douban/setting/TemplateVariableSettingsHelper.ts
-var import_obsidian18 = __toModule(require("obsidian"));
+var import_obsidian20 = __toModule(require("obsidian"));
 function constructTemplateVariablesUI(containerEl, manager) {
   containerEl.createEl("h3", { text: i18nHelper.getMessage("1230") });
   containerEl.createEl("p", { text: i18nHelper.getMessage("122003") });
@@ -19360,6 +21937,16 @@ ${i18nHelper.getMessage("122004")}
 		<td>${i18nHelper.getMessage("310604")}</td>
 		<td>${i18nHelper.getMessage("310704")}</td>
 	</tr>
+		<tr>
+		<td>scoreStar</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+		<td>${i18nHelper.getMessage("410200")}</td>
+	</tr>
 	<tr>
 		<td>image</td>
 		<td>${i18nHelper.getMessage("310105")}</td>
@@ -19369,6 +21956,16 @@ ${i18nHelper.getMessage("122004")}
 		<td>${i18nHelper.getMessage("310505")}</td>
 		<td>${i18nHelper.getMessage("310605")}</td>
 		<td>${i18nHelper.getMessage("310705")}</td>
+	</tr>
+	<tr>
+		<td>imageData.url</td>
+		<td>${i18nHelper.getMessage("310121")}</td>
+		<td>${i18nHelper.getMessage("310221")}</td>
+		<td>${i18nHelper.getMessage("310321")}</td>
+		<td>${i18nHelper.getMessage("310421")}</td>
+		<td>${i18nHelper.getMessage("310521")}</td>
+		<td>${i18nHelper.getMessage("310621")}</td>
+		<td>${i18nHelper.getMessage("310721")}</td>
 	</tr>
 	<tr>
 		<td>url</td>
@@ -19454,7 +22051,7 @@ ${i18nHelper.getMessage("122004")}
 		<td>${i18nHelper.getMessage("330102")}</td>
 	</tr>
 </table>`;
-  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("122001")).setDesc(basicVariablesTable);
+  new import_obsidian20.Setting(containerEl).setName(i18nHelper.getMessage("122001")).setDesc(basicVariablesTable);
   const extraVariablesTable = new DocumentFragment();
   extraVariablesTable.createDiv().innerHTML = `
 ${i18nHelper.getMessage("122004")}
@@ -19574,29 +22171,30 @@ ${i18nHelper.getMessage("122004")}
 		<td>${i18nHelper.getMessage("310720")}</th>
 	</tr>
 </table>`;
-  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("122002")).setDesc(extraVariablesTable);
+  new import_obsidian20.Setting(containerEl).setName(i18nHelper.getMessage("122002")).setDesc(extraVariablesTable);
   const userInfoVariables = new DocumentFragment();
   userInfoVariables.createDiv().innerHTML = `
 ${i18nHelper.getMessage("160225")}
 <br>
 <strong>myTags</strong> \u2192 ${i18nHelper.getMessage("160226")}<br>
 <strong>myRating</strong> \u2192 ${i18nHelper.getMessage("160227")}<br>
+<strong>myRatingStar</strong> \u2192 ${i18nHelper.getMessage("160231")}<br>
 <strong>myState</strong> \u2192 ${i18nHelper.getMessage("160228")}<br>
 <strong>myComment</strong> \u2192 ${i18nHelper.getMessage("160229")}<br>
 <strong>myCollectionDate</strong> \u2192 ${i18nHelper.getMessage("160230")}<br>
 
 
 `;
-  new import_obsidian18.Setting(containerEl).setName(i18nHelper.getMessage("122010")).setDesc(userInfoVariables);
+  new import_obsidian20.Setting(containerEl).setName(i18nHelper.getMessage("122010")).setDesc(userInfoVariables);
 }
 
 // src/org/wanxp/douban/setting/CustomPropertySettingsHelper.ts
-var import_obsidian19 = __toModule(require("obsidian"));
+var import_obsidian21 = __toModule(require("obsidian"));
 function constructCustomPropertySettingsUI(containerEl, manager) {
   containerEl.createEl("h3", { text: i18nHelper.getMessage("1240") });
   containerEl.createEl("p", { text: i18nHelper.getMessage("1242") });
   const customProperties = manager.plugin.settings.customProperties;
-  new import_obsidian19.Setting(containerEl).setDesc(i18nHelper.getMessage("1241")).addButton((button) => {
+  new import_obsidian21.Setting(containerEl).setDesc(i18nHelper.getMessage("1241")).addButton((button) => {
     button.setButtonText(i18nHelper.getMessage("124101"));
     button.setTooltip(i18nHelper.getMessage("124101"));
     button.setIcon("plus");
@@ -19617,7 +22215,7 @@ function constructCustomPropertyUI(containerEl, customProperties, manager) {
 function addFilterInput(data2, el, customProperties, manager, idx) {
   const item = el.createEl("li");
   item.createEl("span", { text: i18nHelper.getMessage("124102") });
-  const nameField = new import_obsidian19.TextComponent(el);
+  const nameField = new import_obsidian21.TextComponent(el);
   nameField.setPlaceholder(i18nHelper.getMessage("124103")).setValue(data2.name).onChange((value) => __async(this, null, function* () {
     if (!value) {
       return;
@@ -19629,7 +22227,7 @@ function addFilterInput(data2, el, customProperties, manager, idx) {
   nameEl.addClass("obsidian_douban_settings_input");
   item.appendChild(nameEl);
   item.createEl("span", { text: i18nHelper.getMessage("124104") });
-  const valueField = new import_obsidian19.TextComponent(el);
+  const valueField = new import_obsidian21.TextComponent(el);
   valueField.setPlaceholder(i18nHelper.getMessage("124105")).setValue(data2.value).onChange((value) => __async(this, null, function* () {
     if (!value) {
       return;
@@ -19640,7 +22238,7 @@ function addFilterInput(data2, el, customProperties, manager, idx) {
   const valueEl = valueField.inputEl;
   valueEl.addClass("obsidian_douban_settings_input");
   item.appendChild(valueEl);
-  const fieldsDropdown = new import_obsidian19.DropdownComponent(el);
+  const fieldsDropdown = new import_obsidian21.DropdownComponent(el);
   for (const fieldSelect in SupportType) {
     fieldsDropdown.addOption(fieldSelect, i18nHelper.getMessage(fieldSelect));
   }
@@ -19652,7 +22250,7 @@ function addFilterInput(data2, el, customProperties, manager, idx) {
   const fieldSelectEl = fieldsDropdown.selectEl;
   fieldSelectEl.addClass("obsidian_douban_settings_input");
   item.appendChild(fieldSelectEl);
-  const extractButton = new import_obsidian19.ButtonComponent(el);
+  const extractButton = new import_obsidian21.ButtonComponent(el);
   extractButton.setIcon("minus-with-circle");
   extractButton.setTooltip(i18nHelper.getMessage("124107"));
   extractButton.onClick(() => __async(this, null, function* () {
@@ -19666,11 +22264,38 @@ function addFilterInput(data2, el, customProperties, manager, idx) {
 }
 
 // src/org/wanxp/douban/setting/AdvancedSettingsHelper.ts
-var import_obsidian20 = __toModule(require("obsidian"));
+var import_obsidian23 = __toModule(require("obsidian"));
+
+// src/org/wanxp/douban/component/ConfirmDialogModal.ts
+var import_obsidian22 = __toModule(require("obsidian"));
+var ConfirmDialogModal = class extends import_obsidian22.Modal {
+  constructor(app2, message, promise) {
+    super(app2);
+    this.message = message;
+    this.promise = promise;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: i18nHelper.getMessage("110152") });
+    contentEl.createEl("p", { text: `${this.message}` });
+    contentEl.createEl("p", { text: i18nHelper.getMessage("125033") });
+    const controls = contentEl.createDiv("controls");
+    controls.addClass("obsidian_douban_search_controls");
+    new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110152")).setCta().onClick(() => __async(this, null, function* () {
+      yield this.promise;
+      this.close();
+    })).setClass("obsidian_douban_search_button");
+    new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110005")).onClick(() => {
+      this.close();
+    }).setClass("obsidian_douban_cancel_button");
+  }
+};
+
+// src/org/wanxp/douban/setting/AdvancedSettingsHelper.ts
 function constructAdvancedUI(containerEl, manager) {
   containerEl.createEl("h3", { text: i18nHelper.getMessage("1250") });
   containerEl.createEl("p", { text: i18nHelper.getMessage("1252") });
-  const settings = new import_obsidian20.Setting(containerEl);
+  const settings = new import_obsidian23.Setting(containerEl);
   const advancedSettings = containerEl.createDiv("advanced-settings");
   settings.setDesc(i18nHelper.getMessage("1251")).addExtraButton((extraButton) => {
     extraButton.setIcon("reset").setTooltip(i18nHelper.getMessage("121905")).onClick(() => __async(this, null, function* () {
@@ -19683,7 +22308,10 @@ function constructAdvancedUI(containerEl, manager) {
 }
 function showAdvancedSettings(containerEl, manager) {
   containerEl.empty();
-  new import_obsidian20.Setting(containerEl).setName(i18nHelper.getMessage("125001")).setDesc(i18nHelper.getMessage("125002")).addToggle((toggleComponent) => {
+  const promise = new Promise((resolve, reject) => {
+    resolve(null);
+  });
+  new import_obsidian23.Setting(containerEl).setName(i18nHelper.getMessage("125001")).setDesc(i18nHelper.getMessage("125002")).addToggle((toggleComponent) => {
     toggleComponent.setValue(manager.plugin.settings.debugMode).onChange((value) => __async(this, null, function* () {
       manager.plugin.settings.debugMode = value;
       if (value) {
@@ -19694,14 +22322,156 @@ function showAdvancedSettings(containerEl, manager) {
       yield manager.plugin.saveSettings();
     }));
   });
+  new import_obsidian23.Setting(containerEl).setName(i18nHelper.getMessage("125011")).setDesc(i18nHelper.getMessage("125012")).addButton((buttonComponent) => {
+    buttonComponent.setIcon("reset").setTooltip(i18nHelper.getMessage("125013")).onClick((value) => __async(this, null, function* () {
+      showConfirmDialog(i18nHelper.getMessage("125012"), promise.then(() => {
+        manager.resetSetting();
+      }), manager);
+    }));
+  });
+  new import_obsidian23.Setting(containerEl).setName(i18nHelper.getMessage("125021")).setDesc(i18nHelper.getMessage("125022")).addButton((buttonComponent) => {
+    buttonComponent.setIcon("reset").setTooltip(i18nHelper.getMessage("125022")).onClick((value) => __async(this, null, function* () {
+      showConfirmDialog(i18nHelper.getMessage("125022"), promise.then(() => {
+        manager.clearLoginInfo();
+        manager.plugin.userComponent.logout();
+      }), manager);
+    }));
+  });
+  new import_obsidian23.Setting(containerEl).setName(i18nHelper.getMessage("125031")).setDesc(i18nHelper.getMessage("125032")).addButton((buttonComponent) => {
+    buttonComponent.setIcon("reset").setTooltip(i18nHelper.getMessage("125032")).onClick((value) => __async(this, null, function* () {
+      showConfirmDialog(i18nHelper.getMessage("125032"), promise.then(() => {
+        manager.clearSyncCache();
+      }), manager);
+    }));
+  });
 }
 function resetAdvanced(manager) {
   log.info("\u8C03\u8BD5\u6A21\u5F0F\u5173\u95ED");
   manager.plugin.settings.debugMode = false;
 }
+function showConfirmDialog(message, promise, manager) {
+  new ConfirmDialogModal(manager.plugin.app, message, promise.then(() => {
+    manager.plugin.saveSettings();
+  }).then(() => {
+    manager.plugin.settingTab.display();
+  })).open();
+}
+
+// src/org/wanxp/douban/setting/ArrayDisplayTypeSettingsHelper.ts
+var import_obsidian24 = __toModule(require("obsidian"));
+function arraySettingDisplayUI(containerEl, manager) {
+  containerEl.createEl("h3", { text: i18nHelper.getMessage("120601") });
+  arraySettingDisplay(containerEl.createDiv("array-settings"), manager, false);
+}
+function arraySettingDisplay(containerEl, manager, displayExtraListTypeFlag = false) {
+  containerEl.empty();
+  const arraySet = new import_obsidian24.Setting(containerEl).setName(i18nHelper.getMessage("120601")).setDesc(i18nHelper.getMessage("120602")).addButton((button) => {
+    button.setIcon("plus").setTooltip(i18nHelper.getMessage("120607")).onClick(() => __async(this, null, function* () {
+      yield manager.addArraySetting();
+      arraySettingDisplay(containerEl, manager, true);
+    }));
+  });
+  if (displayExtraListTypeFlag) {
+    arraySettingDisplayItem(containerEl, manager, manager.getArraySetting(DEFAULT_SETTINGS_ARRAY_NAME));
+    displayExtraListType(manager, containerEl);
+    arraySet.addButton((button) => {
+      button.setIcon("down-chevron-glyph").setTooltip(i18nHelper.getMessage("120608")).onClick(() => __async(this, null, function* () {
+        arraySettingDisplay(containerEl, manager, false);
+      }));
+    });
+  } else {
+    arraySet.addButton((button) => {
+      button.setIcon("right-chevron-glyph").setTooltip(i18nHelper.getMessage("120608")).onClick(() => __async(this, null, function* () {
+        arraySettingDisplay(containerEl, manager, true);
+      }));
+    });
+  }
+}
+function arraySettingDisplayItem(containerEl, manager, arraySetting) {
+  const arrSettingsUI = containerEl.createDiv("array-settings");
+  const arrShow = containerEl.createDiv("array-show");
+  const typeName = arraySetting.arrayName;
+  const arraySettingItems = new import_obsidian24.Setting(arrSettingsUI).setName(i18nHelper.getMessage("120604") + typeName).setDesc(i18nHelper.getMessage(`120605`) + (typeName == DEFAULT_SETTINGS_ARRAY_NAME ? "" : `(${typeName})`) + `}}`);
+  if (typeName != DEFAULT_SETTINGS_ARRAY_NAME) {
+    arraySettingItems.addButton((button) => {
+      button.setIcon("trash").setTooltip(i18nHelper.getMessage("120606")).onClick(() => __async(this, null, function* () {
+        yield manager.removeArraySetting(arraySetting.arrayName);
+        arraySettingDisplay(containerEl, manager, true);
+      }));
+    });
+  }
+  arrSettingsUI.createEl("label", { text: i18nHelper.getMessage("124109") });
+  const arrayStart = new import_obsidian24.TextComponent(arrSettingsUI);
+  arrayStart.setPlaceholder(DEFAULT_SETTINGS.arrayStart).setValue(arraySetting.arrayStart).onChange((value) => __async(this, null, function* () {
+    arraySetting.arrayStart = value;
+    yield manager.updateArraySetting(arraySetting);
+    showArrayExample(arrShow, manager, arraySetting);
+  }));
+  const arrayStartEl = arrayStart.inputEl;
+  arrayStartEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  arrayStartEl.addClass("obsidian_douban_settings_input");
+  arrSettingsUI.appendChild(arrayStartEl).appendText("  ");
+  arrSettingsUI.createEl("label", { text: i18nHelper.getMessage("124110") });
+  const arrayElementStart = new import_obsidian24.TextComponent(arrSettingsUI);
+  arrayElementStart.setPlaceholder(DEFAULT_SETTINGS.arrayElementStart).setValue(arraySetting.arrayElementStart).onChange((value) => __async(this, null, function* () {
+    arraySetting.arrayElementStart = value;
+    yield manager.updateArraySetting(arraySetting);
+    showArrayExample(arrShow, manager, arraySetting);
+  }));
+  const arrayElementStartEl = arrayElementStart.inputEl;
+  arrayElementStartEl.addClass("obsidian_douban_settings_input");
+  arrayElementStartEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  arrSettingsUI.appendChild(arrayElementStartEl).appendText("  ");
+  arrSettingsUI.createEl("label", { text: i18nHelper.getMessage("124111") });
+  const arraySpiltV2 = new import_obsidian24.TextComponent(arrSettingsUI);
+  arraySpiltV2.setPlaceholder(DEFAULT_SETTINGS.arraySpiltV2).setValue(arraySetting.arraySpiltV2).onChange((value) => __async(this, null, function* () {
+    arraySetting.arraySpiltV2 = value;
+    yield manager.updateArraySetting(arraySetting);
+    showArrayExample(arrShow, manager, arraySetting);
+  }));
+  const arraySpiltV2El = arraySpiltV2.inputEl;
+  arraySpiltV2El.addClass("obsidian_douban_settings_input");
+  arraySpiltV2El.size = 2;
+  arrSettingsUI.appendChild(arraySpiltV2El).appendText("  ");
+  arrSettingsUI.createEl("label", { text: i18nHelper.getMessage("124112") });
+  const arrayElementEnd = new import_obsidian24.TextComponent(arrSettingsUI);
+  arrayElementEnd.setPlaceholder(DEFAULT_SETTINGS.arrayElementEnd).setValue(arraySetting.arrayElementEnd).onChange((value) => __async(this, null, function* () {
+    arraySetting.arrayElementEnd = value;
+    yield manager.updateArraySetting(arraySetting);
+    showArrayExample(arrShow, manager, arraySetting);
+  }));
+  const arrayElementEndEl = arrayElementEnd.inputEl;
+  arrayElementEndEl.addClass("obsidian_douban_settings_input");
+  arrayElementEndEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  arrSettingsUI.appendChild(arrayElementEndEl).appendText("  ");
+  arrSettingsUI.createEl("label", { text: i18nHelper.getMessage("124113") });
+  const arrayEnd = new import_obsidian24.TextComponent(arrSettingsUI);
+  arrayEnd.setPlaceholder(DEFAULT_SETTINGS.arrayEnd).setValue(arraySetting.arrayEnd).onChange((value) => __async(this, null, function* () {
+    arraySetting.arrayEnd = value;
+    yield manager.updateArraySetting(arraySetting);
+    showArrayExample(arrShow, manager, arraySetting);
+  }));
+  const arrayEndEl = arrayEnd.inputEl;
+  arrayEndEl.addClass("obsidian_douban_settings_input");
+  arrayEndEl.size = DEFAULT_SETTINGS_ARRAY_INPUT_SIZE;
+  arrSettingsUI.appendChild(arrayEndEl).appendText("  ");
+  showArrayExample(arrShow, manager, arraySetting);
+}
+function displayExtraListType(manager, containerEl) {
+  manager.settings.arraySettings.forEach((arraySetting) => {
+    new import_obsidian24.Setting(containerEl);
+    arraySettingDisplayItem(containerEl, manager, arraySetting);
+  });
+}
+function showArrayExample(arrShow, manager, arraySetting) {
+  arrShow.empty();
+  const document2 = new DocumentFragment();
+  document2.createDiv("array-show-title").innerHTML = `propertyName:${manager.handleArray(["value1", "value2", "value3"], arraySetting)}`;
+  new import_obsidian24.Setting(arrShow).setName(i18nHelper.getMessage("120603")).setDesc(document2);
+}
 
 // src/org/wanxp/douban/setting/DoubanSettingTab.ts
-var DoubanSettingTab = class extends import_obsidian21.PluginSettingTab {
+var DoubanSettingTab = class extends import_obsidian25.PluginSettingTab {
   constructor(app2, plugin) {
     super(app2, plugin);
     this.plugin = plugin;
@@ -19711,10 +22481,11 @@ var DoubanSettingTab = class extends import_obsidian21.PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Obsidian Douban" });
-    new import_obsidian21.Setting(containerEl);
+    new import_obsidian25.Setting(containerEl);
     constructBasicUI(containerEl, this.settingsManager);
     constructTemplateUI(containerEl, this.settingsManager);
     constructOutUI(containerEl, this.settingsManager);
+    arraySettingDisplayUI(containerEl, this.settingsManager);
     constructCustomPropertySettingsUI(containerEl, this.settingsManager);
     constructTemplateVariablesUI(containerEl, this.settingsManager);
     constructAdvancedUI(containerEl, this.settingsManager);
@@ -19724,75 +22495,9 @@ var DoubanSettingTab = class extends import_obsidian21.PluginSettingTab {
 };
 
 // src/org/wanxp/douban/component/DoubanSyncModal.ts
-var import_obsidian22 = __toModule(require("obsidian"));
+var import_obsidian26 = __toModule(require("obsidian"));
 var import_timers = __toModule(require("timers"));
-
-// src/org/wanxp/utils/NumberUtil.ts
-var NumberUtil = class {
-  static getRandomNum(min2, max2) {
-    const range = max2 - min2;
-    const rand = Math.random();
-    return min2 + Math.round(rand * range);
-  }
-};
-
-// src/org/wanxp/utils/TimeUtil.ts
-var TimeUtil = class {
-  static estimateTime(needHandled, overSlowSize) {
-    if (needHandled <= 0) {
-      return 0;
-    }
-    let times = 0;
-    if (overSlowSize) {
-      if (needHandled <= BasicConst.SLOW_SIZE) {
-        times = ESTIMATE_TIME_PER_WITH_REQUEST * needHandled;
-      } else {
-        times = ESTIMATE_TIME_PER_WITH_REQUEST * BasicConst.SLOW_SIZE + ESTIMATE_TIME_PER_WITH_REQUEST_SLOW * Math.max(needHandled - BasicConst.SLOW_SIZE, 0);
-      }
-    } else {
-      times = ESTIMATE_TIME_PER_WITH_REQUEST * needHandled;
-    }
-    return times;
-  }
-  static estimateTimeMsg(needHandled, overSlowSize) {
-    const times = this.estimateTime(needHandled, overSlowSize);
-    if (times <= 0) {
-      return 0 + i18nHelper.getMessage("SECOND");
-    }
-    return this.formatDuring(times);
-  }
-  static formatDuring(mss) {
-    let show = false;
-    let message = "";
-    const days = Math.floor(mss / (1e3 * 60 * 60 * 24));
-    const hours = Math.floor(mss % (1e3 * 60 * 60 * 24) / (1e3 * 60 * 60));
-    const minutes = Math.floor(mss % (1e3 * 60 * 60) / (1e3 * 60));
-    const seconds = Math.floor(mss % (1e3 * 60) / 1e3);
-    if (days > 0) {
-      show = true;
-      message += days + i18nHelper.getMessage("DAY");
-    }
-    if (hours > 0 || show) {
-      show = true;
-      message += hours + i18nHelper.getMessage("HOUR");
-    }
-    if (minutes > 0 || show) {
-      show = true;
-      message += minutes + i18nHelper.getMessage("MINUTE");
-    }
-    if (seconds > 0 || show) {
-      message += seconds + i18nHelper.getMessage("SECOND");
-    }
-    return message;
-  }
-};
-var sleepRange = (msMin, msMax) => {
-  const msTime = NumberUtil.getRandomNum(msMin, msMax);
-  return new Promise((resolve) => setTimeout(resolve, msTime));
-};
-
-// src/org/wanxp/douban/component/DoubanSyncModal.ts
-var DoubanSyncModal = class extends import_obsidian22.Modal {
+var DoubanSyncModal = class extends import_obsidian26.Modal {
   constructor(app2, plugin, context) {
     super(app2);
     this.plugin = plugin;
@@ -19818,11 +22523,11 @@ var DoubanSyncModal = class extends import_obsidian22.Modal {
     const sliderDiv = contentEl.createEl("div");
     sliderDiv.addClass("obsidian_douban_sync_slider");
     const controls = contentEl.createDiv("controls");
-    const stopButton = new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110009")).onClick(() => __async(this, null, function* () {
+    const stopButton = new import_obsidian26.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110009")).onClick(() => __async(this, null, function* () {
       this.close();
       yield this.plugin.statusHolder.stopSync();
     }));
-    const backgroundButton = new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110010")).onClick(() => {
+    const backgroundButton = new import_obsidian26.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110010")).onClick(() => {
       this.close();
     });
     this.showProgress(sliderDiv, backgroundButton, stopButton);
@@ -19834,7 +22539,7 @@ var DoubanSyncModal = class extends import_obsidian22.Modal {
   }
   showProgress(sliderDiv, backgroundButton, stopButton) {
     sliderDiv.empty();
-    new import_obsidian22.Setting(sliderDiv);
+    new import_obsidian26.Setting(sliderDiv);
     let progress = sliderDiv.createDiv("progress");
     const { syncStatus } = this.plugin.statusHolder;
     if (!this.plugin.statusHolder.syncStarted) {
@@ -19872,10 +22577,10 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
     };
     this.showConfigPan(contentEl.createDiv("config"), syncConfig, false);
     const controls = contentEl.createDiv("controls");
-    const cancelButton = new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110005")).onClick(() => {
+    const cancelButton = new import_obsidian26.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110005")).onClick(() => {
       this.close();
     });
-    const syncButton = new import_obsidian22.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110007")).onClick(() => __async(this, null, function* () {
+    const syncButton = new import_obsidian26.ButtonComponent(controls).setButtonText(i18nHelper.getMessage("110007")).onClick(() => __async(this, null, function* () {
       if (!(yield this.plugin.checkLogin(this.context))) {
         return;
       }
@@ -19893,9 +22598,10 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
   updateContextByConfig(syncConfig) {
     const { context } = this;
     context.syncConfig = syncConfig;
+    context.syncActive = true;
   }
   showConfigPan(contentEl, config, disable) {
-    new import_obsidian22.Setting(contentEl);
+    new import_obsidian26.Setting(contentEl);
     this.showTypeDropdown(contentEl, config, disable);
     this.showOutputFolderSelections(contentEl, config, disable);
     this.showOutiFleName(contentEl, config, disable);
@@ -19929,10 +22635,13 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
       case SyncType.music:
         this.showScopeDropdown(contentEl, DoubanSubjectStateRecords_MUSIC_SYNC, config, disable);
         break;
+      case SyncType.teleplay:
+        this.showScopeDropdown(contentEl, DoubanSubjectStateRecords_TELEPLAY_SYNC, config, disable);
+        break;
     }
   }
   showTypeDropdown(containerEl, config, disable) {
-    const settings = new import_obsidian22.Setting(containerEl);
+    const settings = new import_obsidian26.Setting(containerEl);
     const scopeSelections = containerEl.createDiv("scope-selection");
     const templateFile = containerEl.createDiv("template-file-path-selection");
     settings.setName(i18nHelper.getMessage("110030")).addDropdown((dropdown) => {
@@ -19959,12 +22668,15 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
       case SyncType.music:
         result = settings.musicTemplateFile == "" || settings.musicTemplateFile == null ? DEFAULT_SETTINGS.musicTemplateFile : settings.musicTemplateFile;
         break;
+      case SyncType.teleplay:
+        result = settings.teleplayTemplateFile == "" || settings.teleplayTemplateFile == null ? DEFAULT_SETTINGS.teleplayTemplateFile : settings.teleplayTemplateFile;
+        break;
     }
     return result;
   }
   showScopeDropdown(containerEl, scopeSelections, config, disable) {
     containerEl.empty();
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("110032")).addDropdown((dropdown) => {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("110032")).addDropdown((dropdown) => {
       dropdown.addOptions(scopeSelections);
       dropdown.setValue(config.scope).onChange((value) => __async(this, null, function* () {
         config.scope = value;
@@ -19972,14 +22684,14 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
     }).setDisabled(disable);
   }
   showOutiFleName(containerEl, config, disable) {
-    const dataFilePathSetting = new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("121601")).setDesc(i18nHelper.getMessage("121602")).addText((textField) => {
+    const dataFilePathSetting = new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("121601")).setDesc(i18nHelper.getMessage("121602")).addText((textField) => {
       textField.setPlaceholder(i18nHelper.getMessage("121602")).setValue(config.dataFileNamePath).onChange((value) => __async(this, null, function* () {
         config.dataFileNamePath = value;
       }));
     }).setDisabled(disable);
   }
   showOutputFolderSelections(containerEl, config, disable) {
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("121501")).setDesc(i18nHelper.getMessage("121502")).addSearch((search) => __async(this, null, function* () {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("121501")).setDesc(i18nHelper.getMessage("121502")).addSearch((search) => __async(this, null, function* () {
       new FolderSuggest(this.app, search.inputEl);
       search.setValue(config.dataFilePath).setPlaceholder(i18nHelper.getMessage("121503")).onChange((value) => __async(this, null, function* () {
         config.dataFilePath = value;
@@ -19989,7 +22701,7 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
   showTemplateFileSelectionSetting(containerEl, config, disable) {
     containerEl.empty();
     const key = this.getKey(config.syncType);
-    let setting = new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("121101")).setDesc(i18nHelper.getMessage("121102")).addSearch((search) => __async(this, null, function* () {
+    let setting = new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("121101")).setDesc(i18nHelper.getMessage("121102")).addSearch((search) => __async(this, null, function* () {
       new FileSuggest(this.app, search.inputEl);
       search.setValue(config.templateFile).onChange((value) => __async(this, null, function* () {
         config.templateFile = value;
@@ -20010,14 +22722,14 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
     return supportType + "TemplateFile";
   }
   showForceUpdateConfig(containerEl, config, disable) {
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("110031")).setDesc(i18nHelper.getMessage("500110")).addToggle((toggleComponent) => {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("110031")).setDesc(i18nHelper.getMessage("500110")).addToggle((toggleComponent) => {
       toggleComponent.setValue(config.force).onChange((value) => __async(this, null, function* () {
         config.force = value;
       }));
     }).setDisabled(disable);
   }
   showAttachmentsFileConfig(containerEl, config, disable) {
-    const settings = new import_obsidian22.Setting(containerEl);
+    const settings = new import_obsidian26.Setting(containerEl);
     let attachmentFileEl = containerEl.createDiv("attachment-file-path-selection");
     settings.setName(i18nHelper.getMessage("121430")).setDesc(i18nHelper.getMessage("121431")).addToggle((toggleComponent) => {
       toggleComponent.setValue(config.cacheImage).onChange((value) => __async(this, null, function* () {
@@ -20032,20 +22744,20 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
     if (!show) {
       return;
     }
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("121432")).setDesc(i18nHelper.getMessage("121433")).addSearch((search) => __async(this, null, function* () {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("121432")).setDesc(i18nHelper.getMessage("121433")).addSearch((search) => __async(this, null, function* () {
       new FolderSuggest(this.plugin.app, search.inputEl);
       search.setValue(config.attachmentPath).setPlaceholder(i18nHelper.getMessage("121434")).onChange((value) => __async(this, null, function* () {
         config.attachmentPath = value;
       }));
     })).setDisabled(disable);
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("121435")).setDesc(i18nHelper.getMessage("121438")).addToggle((toggleComponent) => {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("121435")).setDesc(i18nHelper.getMessage("121438")).addToggle((toggleComponent) => {
       toggleComponent.setValue(config.cacheHighQuantityImage).onChange((value) => __async(this, null, function* () {
         config.cacheHighQuantityImage = value;
       }));
     }).setDisabled(disable);
   }
   showUpdateAllConfig(containerEl, config, disable) {
-    new import_obsidian22.Setting(containerEl).setName(i18nHelper.getMessage("110039")).setDesc(i18nHelper.getMessage("110040")).addToggle((toggleComponent) => {
+    new import_obsidian26.Setting(containerEl).setName(i18nHelper.getMessage("110039")).setDesc(i18nHelper.getMessage("110040")).addToggle((toggleComponent) => {
       toggleComponent.setTooltip(i18nHelper.getMessage("110040")).setValue(config.incrementalUpdate).onChange((value) => __async(this, null, function* () {
         config.incrementalUpdate = value;
       }));
@@ -20054,28 +22766,7 @@ ${syncStatus.getHandle() == 0 ? "..." : i18nHelper.getMessage("110042") + ":" + 
 };
 
 // src/org/wanxp/file/FileHandler.ts
-var import_obsidian24 = __toModule(require("obsidian"));
-
-// src/org/wanxp/utils/FileUtil.ts
-var import_obsidian23 = __toModule(require("obsidian"));
-var FileUtil = {
-  parse(pathString) {
-    const regex = /(?<dir>([^/\\]+[/\\])*)(?<name>[^/\\]*$)/;
-    const match = String(pathString).match(regex);
-    const { dir, name } = match && match.groups;
-    const nameWithoutSpChar = this.replaceSpecialCharactersForFileName(name);
-    return { dir, name: nameWithoutSpChar || "Untitled_" + new Date().getTime(), extension: "md" };
-  },
-  join(...strings) {
-    const parts = strings.map((s) => String(s).trim()).filter((s) => s != null);
-    return (0, import_obsidian23.normalizePath)(parts.join("/"));
-  },
-  replaceSpecialCharactersForFileName(fileName) {
-    return fileName.replaceAll(/[\\/:*?"<>|]/g, "_");
-  }
-};
-
-// src/org/wanxp/file/FileHandler.ts
+var import_obsidian27 = __toModule(require("obsidian"));
 var FileHandler = class {
   constructor(app2) {
     this._app = app2;
@@ -20087,12 +22778,12 @@ var FileHandler = class {
       const root2 = vault.getRoot().path;
       const directoryPath = FileUtil.join(dir);
       const directoryExists = yield adapter2.exists(directoryPath);
-      if (!import_obsidian24.Platform.isIosApp) {
+      if (!import_obsidian27.Platform.isIosApp) {
         if (!directoryExists) {
-          return adapter2.mkdir((0, import_obsidian24.normalizePath)(directoryPath));
+          return adapter2.mkdir((0, import_obsidian27.normalizePath)(directoryPath));
         }
       }
-      const subPaths = (0, import_obsidian24.normalizePath)(directoryPath).split("/").filter((part) => part.trim() !== "").map((_, index2, arr) => arr.slice(0, index2 + 1).join("/"));
+      const subPaths = (0, import_obsidian27.normalizePath)(directoryPath).split("/").filter((part) => part.trim() !== "").map((_, index2, arr) => arr.slice(0, index2 + 1).join("/"));
       for (const subPath of subPaths) {
         const directoryExists2 = yield adapter2.exists(FileUtil.join(root2, subPath));
         if (!directoryExists2) {
@@ -20180,7 +22871,7 @@ var FileHandler = class {
   getFileContent(filePath) {
     return __async(this, null, function* () {
       const { metadataCache, vault } = this._app;
-      const normalizedTemplatePath = (0, import_obsidian24.normalizePath)(filePath != null ? filePath : "");
+      const normalizedTemplatePath = (0, import_obsidian27.normalizePath)(filePath != null ? filePath : "");
       if (filePath === "/") {
         return Promise.resolve("");
       }
@@ -20197,7 +22888,7 @@ var FileHandler = class {
 };
 
 // src/org/wanxp/douban/model/GlobalStatusHolder.ts
-var import_obsidian25 = __toModule(require("obsidian"));
+var import_obsidian28 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/sync/model/SyncStatusHolder.ts
 var SyncStatusHolder = class {
@@ -20336,7 +23027,7 @@ var GlobalStatusHolder = class {
   startSync(syncConfigOut) {
     if (this.syncStarted) {
       const { syncConfig } = this.syncStatus;
-      new import_obsidian25.Notice(i18nHelper.getMessage("110008"), SyncTypeRecords[syncConfig.syncType], DoubanSubjectState[syncConfig.scope]);
+      new import_obsidian28.Notice(i18nHelper.getMessage("110008"), SyncTypeRecords[syncConfig.syncType], DoubanSubjectState[syncConfig.scope]);
       return false;
     }
     this.syncStatus = new SyncStatusHolder(syncConfigOut);
@@ -20376,29 +23067,15 @@ var GlobalStatusHolder = class {
 };
 
 // src/org/wanxp/net/NetFileHandler.ts
-var import_obsidian26 = __toModule(require("obsidian"));
 var NetFileHandler = class {
   constructor(fileHandler) {
     this.fileHandler = fileHandler;
   }
   downloadFile(url, folder, filename, context, showError, headers) {
     return __async(this, null, function* () {
-      const headersCookie = { Cookie: context.settings.loginCookiesContent };
-      const headersInner = {};
-      if (headers) {
-        Object.assign(headersInner, headers, headersCookie);
-      } else {
-        Object.assign(headersInner, headersCookie);
-      }
-      const requestUrlParam = {
-        url,
-        method: "GET",
-        throw: true,
-        headers: headersInner
-      };
       const filePath = FileUtil.join(folder, filename);
-      return (0, import_obsidian26.requestUrl)(requestUrlParam).then((response) => {
-        this.fileHandler.creatAttachmentWithData(filePath, response.arrayBuffer);
+      return HttpUtil.httpRequestGetBuffer(url, headers, context.plugin.settingsManager).then((buffer) => {
+        this.fileHandler.creatAttachmentWithData(filePath, buffer);
       }).then(() => {
         return { success: true, error: "", filepath: filePath };
       }).catch((e) => {
@@ -20428,6 +23105,22 @@ var SettingsManager = class {
   getSetting(key) {
     return this.settings[key];
   }
+  getHeaders() {
+    if (this.settings.loginHeadersContent) {
+      return JSON.parse(this.settings.loginHeadersContent);
+    } else if (this.settings.loginCookiesContent) {
+      return __spreadValues({ Cookie: this.settings.loginCookiesContent }, DEFAULT_DOUBAN_HEADERS);
+    } else {
+      return DEFAULT_DOUBAN_HEADERS;
+    }
+  }
+  getHeadersByCookie(cookie) {
+    if (cookie) {
+      return __spreadProps(__spreadValues({}, DEFAULT_DOUBAN_HEADERS), { Cookie: cookie });
+    } else {
+      return DEFAULT_DOUBAN_HEADERS;
+    }
+  }
   updateSetting(key, value) {
     return __async(this, null, function* () {
       this.settings[key] = value;
@@ -20447,10 +23140,145 @@ var SettingsManager = class {
   getCookieTemp() {
     return this.cookieTemp;
   }
+  getSelector(itemType, propertyName) {
+    if (this.onlineSettings && this.onlineSettings.properties) {
+      const doubanPluginSubjectProperty2 = this.onlineSettings.properties.find((subjectProperty) => subjectProperty.type === itemType && subjectProperty.name === propertyName);
+      if (doubanPluginSubjectProperty2) {
+        return doubanPluginSubjectProperty2.selectors;
+      }
+    }
+    const doubanPluginSubjectProperty = ONLINE_SETTING_DEFAULT.properties.find((subjectProperty) => subjectProperty.type === itemType && subjectProperty.name === propertyName);
+    if (doubanPluginSubjectProperty) {
+      return doubanPluginSubjectProperty.selectors;
+    }
+    return [];
+  }
+  handleArray(arr, arraySetting) {
+    let result = StringUtil.handleArray(arr, arraySetting);
+    return HtmlUtil.strToHtml(result);
+  }
+  updateArraySetting(arraySetting) {
+    return __async(this, null, function* () {
+      if (arraySetting.arrayName == DEFAULT_SETTINGS_ARRAY_NAME) {
+        this.settings.arrayStart = arraySetting.arrayStart;
+        this.settings.arrayElementStart = arraySetting.arrayElementStart;
+        this.settings.arraySpiltV2 = arraySetting.arraySpiltV2;
+        this.settings.arrayElementEnd = arraySetting.arrayElementEnd;
+        this.settings.arrayEnd = arraySetting.arrayEnd;
+      } else {
+        const index2 = this.settings.arraySettings.findIndex((as) => as.arrayName == arraySetting.arrayName);
+        if (index2 == -1) {
+          this.settings.arraySettings.push(arraySetting);
+        } else {
+          this.settings.arraySettings[index2] = arraySetting;
+        }
+      }
+      yield this.plugin.saveSettings();
+    });
+  }
+  removeArraySetting(arrayName) {
+    return __async(this, null, function* () {
+      if (arrayName == DEFAULT_SETTINGS_ARRAY_NAME) {
+        return;
+      } else {
+        this.settings.arraySettings = this.settings.arraySettings.filter((arraySetting) => arraySetting.arrayName !== arrayName);
+      }
+      yield this.plugin.saveSettings();
+    });
+  }
+  getArraySetting(arrayName) {
+    if (!this.settings.arraySettings) {
+      this.settings.arraySettings = [];
+    }
+    if (arrayName == DEFAULT_SETTINGS_ARRAY_NAME) {
+      return this.getDefaultArraySetting(DEFAULT_SETTINGS_ARRAY_NAME, 0);
+    } else {
+      const arraySetting = this.settings.arraySettings.find((arraySetting2) => arraySetting2.arrayName == arrayName);
+      if (arraySetting) {
+        return arraySetting;
+      }
+    }
+    return null;
+  }
+  getDefaultArraySetting(arrayName, index2) {
+    return {
+      arrayName,
+      arrayStart: this.settings.arrayStart,
+      arrayElementStart: this.settings.arrayElementStart,
+      arraySpiltV2: this.settings.arraySpiltV2,
+      arrayElementEnd: this.settings.arrayElementEnd,
+      arrayEnd: this.settings.arrayEnd,
+      index: index2
+    };
+  }
+  addArraySetting() {
+    return __async(this, null, function* () {
+      const index2 = this.settings.arraySettings.length + 1;
+      const arraySetting = this.getDefaultArraySetting(ARRAY_NAME_PREFIX_NAME + index2, index2);
+      this.settings.arraySettings.push(arraySetting);
+      yield this.plugin.saveSettings();
+      return arraySetting;
+    });
+  }
+  getSettingStr(field) {
+    const setting = this.getSetting(field);
+    if (setting) {
+      if (typeof setting == "string") {
+        return setting;
+      } else {
+        return setting.toString();
+      }
+    }
+    return "";
+  }
+  getSettingBoolean(field) {
+    const setting = this.getSetting(field);
+    if (setting) {
+      if (typeof setting == "boolean") {
+        return setting;
+      } else {
+        return !!setting;
+      }
+    }
+    return false;
+  }
+  resetSetting() {
+    this.settings.scoreSetting = DEFAULT_SETTINGS.scoreSetting;
+    this.settings.arraySettings = DEFAULT_SETTINGS.arraySettings;
+    this.settings.arrayStart = DEFAULT_SETTINGS.arrayStart;
+    this.settings.arrayElementStart = DEFAULT_SETTINGS.arrayElementStart;
+    this.settings.arraySpiltV2 = DEFAULT_SETTINGS.arraySpiltV2;
+    this.settings.arrayElementEnd = DEFAULT_SETTINGS.arrayElementEnd;
+    this.settings.arrayEnd = DEFAULT_SETTINGS.arrayEnd;
+    this.settings.attachmentPath = DEFAULT_SETTINGS.attachmentPath;
+    this.settings.bookTemplateFile = DEFAULT_SETTINGS.bookTemplateFile;
+    this.settings.movieTemplateFile = DEFAULT_SETTINGS.movieTemplateFile;
+    this.settings.musicTemplateFile = DEFAULT_SETTINGS.musicTemplateFile;
+    this.settings.noteTemplateFile = DEFAULT_SETTINGS.noteTemplateFile;
+    this.settings.gameTemplateFile = DEFAULT_SETTINGS.gameTemplateFile;
+    this.settings.teleplayTemplateFile = DEFAULT_SETTINGS.teleplayTemplateFile;
+    this.settings.dateFormat = DEFAULT_SETTINGS.dateFormat;
+    this.settings.timeFormat = DEFAULT_SETTINGS.timeFormat;
+    this.settings.searchUrl = DEFAULT_SETTINGS.searchUrl;
+    this.settings.personNameMode = DEFAULT_SETTINGS.personNameMode;
+    this.settings.dataFilePath = DEFAULT_SETTINGS.dataFilePath;
+    this.settings.dataFileNamePath = DEFAULT_SETTINGS.dataFileNamePath;
+    this.settings.statusBar = DEFAULT_SETTINGS.statusBar;
+    this.settings.debugMode = DEFAULT_SETTINGS.debugMode;
+    this.settings.cacheImage = DEFAULT_SETTINGS.cacheImage;
+    this.settings.cacheHighQuantityImage = DEFAULT_SETTINGS.cacheHighQuantityImage;
+  }
+  clearLoginInfo() {
+    this.settings.loginCookiesContent = DEFAULT_SETTINGS.loginHeadersContent;
+    this.settings.loginHeadersContent = DEFAULT_SETTINGS.loginHeadersContent;
+  }
+  clearSyncCache() {
+    this.settings.syncHandledDataArray = [];
+  }
 };
 
 // src/org/wanxp/douban/sync/handler/SyncHandler.ts
-var import_obsidian28 = __toModule(require("obsidian"));
+var import_obsidian29 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/sync/handler/DoubanAbstractSyncHandler.ts
 var DoubanAbstractSyncHandler = class {
@@ -20505,7 +23333,7 @@ var DoubanAbstractSyncHandler = class {
           return;
         }
         if (syncStatus.shouldSync(item.id)) {
-          yield this.doubanSubjectLoadHandler.handle(item.url, context);
+          let subject = yield this.doubanSubjectLoadHandler.handle(item.id, context);
           yield sleepRange(BasicConst.CALL_DOUBAN_DELAY, BasicConst.CALL_DOUBAN_DELAY + BasicConst.CALL_DOUBAN_DELAY_RANGE);
         } else {
           syncStatus.unHandle(item.id, item.title);
@@ -20533,8 +23361,12 @@ var DoubanOtherSyncHandler = class extends DoubanAbstractSyncHandler {
   }
 };
 
+// src/org/wanxp/constant/Douban.ts
+var doubanSubjectSyncListUrl = function(subjectType, userId, doType, start2) {
+  return `https://${subjectType}.douban.com/people/${userId}/${doType}?start=${start2}&sort=time&rating=all&filter=all&mode=list`;
+};
+
 // src/org/wanxp/douban/sync/handler/list/DoubanAbstractListHandler.ts
-var import_obsidian27 = __toModule(require("obsidian"));
 var DoubanAbstractListHandler = class {
   getAllPageList(context) {
     return __async(this, null, function* () {
@@ -20561,19 +23393,14 @@ var DoubanAbstractListHandler = class {
     });
   }
   getUrl(context, start2) {
-    return doubanSubjectSyncListUrl(this.getSyncType(), context.userComponent.getUserId(), this.getDoType(), start2);
+    return doubanSubjectSyncListUrl(this.getSyncTypeDomain(), context.userComponent.getUserId(), this.getDoType(), start2);
+  }
+  getSyncTypeDomain() {
+    return SyncTypeUrlDomain.get(this.getSyncType());
   }
   getPageList(url, context) {
     return __async(this, null, function* () {
-      let headers = JSON.parse(context.settings.searchHeaders);
-      headers.Cookie = context.settings.loginCookiesContent;
-      const requestUrlParam = {
-        url,
-        method: "GET",
-        headers,
-        throw: true
-      };
-      return (0, import_obsidian27.request)(requestUrlParam).then(load).then((data2) => this.parseSubjectFromHtml(data2, context)).catch((e) => log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e));
+      return HttpUtil.httpRequestGet(url, context.plugin.settingsManager.getHeaders(), context.plugin.settingsManager).then(load).then((data2) => this.parseSubjectFromHtml(data2, context)).catch((e) => log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e));
       ;
     });
   }
@@ -20718,6 +23545,48 @@ var DoubanBookSyncHandler = class extends DoubanAbstractSyncHandler {
   }
 };
 
+// src/org/wanxp/douban/sync/handler/list/DoubanTeleplayListHandler.ts
+var DoubanTeleplayListHandler = class extends DoubanAbstractListHandler {
+  getSyncType() {
+    return SyncType.teleplay;
+  }
+};
+
+// src/org/wanxp/douban/sync/handler/list/DoubanTeleplayCollectListHandler.ts
+var DoubanTeleplayCollectListHandler = class extends DoubanTeleplayListHandler {
+  getDoType() {
+    return DoubanSubjectState.collect;
+  }
+};
+
+// src/org/wanxp/douban/sync/handler/list/DoubanTeleplayWishListHandler.ts
+var DoubanTeleplayWishListHandler = class extends DoubanTeleplayListHandler {
+  getDoType() {
+    return DoubanSubjectState.wish;
+  }
+};
+
+// src/org/wanxp/douban/sync/handler/list/DoubanTeleplayDoListHandler.ts
+var DoubanTeleplayDoListHandler = class extends DoubanTeleplayListHandler {
+  getDoType() {
+    return DoubanSubjectState.do;
+  }
+};
+
+// src/org/wanxp/douban/sync/handler/DoubanTeleplaySyncHandler.ts
+var DoubanTeleplaySyncHandler = class extends DoubanAbstractSyncHandler {
+  constructor(plugin) {
+    super(plugin, new DoubanTeleplayLoadHandler(plugin), [
+      new DoubanTeleplayCollectListHandler(),
+      new DoubanTeleplayWishListHandler(),
+      new DoubanTeleplayDoListHandler()
+    ]);
+  }
+  getSyncType() {
+    return SyncType.teleplay;
+  }
+};
+
 // src/org/wanxp/douban/sync/handler/SyncHandler.ts
 var SyncHandler = class {
   constructor(app2, plugin, syncConfig, context) {
@@ -20730,6 +23599,7 @@ var SyncHandler = class {
       new DoubanMovieSyncHandler(plugin),
       new DoubanBookSyncHandler(plugin),
       new DoubanMusicSyncHandler(plugin),
+      new DoubanTeleplaySyncHandler(plugin),
       this.defaultSyncHandler
     ];
   }
@@ -20774,14 +23644,11 @@ var SyncHandler = class {
         }
       }
       const result = i18nHelper.getMessage("110037", summary, details);
-      const resultFileName = `${i18nHelper.getMessage("110038")}_${(0, import_obsidian28.moment)(new Date()).format("YYYYMMDDHHmmss")}`;
+      const resultFileName = `${i18nHelper.getMessage("110038")}_${(0, import_obsidian29.moment)(new Date()).format("YYYYMMDDHHmmss")}`;
       yield this.plugin.fileHandler.createNewNoteWithData(`${this.syncConfig.dataFilePath}/${resultFileName}`, result, true);
     });
   }
 };
-
-// src/org/wanxp/douban/user/UserComponent.ts
-var import_obsidian29 = __toModule(require("obsidian"));
 
 // src/org/wanxp/douban/user/User.ts
 var User = class {
@@ -20807,66 +23674,54 @@ var UserComponent = class {
     }
     this.user = null;
     this.settingsManager.updateSetting("loginCookiesContent", "");
+    this.settingsManager.updateSetting("loginHeadersContent", "");
   }
   needLogin() {
-    const cookie = this.settingsManager.getSetting("loginCookiesContent");
-    if (!cookie) {
+    const headers = this.settingsManager.getSetting("loginHeadersContent");
+    const cookies = this.settingsManager.getSetting("loginCookiesContent");
+    if (!headers && !cookies) {
       return false;
     }
     return !this.isLogin();
   }
-  loginByCookie() {
+  loginHeaders(headers) {
     return __async(this, null, function* () {
-      let cookie = this.settingsManager.getSetting("loginCookiesContent");
-      if (!cookie) {
-        this.settingsManager.debug("\u4E3B\u754C\u9762:loginByCookie:\u65E0\u8C46\u74E3cookies\u4FE1\u606F\uFF0C\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25");
+      if (!headers) {
         return new User();
       }
-      this.settingsManager.debug("\u4E3B\u754C\u9762:loginByCookie:\u8C46\u74E3cookies\u4FE1\u606F\u6B63\u5E38\uFF0C\u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F");
-      yield this.loadUserInfo(cookie).then((user) => {
+      this.settingsManager.debug("\u914D\u7F6E\u754C\u9762:loginCookie:\u8C46\u74E3headers\u4FE1\u606F\u6B63\u5E38\uFF0C\u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F,headers:" + headers);
+      yield this.loadUserInfoByHeaders(headers).then((user) => {
         this.user = user;
-        this.settingsManager.debug(`\u4E3B\u754C\u9762:loginByCookie:\u8C46\u74E3cookies\u4FE1\u606F\u6B63\u5E38\uFF0C${user && user.id ? "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u6210\u529Fid:" + StringUtil.confuse(user.id) + ",\u7528\u6237\u540D:" + StringUtil.confuse(user.name) : "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25"}`);
+        this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:loginCookie:\u8C46\u74E3headers\u4FE1\u606F\u6B63\u5E38\uFF0C${user && user.id ? "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u6210\u529Fid:" + StringUtil.confuse(user.id) + ",\u7528\u6237\u540D:" + StringUtil.confuse(user.name) : "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25"}`);
       });
+      if (this.user) {
+        this.settingsManager.updateSetting("loginHeadersContent", JSON.stringify(headers));
+      }
       return this.user;
+    });
+  }
+  loadUserInfoByHeaders(headers) {
+    return __async(this, null, function* () {
+      return HttpUtil.httpRequestGet("https://www.douban.com/mine/", headers, this.settingsManager).then(load).then(this.getUserInfo);
     });
   }
   loginCookie(cookie) {
     return __async(this, null, function* () {
-      if (!cookie) {
-        return new User();
-      }
-      this.settingsManager.debug("\u914D\u7F6E\u754C\u9762:loginCookie:\u8C46\u74E3cookies\u4FE1\u606F\u6B63\u5E38\uFF0C\u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F");
-      yield this.loadUserInfo(cookie).then((user) => {
-        this.user = user;
-        this.settingsManager.debug(`\u914D\u7F6E\u754C\u9762:loginCookie:\u8C46\u74E3cookies\u4FE1\u606F\u6B63\u5E38\uFF0C${user && user.id ? "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u6210\u529Fid:" + StringUtil.confuse(user.id) + ",\u7528\u6237\u540D:" + StringUtil.confuse(user.name) : "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25"}`);
+      const headers = this.settingsManager.getHeadersByCookie(cookie);
+      return this.loginHeaders(headers).then((user) => {
+        if (this.user) {
+          this.settingsManager.updateSetting("loginCookiesContent", cookie);
+        }
+        return user;
       });
-      if (this.user) {
-        this.settingsManager.updateSetting("loginCookiesContent", cookie);
-      }
-      return this.user;
     });
   }
   loadUserInfo(cookie) {
     return __async(this, null, function* () {
-      let requestUrlParam = {
-        url: "https://www.douban.com/mine/",
-        method: "GET",
-        headers: { "Cookie": cookie },
-        throw: true
-      };
-      this.settingsManager.debug("loadUserInfo:\u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F:https://www.douban.com/mine/");
-      return (0, import_obsidian29.request)(requestUrlParam).then((requestUrlResponse) => {
-        if (requestUrlResponse.indexOf("https://sec.douban.com/a") > 0) {
-          throw new Error(i18nHelper.getMessage("130105"));
-        }
-        return requestUrlResponse;
-      }).then(load).then(this.getUserInfo).catch((e) => {
-        if (e.toString().indexOf("403") > 0) {
-          throw new Error(i18nHelper.getMessage("130105"));
-        } else {
-          throw log.error(i18nHelper.getMessage("130101").replace("{0}", e.toString()), e);
-        }
+      const headers1 = __spreadProps(__spreadValues({}, DEFAULT_DOUBAN_HEADERS), {
+        Cookie: cookie
       });
+      return HttpUtil.httpRequestGet("https://www.douban.com/mine/", headers1, this.settingsManager).then(load).then(this.getUserInfo);
     });
   }
   getUserInfo(dataHtml) {
@@ -20893,6 +23748,35 @@ var UserComponent = class {
       login: true
     };
   }
+  login() {
+    return __async(this, null, function* () {
+      let headers = this.settingsManager.getHeaders();
+      if (!headers) {
+        this.settingsManager.debug("\u4E3B\u754C\u9762:login:\u65E0\u8C46\u74E3\u4FE1\u606F\uFF0C\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25");
+        return new User();
+      }
+      this.settingsManager.debug("\u4E3B\u754C\u9762:login:\u8C46\u74E3headers\u4FE1\u606F\u6B63\u5E38\uFF0C\u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F");
+      yield this.loadUserInfoByHeaders(headers).then((user) => {
+        this.user = user;
+        this.settingsManager.debug(`\u4E3B\u754C\u9762:loginByCookie:\u8C46\u74E3cookies\u4FE1\u606F\u6B63\u5E38\uFF0C${user && user.id ? "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u6210\u529Fid:" + StringUtil.confuse(user.id) + ",\u7528\u6237\u540D:" + StringUtil.confuse(user.name) : "\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25"}`);
+      });
+      return this.user;
+    });
+  }
+};
+
+// src/org/wanxp/utils/GithubUtil.ts
+var GithubUtil = class {
+  static getGistsData(gistId, fileName) {
+    return __async(this, null, function* () {
+      const gistUrl = `https://api.github.com/gists/${gistId}`;
+      return fetch(gistUrl).then((response) => response.json()).then((data2) => {
+        const files = Object.keys(data2.files);
+        const file = files[0];
+        return data2.files[file].content;
+      }).catch((error) => console.error(error));
+    });
+  }
 };
 
 // src/org/wanxp/main.ts
@@ -20905,6 +23789,11 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
           log.warn(i18nHelper.getMessage("140101"));
           return;
         }
+        if (context.syncActive && extract.guessType && extract.guessType != extract.type) {
+          extract.handledStatus = SubjectHandledStatus.syncTypeDiffAbort;
+          console.log(i18nHelper.getMessage("140102", extract.type, extract.title, extract.guessType));
+          return;
+        }
         if (Action.Sync == context.action) {
           this.showStatus(i18nHelper.getMessage("140207", syncStatus.getHasHandle(), syncStatus.getTotal(), extract.title));
         } else {
@@ -20913,6 +23802,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
         const result = yield this.doubanExtractHandler.parseText(extract, context);
         if (result) {
           yield this.putContentToObsidian(context, result);
+          extract.handledStatus = SubjectHandledStatus.saved;
         }
         if (Action.Sync == context.action) {
           this.showStatus(i18nHelper.getMessage("140208", syncStatus.getHasHandle(), syncStatus.getTotal(), extract.title));
@@ -20974,14 +23864,14 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
       }
     });
   }
-  search(searchTerm, context) {
+  search(searchTerm, searchType, context) {
     return __async(this, null, function* () {
       try {
         this.showStatus(i18nHelper.getMessage("140201", searchTerm));
-        const resultList = yield Searcher.search(searchTerm, this.settings, context.plugin.settingsManager);
-        this.showStatus(i18nHelper.getMessage("140202", resultList.length.toString()));
-        context.searchPage = new SearchPageInfo(21, -1, 20);
-        new DoubanFuzzySuggester(this, context, searchTerm).showSearchList(resultList);
+        const result = yield SearcherV2.search(searchTerm, searchType, 1, SEARCH_ITEM_PAGE_SIZE, this.settings, context.plugin.settingsManager);
+        this.showStatus(i18nHelper.getMessage("140202", result.list.toString()));
+        context.searchPage = result;
+        new DoubanFuzzySuggester(this, context, searchTerm).showSearchPage(result);
       } catch (e) {
         log.error(i18nHelper.getMessage("140206").replace("{0}", e.message), e);
       } finally {
@@ -20995,7 +23885,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
       if (activeFile) {
         const searchTerm = activeFile.basename;
         if (searchTerm) {
-          yield this.search(searchTerm, context);
+          yield this.search(searchTerm, SupportType.ALL, context);
         }
       }
     });
@@ -21022,7 +23912,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
         this.doubanStatusBar = this.addStatusBarItem();
       }
       this.addCommand({
-        id: "search-douban-import-and-create-file",
+        id: "searcher-douban-import-and-create-file",
         name: i18nHelper.getMessage("110101"),
         callback: () => this.getDoubanTextForCreateNewNote({
           plugin: this,
@@ -21035,7 +23925,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
         })
       });
       this.addCommand({
-        id: "search-douban-and-input-current-file",
+        id: "searcher-douban-and-input-current-file",
         name: i18nHelper.getMessage("110002"),
         editorCallback: (editor) => this.getDoubanTextForSearchTerm({
           plugin: this,
@@ -21048,7 +23938,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
         })
       });
       this.addCommand({
-        id: "search-douban-by-current-file-name",
+        id: "searcher-douban-by-current-file-name",
         name: i18nHelper.getMessage("110001"),
         editorCallback: (editor) => this.getDoubanTextForActiveFile({
           plugin: this,
@@ -21074,12 +23964,18 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
         })
       });
       this.settingsManager = new SettingsManager(app, this);
+      this.fetchOnlineData(this.settingsManager);
       this.userComponent = new UserComponent(this.settingsManager);
       this.netFileHandler = new NetFileHandler(this.fileHandler);
       if (this.userComponent.needLogin()) {
-        yield this.userComponent.loginByCookie();
+        try {
+          yield this.userComponent.login();
+        } catch (e) {
+          log.debug(i18nHelper.getMessage("100101"));
+        }
       }
-      this.addSettingTab(new DoubanSettingTab(this.app, this));
+      this.settingTab = new DoubanSettingTab(this.app, this);
+      this.addSettingTab(this.settingTab);
       this.statusHolder = new GlobalStatusHolder(this.app, this);
     });
   }
@@ -21135,6 +24031,7 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
       } finally {
         yield context.plugin.statusHolder.completeSync();
         this.clearStatusBarDelay();
+        context.syncActive = false;
       }
     });
   }
@@ -21142,11 +24039,11 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
     return __async(this, null, function* () {
       this.settingsManager.debug("\u4E3B\u754C\u9762:\u540C\u6B65\u65F6\u7684\u767B\u5F55\u72B6\u6001\u68C0\u6D4B");
       if (!context.userComponent.needLogin()) {
-        this.settingsManager.debug("\u4E3B\u754C\u9762:\u540C\u6B65\u65F6\u7684\u767B\u5F55\u72B6\u6001\u68C0\u6D4B\u5B8C\u6210: \u65E0\u7528\u6237\u4FE1\u606F, \u5C1D\u8BD5\u4F7F\u7528cookie\u83B7\u53D6\u7528\u6237\u4FE1\u606F");
-        yield context.userComponent.loginByCookie();
+        this.settingsManager.debug("\u4E3B\u754C\u9762:\u540C\u6B65\u65F6\u7684\u767B\u5F55\u72B6\u6001\u68C0\u6D4B\u5B8C\u6210: \u65E0\u7528\u6237\u4FE1\u606F, \u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F");
+        yield context.userComponent.login();
       }
       if (!context.userComponent.isLogin()) {
-        this.settingsManager.debug("\u4E3B\u754C\u9762:\u540C\u6B65\u65F6\u7684\u767B\u5F55\u72B6\u6001\u68C0\u6D4B\u5B8C\u6210: \u5C1D\u8BD5\u4F7F\u7528cookie\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25");
+        this.settingsManager.debug("\u4E3B\u754C\u9762:\u540C\u6B65\u65F6\u7684\u767B\u5F55\u72B6\u6001\u68C0\u6D4B\u5B8C\u6210: \u5C1D\u8BD5\u83B7\u53D6\u7528\u6237\u4FE1\u606F\u5931\u8D25");
         new import_obsidian30.Notice(i18nHelper.getMessage("140303"));
         return false;
       }
@@ -21158,5 +24055,18 @@ var DoubanPlugin = class extends import_obsidian30.Plugin {
     syncConfig.templateFile = syncConfig.templateFile ? syncConfig.templateFile : "";
     syncConfig.attachmentPath = syncConfig.attachmentPath ? syncConfig.attachmentPath : DEFAULT_SETTINGS.attachmentPath;
     syncConfig.dataFileNamePath = syncConfig.dataFileNamePath ? syncConfig.dataFileNamePath : DEFAULT_SETTINGS.dataFileNamePath;
+  }
+  fetchOnlineData(settingsManager) {
+    const gistId = DEFAULT_SETTINGS.onlineSettingsGistId;
+    const fileName = DEFAULT_SETTINGS.onlineSettingsFileName;
+    GithubUtil.getGistsData(gistId, fileName).then((data2) => {
+      this.onlineData = JSON.parse(data2);
+      this.fillOnlineData(this.onlineData, settingsManager);
+    });
+  }
+  fillOnlineData(onlineData, settingsManager) {
+    if (onlineData.settings) {
+      settingsManager.onlineSettings = onlineData.settings;
+    }
   }
 };

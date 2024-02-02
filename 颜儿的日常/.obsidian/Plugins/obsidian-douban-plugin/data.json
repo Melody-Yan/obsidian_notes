@@ -1,4 +1,17 @@
 {
+  "arraySettings": [
+    {
+      "arrayName": "ArrayType1",
+      "arrayStart": "",
+      "arrayElementStart": "[[",
+      "arraySpiltV2": ",",
+      "arrayElementEnd": "]]",
+      "arrayEnd": "",
+      "index": 1
+    }
+  ],
+  "onlineSettingsFileName": "obsidian_douban_plugin_online_settings.json",
+  "onlineSettingsGistId": "35693f9ece9bd6abba98f94e81afde19",
   "movieTemplateFile": "",
   "bookTemplateFile": "",
   "musicTemplateFile": "",
@@ -6,11 +19,14 @@
   "gameTemplateFile": "",
   "teleplayTemplateFile": "",
   "searchUrl": "https://www.douban.com/search?q=",
-  "searchHeaders": "{\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\",\"Accept-Language\":\"en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7\",\"User-Agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36\"}",
   "dateFormat": "yyyy-MM-DD",
   "timeFormat": "HH:mm:ss",
-  "arraySpilt": ", ",
-  "personNameMode": "CH",
+  "arrayStart": "",
+  "arrayElementStart": "\\n  - ",
+  "arraySpiltV2": "",
+  "arrayElementEnd": "",
+  "arrayEnd": "",
+  "personNameMode": "CH_EN",
   "dataFilePath": "",
   "dataFileNamePath": "/{{type}}/{{title}}",
   "statusBar": true,
@@ -45,9 +61,15 @@
       "name": "myType",
       "value": "teleplay",
       "field": "TELEPLAY"
+    },
+    {
+      "name": "封面",
+      "value": "imageData.url",
+      "field": "ALL"
     }
   ],
   "loginCookiesContent": "bid=reH2xlcmzB0; dbcl2=\"230978355:tX9ET9fXP80\"",
+  "loginHeadersContent": "{\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\",\"Accept-Encoding\":\"gzip, deflate, br\",\"Accept-Language\":\"zh-CN\",\"Cookie\":\"bid=WZjVkt-Ggms; dbcl2=\\\"230978355:aru5C7WE0do\\\"\",\"Referer\":\"https://accounts.douban.com/\",\"Sec-Fetch-Mode\":\"navigate\",\"Sec-Fetch-Site\":\"same-site\",\"Upgrade-Insecure-Requests\":\"1\",\"User-Agent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) obsidian/1.4.16 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36\"}",
   "cacheImage": true,
   "cacheHighQuantityImage": true,
   "attachmentPath": "assets",
@@ -357,6 +379,50 @@
         "25853071",
         "36166189"
       ]
+    },
+    {
+      "key": "书库+book+collect",
+      "value": [
+        "34973519",
+        "36331622",
+        "26220986",
+        "34858981",
+        "35695541",
+        "35534519",
+        "24540864",
+        "36560856",
+        "36210736",
+        "4908885",
+        "24257486",
+        "35479662",
+        "34998019",
+        "30389968",
+        "30259153",
+        "26344078",
+        "35817710",
+        "30468519",
+        "36149278",
+        "1007305",
+        "1253310",
+        "35170896",
+        "35445999",
+        "35361136",
+        "20383692",
+        "30179767",
+        "30258333",
+        "1084336",
+        "4074636",
+        "1011754",
+        "34778574"
+      ]
     }
-  ]
+  ],
+  "scoreSetting": {
+    "starFull": "⭐",
+    "starEmpty": "☆",
+    "displayStarEmpty": true,
+    "maxStar": 5
+  },
+  "searchHeaders": "{\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\",\"Accept-Language\":\"en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7\",\"User-Agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36\"}",
+  "arraySpilt": ", "
 }

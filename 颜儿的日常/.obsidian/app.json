@@ -15,12 +15,13 @@
   "showFrontmatter": true,
   "trashOption": "local",
   "defaultViewMode": "source",
-  "showUnsupportedFiles": false,
+  "showUnsupportedFiles": true,
   "alwaysUpdateLinks": true,
   "vimMode": false,
   "livePreview": true,
   "smartIndentList": true,
   "readableLineLength": true,
   "useTab": true,
-  "autoPairBrackets": true
+  "autoPairBrackets": true,
+  "useMarkdownLinks": true
 }
