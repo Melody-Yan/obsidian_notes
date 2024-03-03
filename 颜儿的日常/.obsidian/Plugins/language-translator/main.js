@@ -375,13 +375,12 @@ function getTextAzure(text, lang, region, token, translateApiUrl) {
 }
 
 // src/translationServiceImplementation.ts
-var AZURE_AUTH_URL = "https://func-lang-translator-auth.azurewebsites.net/api/AuthToken";
+var AZURE_BUILTIN_KEY = "0bb27e8d40864db0a9854d8793e4fbb7";
 var TranslationServiceImplementation = class {
   constructor(plugin) {
     this.getBuiltinAzureToken = () => __async(this, null, function* () {
       try {
-        const response = yield fetch(AZURE_AUTH_URL);
-        return yield response.text();
+        return AZURE_BUILTIN_KEY;
       } catch (err) {
         console.log(err);
         new import_obsidian2.Notice(err.message);
@@ -395,7 +394,7 @@ var TranslationServiceImplementation = class {
       switch (Number(this.plugin.settings.apiType.value)) {
         case apiTypes_default.Builtin:
           let token = yield this.getBuiltinAzureToken();
-          result = yield getTextAzure(text, lang, "Global", token, this.plugin.settings.translateApiUrl);
+          result = yield getTextAzure(text, lang, "westeurope", token, this.plugin.settings.translateApiUrl);
           break;
         case apiTypes_default.Azure:
           result = yield getTextAzure(text, lang, this.plugin.settings.region.code, this.plugin.settings.token, this.plugin.settings.translateApiUrl);

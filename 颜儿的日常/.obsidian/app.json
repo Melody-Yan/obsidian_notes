@@ -23,5 +23,6 @@
   "readableLineLength": true,
   "useTab": true,
   "autoPairBrackets": true,
-  "useMarkdownLinks": true
+  "useMarkdownLinks": true,
+  "focusNewTab": true
 }

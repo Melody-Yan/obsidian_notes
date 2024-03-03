@@ -1,12 +1,12 @@
 {
   "cookies": [
     {
-      "name": "wr_gid",
-      "value": "274165448"
-    },
-    {
       "name": "wr_fp",
       "value": "146622093"
+    },
+    {
+      "name": "wr_gid",
+      "value": "216460212"
     },
     {
       "name": "wr_vid",
@@ -14,15 +14,15 @@
     },
     {
       "name": "wr_skey",
-      "value": "zv99rL05"
+      "value": "YWRFF0Gk"
     },
     {
       "name": "wr_pf",
-      "value": "0"
+      "value": "2"
     },
     {
       "name": "wr_rt",
-      "value": "web@ZPx2YGACRpMyNjtdv8x_AL"
+      "value": "web@2EAjMzOUcKUKUVw6aTC_AL"
     },
     {
       "name": "wr_localvid",
@@ -34,7 +34,7 @@
     },
     {
       "name": "wr_avatar",
-      "value": "https://res.weread.qq.com/wravatar/WV0010-rzc7oaH8i14FEx5687hTpd5/0"
+      "value": "https://wx.qlogo.cn/mmhead/SISP9N5b34ZVz4bIM9JpY2BWJeoYXDweiaVkjKibvM9JXZv1rKIjVDAzwrJ5SGbribJqJZfkl2yQnc/0"
     },
     {
       "name": "wr_gender",
@@ -46,7 +46,7 @@
   "insertAfter": "<!-- start of weread -->",
   "insertBefore": "<!-- end of weread -->",
   "dailyNotesFormat": "YYYY-MM-DD",
-  "lastCookieTime": 1706896274611,
+  "lastCookieTime": 1707235685742,
   "isCookieValid": true,
   "user": "南风的旅行.",
   "userVid": "232063128",

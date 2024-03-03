@@ -4,23 +4,37 @@
     "type": "split",
     "children": [
       {
-        "id": "b9b5e9817cc6c981",
+        "id": "0d55443f08d730f7",
         "type": "tabs",
         "children": [
           {
-            "id": "c4a280599703d013",
+            "id": "0797f99865e9ba51",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "读书笔记/死魂灵/死魂灵-果戈理.md",
+                "file": "读书笔记/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)-范晔.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "24b63747b65b039a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "快速记录/主页.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -42,14 +56,6 @@
               "state": {
                 "sortOrder": "custom"
               }
-            }
-          },
-          {
-            "id": "3a51782d8e1e40df",
-            "type": "leaf",
-            "state": {
-              "type": "starred",
-              "state": {}
             }
           },
           {
@@ -100,6 +106,14 @@
               "type": "chronology-calendar-view",
               "state": {}
             }
+          },
+          {
+            "id": "6ae01bcd1e602a5e",
+            "type": "leaf",
+            "state": {
+              "type": "timeline",
+              "state": {}
+            }
           }
         ]
       }
@@ -114,10 +128,10 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 28.298611111111107,
+        "dimension": 31.68411037107517,
         "children": [
           {
-            "id": "ef2d20a0aac02610",
+            "id": "3ae685e095b64f35",
             "type": "leaf",
             "state": {
               "type": "calendar",
@@ -130,7 +144,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "读书笔记/死魂灵/死魂灵-果戈理.md",
+                "file": "快速记录/主页.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -147,7 +161,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "读书笔记/死魂灵/死魂灵-果戈理.md",
+                "file": "快速记录/主页.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -180,28 +194,13 @@
                 "searchQuery": ""
               }
             }
-          },
-          {
-            "id": "83284c3924bd265c",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "epub/晚春 (三三) (Z-Library)/晚春 (三三) (Z-Library).md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": false
-              },
-              "pinned": true
-            }
           }
         ]
       },
       {
         "id": "eb8df96c63e62749",
         "type": "tabs",
-        "dimension": 35.32986111111111,
+        "dimension": 35.68030447193149,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -209,7 +208,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "读书笔记/死魂灵/死魂灵-果戈理.md"
+                "file": "快速记录/主页.md"
               }
             }
           },
@@ -240,12 +239,12 @@
         ]
       },
       {
-        "id": "0cad6b73e695772e",
+        "id": "573630520f47dfe6",
         "type": "tabs",
-        "dimension": 36.37152777777778,
+        "dimension": 32.63558515699334,
         "children": [
           {
-            "id": "adaba3f680fb849e",
+            "id": "2b58cff4984dfe5a",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -253,7 +252,7 @@
             }
           },
           {
-            "id": "afb56b5e8c7018a0",
+            "id": "7f8e121312b551c3",
             "type": "leaf",
             "state": {
               "type": "online.larslockefeer.obsidian-plugin-todo",
@@ -261,22 +260,25 @@
             }
           },
           {
-            "id": "477ea9e4357c7331",
+            "id": "718d1d9865399415",
             "type": "leaf",
             "state": {
               "type": "reminder-list",
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "horizontal",
-    "width": 308.5
+    "width": 303.5
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-excalidraw-plugin:新建 Excalidraw 绘图": false,
+      "obsidian42-brat:BRAT": false,
+      "obsidian-weread-plugin:同步微信读书笔记": false,
+      "copilot:Copilot Chat": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
@@ -288,23 +290,42 @@
       "audio-recorder:开始/结束录音": false,
       "workspaces:管理工作区布局": false,
       "publish:发布更改": false,
-      "obsidian-weread-plugin:同步微信读书笔记": false,
       "obsidian-read-it-later:ReadItLater: Save clipboard": false,
-      "obsidian42-brat:BRAT": false,
-      "obsidian-advanced-slides:Show Slide Preview": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "media-extended:Open media": false,
+      "obsidian-day-planner:Timeline": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "markdown-table-editor:Open Markdown Table Editor": false,
       "chronology:Open Chronology": false,
       "obsidian-custom-frames:Open 微信读书": false,
       "obsidian-projects:Open projects": false,
-      "notion-like-tables:Create new loom": false,
+      "notion-like-tables:Create loom": false,
+      "obsidian-advanced-slides:Show Slide Preview": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
       "periodic-notes:Open today": false,
       "obsidian-memos:Memos": false
     }
   },
-  "active": "c4a280599703d013",
+  "active": "24b63747b65b039a",
   "lastOpenFiles": [
+    "未命名.md",
+    "读书笔记/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)-范晔.md",
+    "快速记录/主页.md",
+    "epub/晚春 (三三) (Z-Library)/晚春 (三三) (Z-Library).md",
+    "MEMO＆DAILY/MEMOS/2024读书计划.md",
+    "Day Planners/Day Planner-20240207.md",
+    "MEMO＆DAILY/MEMOS/2023-10-02.md",
+    "快速记录/测试专用/1.md",
+    "读书笔记/人间草木/人间草木-汪曾祺.md",
+    "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）/奥斯卡与玫瑰奶奶（全彩插画本）-埃里克-埃马纽埃尔·施米特.md",
+    "密码｜账号/pigcha.md",
     "读书笔记/年轻男人/年轻男人.md",
+    "读书笔记/不止读书/不止读书-魏小河.md",
+    "读书笔记/诗人十四个：十四位古代诗人和一位现代闯入者 一场始于1600年前的诗歌沙龙/诗人十四个：十四位古代诗人和一位现代闯入者 一场始于1600年前的诗歌沙龙.md",
+    "读书笔记/诗人十四个：十四位古代诗人和一位现代闯入者 一场始于1600年前的诗歌沙龙",
+    "读书笔记/小王子（漫画）/小王子（漫画）.md",
+    "读书笔记/小王子（漫画）",
+    "读书笔记/不可思议校园[无限]/不可思议校园[无限]-条纹花瓶.md",
+    "读书笔记/死魂灵/死魂灵-果戈理.md",
     "书库/豆瓣同步结果_20240130181528.md",
     "读书笔记/年轻男人",
     "读书笔记/春/春.md",
@@ -320,36 +341,18 @@
     "assets/s1067491.jpg",
     "书库/book/放学后.md",
     "assets/s4066862.jpg",
-    "书库/book/小王子.md",
     "assets/s1237549.jpg",
-    "书库/book/《催眠师手记》（第一季）.md",
     "assets/s34231017.jpg",
-    "书库/book/《催眠师手记》（第二季）.md",
     "assets/s34231018.jpg",
-    "书库/book/山海师1.md",
     "assets/s24422775.jpg",
-    "书库/book/致命圆桌.md",
     "assets/s33899981.jpg",
-    "书库/book/薄雾.md",
     "assets/s33900058.jpg",
-    "书库/book/平面国.md",
     "assets/s33710398.jpg",
-    "书库/book/人间草木.md",
-    "书库/book/红楼梦.md",
-    "书库/book/一切都会好起来的.md",
-    "书库/book/日日杂记.md",
-    "书库/book/夜莺与玫瑰.md",
-    "书库/book/克林索尔的最后夏天.md",
-    "书库/book/秋园.md",
-    "书库/book/浮木.md",
-    "书库/book/阿Q正传.md",
     "书库/book",
     "assets",
     "book",
     "书库",
     "epub/沿着季风的方向（《失落的卫星》作者刘子超代表作） (刘子超) (Z-Library)/跳岛记",
-    "epub/沿着季风的方向（《失落的卫星》作者刘子超代表作） (刘子超) (Z-Library)/穿越北印度的火车之旅",
-    "epub/沿着季风的方向（《失落的卫星》作者刘子超代表作） (刘子超) (Z-Library)/images",
     "攻略/开学准备/开学.canvas",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",
