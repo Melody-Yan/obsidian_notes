@@ -1,0 +1,370 @@
+{
+  "main": {
+    "id": "f0e54e5dcb0a475c",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d55443f08d730f7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f56b0b7b539c0826",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "560540394feb1062",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5a353c8a4f3a9381",
+    "type": "split",
+    "children": [
+      {
+        "id": "fb08aa6e132aaed9",
+        "type": "tabs",
+        "dimension": 58.90529973935709,
+        "children": [
+          {
+            "id": "ef01d5ec1b589285",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "custom"
+              }
+            }
+          },
+          {
+            "id": "d21950b484b62e1e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": true,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b2f9db0e04c7fcdb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "bdc7ed67362c7e4c",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "4c275ce8c024178b",
+        "type": "tabs",
+        "dimension": 41.09470026064291,
+        "children": [
+          {
+            "id": "10edaa578b60d590",
+            "type": "leaf",
+            "state": {
+              "type": "chronology-calendar-view",
+              "state": {}
+            }
+          },
+          {
+            "id": "6ae01bcd1e602a5e",
+            "type": "leaf",
+            "state": {
+              "type": "timeline",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 263.5
+  },
+  "right": {
+    "id": "628262475fc8c9f5",
+    "type": "split",
+    "children": [
+      {
+        "id": "dd3fafea56169283",
+        "type": "tabs",
+        "dimension": 31.684110371075167,
+        "children": [
+          {
+            "id": "3ae685e095b64f35",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          },
+          {
+            "id": "5f1e61420090beb8",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "81cab4f08b7929dc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "8c632290d83d5fe9",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          },
+          {
+            "id": "5067201c8cabbdec",
+            "type": "leaf",
+            "state": {
+              "type": "gptModelSettings",
+              "state": {}
+            }
+          },
+          {
+            "id": "023470b3a9c37c64",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              }
+            }
+          },
+          {
+            "id": "d11eaf1eb0c32aa6",
+            "type": "leaf",
+            "state": {
+              "type": "copilot-chat-view",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "eb8df96c63e62749",
+        "type": "tabs",
+        "dimension": 35.68030447193149,
+        "children": [
+          {
+            "id": "63813c46d9773e30",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "读书笔记/呐喊/呐喊-鲁迅.md"
+              }
+            }
+          },
+          {
+            "id": "5a8bcd161c17cf47",
+            "type": "leaf",
+            "state": {
+              "type": "QUICKSHARE_SIDE_VIEW",
+              "state": {}
+            }
+          },
+          {
+            "id": "79bd86300b23ee24",
+            "type": "leaf",
+            "state": {
+              "type": "Strange New Worlds",
+              "state": {}
+            }
+          },
+          {
+            "id": "5e297d7ec2dd9083",
+            "type": "leaf",
+            "state": {
+              "type": "custom-frames-微信读书",
+              "state": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "573630520f47dfe6",
+        "type": "tabs",
+        "dimension": 32.635585156993336,
+        "children": [
+          {
+            "id": "2b58cff4984dfe5a",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {}
+            }
+          },
+          {
+            "id": "7f8e121312b551c3",
+            "type": "leaf",
+            "state": {
+              "type": "online.larslockefeer.obsidian-plugin-todo",
+              "state": {}
+            }
+          },
+          {
+            "id": "718d1d9865399415",
+            "type": "leaf",
+            "state": {
+              "type": "reminder-list",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 303.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "note-to-mp:复制到公众号": false,
+      "obsidian42-brat:BRAT": false,
+      "obsidian-weread-plugin:同步微信读书笔记": false,
+      "copilot:Copilot Chat": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "zk-prefixer:创建时间戳笔记": false,
+      "random-note:开始漫游笔记": false,
+      "audio-recorder:开始/结束录音": false,
+      "workspaces:管理工作区布局": false,
+      "publish:发布更改": false,
+      "obsidian-read-it-later:ReadItLater: Save clipboard": false,
+      "media-extended:Open media": false,
+      "obsidian-day-planner:Timeline": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
+      "markdown-table-editor:Open Markdown Table Editor": false,
+      "chronology:Open Chronology": false,
+      "obsidian-custom-frames:Open 微信读书": false,
+      "obsidian-projects:Open projects": false,
+      "notion-like-tables:Create loom": false,
+      "obsidian-advanced-slides:Show Slide Preview": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "periodic-notes:Open today": false,
+      "obsidian-memos:Memos": false
+    }
+  },
+  "active": "560540394feb1062",
+  "lastOpenFiles": [
+    "读书笔记/孔雀菩提（莫言作序、余华推荐）/孔雀菩提（莫言作序、余华推荐）.md",
+    "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）/奥斯卡与玫瑰奶奶（全彩插画本）.md",
+    "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）",
+    "读书笔记/半小时漫画世界名著/半小时漫画世界名著.md",
+    "读书笔记/半小时漫画世界名著",
+    "读书笔记/读者·原创版（2021年第1期）/读者·原创版（2021年第1期）.md",
+    "读书笔记/读者·原创版（2021年第1期）",
+    "读书笔记/米格尔街（2019版）/米格尔街（2019版）.md",
+    "读书笔记/米格尔街（2019版）",
+    "读书笔记/春桃/春桃.md",
+    "读书笔记/春桃",
+    "读书笔记/鲤·与书私奔/鲤·与书私奔.md",
+    "读书笔记/鲤·与书私奔",
+    "读书笔记/晚春/晚春.md",
+    "读书笔记/晚春",
+    "读书笔记/伊豆的舞女/伊豆的舞女.md",
+    "读书笔记/伊豆的舞女",
+    "读书笔记/一桩事先张扬的凶杀案/一桩事先张扬的凶杀案.md",
+    "读书笔记/一桩事先张扬的凶杀案",
+    "读书笔记/游隼/游隼.md",
+    "读书笔记/游隼",
+    "读书笔记/月牙儿/月牙儿.md",
+    "读书笔记/豆子芝麻茶（杨本芬新书｜独家首发）/豆子芝麻茶（杨本芬新书｜独家首发）.md",
+    "读书笔记/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)-范晔.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+    "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/乘风破浪的姐姐,强化了｜削弱了性别刻板印.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
+    "观影/百炼飞升录/流水不争先.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/想说的话｜评分.md",
+    "观影/向着明亮那方★★★★★★☆☆☆☆/哼将军和哈将军   导演刘高翔.md",
+    "观影/凡人修仙传/用这恶人尸体烧成的火，却也如此美.md",
+    "Day Planners/Day Planner-20230220.md",
+    "AllBooks.md",
+    "dictionary.md",
+    "未命名.md",
+    "assets/s33451826.jpg",
+    "assets/s1067491.jpg",
+    "assets/s4066862.jpg",
+    "assets/s1237549.jpg",
+    "assets/s34231017.jpg",
+    "assets/s34231018.jpg",
+    "assets/s24422775.jpg",
+    "assets/s33899981.jpg",
+    "assets/s33900058.jpg",
+    "assets/s33710398.jpg",
+    "攻略/开学准备/开学.canvas",
+    "My manuscript/长篇+成稿/未命名.canvas",
+    "快速记录/测试专用/测试canvas.canvas",
+    "测试专用/未命名.canvas",
+    "未命名.canvas"
+  ]
+}
