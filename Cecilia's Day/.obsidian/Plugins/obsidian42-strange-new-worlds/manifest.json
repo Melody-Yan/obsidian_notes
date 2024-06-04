@@ -1,15 +1,14 @@
 {
-  "id": "obsidian42-strange-new-worlds",
-  "name": "Strange New Worlds (SNW)",
-  "version": "1.2.5",
-  "minAppVersion": "1.4.16",
-  "description": "Revealing networked thought and the strange new worlds created by your vault",
-  "author": "TfTHacker",
-  "authorUrl": "https://twitter.com/TfTHacker",
-  "helpUrl": "https://tfthacker.com/SNW",
-  "isDesktopOnly": false,
-  "fundingUrl": {
-    "Buy Me a Coffee": "https://bit.ly/o42-kofi",
-    "Vist my site": "https://tfthacker.com"
-  }
+	"id": "obsidian42-strange-new-worlds",
+	"name": "Strange New Worlds",
+	"version": "2.1.2",
+	"minAppVersion": "1.5.11",
+	"description": "Help see how your vault is interconnected with visual indicators.",
+	"author": "TfTHacker",
+	"authorUrl": "https://twitter.com/TfTHacker",
+	"helpUrl": "https://tfthacker.com/SNW",
+	"isDesktopOnly": false,
+	"fundingUrl": {
+		"Sponsor my work": "https://tfthacker.com/sponsor"
+	}
 }

@@ -10,6 +10,12 @@
   "sortDirectionSubGroups": "new->old",
   "includeFiles": "",
   "lookAndFeel": "compact",
-  "_collapsedSections": [],
+  "_collapsedSections": [
+    "攻略/开学准备/开学准备.md",
+    "Day Planners/Day Planner-20230719.md",
+    "作业/718.md",
+    "Day Planners/Day Planner-20230718.md",
+    "Day Planners/713.md"
+  ],
   "_hiddenTags": []
 }

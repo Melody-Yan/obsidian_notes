@@ -1,0 +1,136 @@
+/* @settings
+
+name: 旁注区块相关设定
+id: parngjuh
+settings:
+  -
+    id: tzyhtii-dahsheau
+    title: 字体大小设定
+    description: ㅤㅤ控制区块内部字体的大小
+    type: variable-text
+    default: 90%
+  -
+    id: harngjiannjiuh
+    title: 行间距设定
+    type: variable-text
+    default: 1.3em
+  -
+    id: chiukuay-kuanduh
+    title: 区块最大宽度
+    description: ㅤㅤ使小屏或启用缩减栏宽后的显示效果更均衡。
+    type: variable-text
+    default: 38%
+  -
+    id: neybianjiuh
+    title: 内边距设定
+    type: heading
+    level: 3
+    collapsed: true
+  -
+      id: ney-shanqshiah
+      title: 上下边距
+      description: ㅤㅤ如果没有使用默认的 callout 样式，建议此处保持为默认，因为上下左右都是 5 px 时观感较为均衡。或者直接删去默认值留空，这样圆角边框和阴影效果就可以直接作用于 callout 区块之上。
+      type: variable-text
+      default: 5px
+  -
+      id: ney-tzuooyow
+      title: 左右边距
+      description: ㅤㅤ5 px 大概就是 1 毫米左右的宽度。
+      type: variable-text
+      default: 5px
+  -
+    id: waybianjiuh
+    title: 外边距设定
+    type: heading
+    level: 3
+    collapsed: true
+  -
+    id: way-shanq
+    title: 上方边距
+    type: variable-text
+    default: 0px
+  -
+    id: way-shiah
+    title: 下方边距
+    type: variable-text
+    default: 3px
+  -
+    id: way-yow
+    title: 右侧边距
+    description: ㅤㅤ控制左边的区块。建议设置为 30 px，此时右侧如若存在列表，这个间距将不会显得于紧密。
+    type: variable-text
+    default: 30px
+  -
+    id: way-tzuoo
+    title: 左侧边距
+    description: ㅤㅤ控制右边的区块。
+    type: variable-text
+    default: 20px
+  -
+*/
+
+div[data-callout-metadata~="pz"].callout,
+div[data-callout-metadata~="pzy"].callout,
+div[data-callout-metadata~="pzz"].callout {
+  padding: var(--ney-shanqshiah,5px) var(--ney-tzuooyow,5px) ;
+  border-radius: 8px;
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-color: #888888 !important;
+  border: 1px solid;
+  font-size: var(--tzyhtii-dahsheau,90%);
+  line-height: var(--harngjiannjiuh,1.3em);
+  max-width: var(--chiukuay-kuanduh,38%);
+  clear: both
+}
+
+div[data-callout-metadata~="pz"].callout,
+div[data-callout-metadata~="pzy"].callout {
+  margin: var(--way-shanq,0) 0 var(--way-shiah,3px) var(--way-tzuoo,20px);
+  float: right
+}
+div[data-callout-metadata~="pzz"].callout {
+  margin: var(--way-shanq,0) var(--way-yow,30px) var(--way-shiah,3px) 0;
+  float: left
+}
+
+/* 「z」可以随意，但是「y」只能和「pz」写在一起，不能单独拿出来放在这句话下面，否则收合后会自动移动到左上角而不是停留在当前位置。 */
+
+/* 去除边框 */
+div[data-callout-metadata~="wbk"]:not(.is-collapsed) {
+  border: 0; 
+}
+/* 去除阴影 */
+div[data-callout-metadata~="wyy"]:not(.is-collapsed) {
+  box-shadow: unset !important; 
+}
+
+/* 去除图标 */
+:is(div[data-callout-metadata~="wtb"]) .callout-icon .svg-icon {
+  width: 0;
+}
+
+/*透明样式和图片样式*/
+div[data-callout-metadata~="tm"]:not(.is-collapsed)>.callout-title,
+div[data-callout-metadata~="tp"]:not(.is-collapsed)>.callout-title /*去除 title */ {
+  display: none;
+}
+
+div[data-callout-metadata~="tm"]:not(.is-collapsed)>.callout-content,
+div[data-callout-metadata~="tp"]:not(.is-collapsed)>.callout-content /*去除 callout 主体部分*/ {
+  display: contents;
+}
+
+div[data-callout-metadata~="tm"].callout{
+  background-color: unset; /*针对默认主题去除背景颜色，下同*/
+  padding: 0px 10px; /*对于透明样式，上下边距设置为 0 后也会留有空白，但左右为 0 就不会留空了。*/
+}
+div[data-callout-metadata~="tp"]:is(div[data-callout-metadata~="pzz"]).callout{
+  background-color: unset;
+  padding: 0px;
+  margin: 0 15px 0 0;
+}
+div[data-callout-metadata~="tp"]:is(div[data-callout-metadata~="pzy"]).callout{
+  background-color: unset;
+  padding: 0px;
+  margin: 0 0 0 15px;
+}

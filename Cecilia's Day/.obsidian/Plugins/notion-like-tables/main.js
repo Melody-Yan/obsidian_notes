@@ -235,7 +235,7 @@ var require_react_development = __commonJS({
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var ReactVersion = "18.2.0";
+        var ReactVersion = "18.3.1";
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -2063,6 +2063,7 @@ var require_react_development = __commonJS({
         exports.StrictMode = REACT_STRICT_MODE_TYPE;
         exports.Suspense = REACT_SUSPENSE_TYPE;
         exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactSharedInternals;
+        exports.act = act;
         exports.cloneElement = cloneElement$1;
         exports.createContext = createContext2;
         exports.createElement = createElement$1;
@@ -2658,7 +2659,7 @@ var require_react_dom_development = __commonJS({
         var enableSuspenseAvoidThisFallback = false;
         var disableCommentsAsDOMContainers = true;
         var enableCustomElementPropertySupport = false;
-        var warnAboutStringRefs = false;
+        var warnAboutStringRefs = true;
         var enableSchedulingProfiler = true;
         var enableProfilerTimer = true;
         var enableProfilerCommitHooks = true;
@@ -11955,1279 +11956,6 @@ var require_react_dom_development = __commonJS({
             pendingLegacyContextWarning = /* @__PURE__ */ new Map();
           };
         }
-        function resolveDefaultProps(Component2, baseProps) {
-          if (Component2 && Component2.defaultProps) {
-            var props = assign({}, baseProps);
-            var defaultProps = Component2.defaultProps;
-            for (var propName in defaultProps) {
-              if (props[propName] === void 0) {
-                props[propName] = defaultProps[propName];
-              }
-            }
-            return props;
-          }
-          return baseProps;
-        }
-        var valueCursor = createCursor(null);
-        var rendererSigil;
-        {
-          rendererSigil = {};
-        }
-        var currentlyRenderingFiber = null;
-        var lastContextDependency = null;
-        var lastFullyObservedContext = null;
-        var isDisallowedContextReadInDEV = false;
-        function resetContextDependencies() {
-          currentlyRenderingFiber = null;
-          lastContextDependency = null;
-          lastFullyObservedContext = null;
-          {
-            isDisallowedContextReadInDEV = false;
-          }
-        }
-        function enterDisallowedContextReadInDEV() {
-          {
-            isDisallowedContextReadInDEV = true;
-          }
-        }
-        function exitDisallowedContextReadInDEV() {
-          {
-            isDisallowedContextReadInDEV = false;
-          }
-        }
-        function pushProvider(providerFiber, context, nextValue) {
-          {
-            push(valueCursor, context._currentValue, providerFiber);
-            context._currentValue = nextValue;
-            {
-              if (context._currentRenderer !== void 0 && context._currentRenderer !== null && context._currentRenderer !== rendererSigil) {
-                error("Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.");
-              }
-              context._currentRenderer = rendererSigil;
-            }
-          }
-        }
-        function popProvider(context, providerFiber) {
-          var currentValue = valueCursor.current;
-          pop(valueCursor, providerFiber);
-          {
-            {
-              context._currentValue = currentValue;
-            }
-          }
-        }
-        function scheduleContextWorkOnParentPath(parent, renderLanes2, propagationRoot) {
-          var node = parent;
-          while (node !== null) {
-            var alternate = node.alternate;
-            if (!isSubsetOfLanes(node.childLanes, renderLanes2)) {
-              node.childLanes = mergeLanes(node.childLanes, renderLanes2);
-              if (alternate !== null) {
-                alternate.childLanes = mergeLanes(alternate.childLanes, renderLanes2);
-              }
-            } else if (alternate !== null && !isSubsetOfLanes(alternate.childLanes, renderLanes2)) {
-              alternate.childLanes = mergeLanes(alternate.childLanes, renderLanes2);
-            }
-            if (node === propagationRoot) {
-              break;
-            }
-            node = node.return;
-          }
-          {
-            if (node !== propagationRoot) {
-              error("Expected to find the propagation root when scheduling context work. This error is likely caused by a bug in React. Please file an issue.");
-            }
-          }
-        }
-        function propagateContextChange(workInProgress2, context, renderLanes2) {
-          {
-            propagateContextChange_eager(workInProgress2, context, renderLanes2);
-          }
-        }
-        function propagateContextChange_eager(workInProgress2, context, renderLanes2) {
-          var fiber = workInProgress2.child;
-          if (fiber !== null) {
-            fiber.return = workInProgress2;
-          }
-          while (fiber !== null) {
-            var nextFiber = void 0;
-            var list = fiber.dependencies;
-            if (list !== null) {
-              nextFiber = fiber.child;
-              var dependency = list.firstContext;
-              while (dependency !== null) {
-                if (dependency.context === context) {
-                  if (fiber.tag === ClassComponent) {
-                    var lane = pickArbitraryLane(renderLanes2);
-                    var update = createUpdate(NoTimestamp, lane);
-                    update.tag = ForceUpdate;
-                    var updateQueue = fiber.updateQueue;
-                    if (updateQueue === null)
-                      ;
-                    else {
-                      var sharedQueue = updateQueue.shared;
-                      var pending = sharedQueue.pending;
-                      if (pending === null) {
-                        update.next = update;
-                      } else {
-                        update.next = pending.next;
-                        pending.next = update;
-                      }
-                      sharedQueue.pending = update;
-                    }
-                  }
-                  fiber.lanes = mergeLanes(fiber.lanes, renderLanes2);
-                  var alternate = fiber.alternate;
-                  if (alternate !== null) {
-                    alternate.lanes = mergeLanes(alternate.lanes, renderLanes2);
-                  }
-                  scheduleContextWorkOnParentPath(fiber.return, renderLanes2, workInProgress2);
-                  list.lanes = mergeLanes(list.lanes, renderLanes2);
-                  break;
-                }
-                dependency = dependency.next;
-              }
-            } else if (fiber.tag === ContextProvider) {
-              nextFiber = fiber.type === workInProgress2.type ? null : fiber.child;
-            } else if (fiber.tag === DehydratedFragment) {
-              var parentSuspense = fiber.return;
-              if (parentSuspense === null) {
-                throw new Error("We just came from a parent so we must have had a parent. This is a bug in React.");
-              }
-              parentSuspense.lanes = mergeLanes(parentSuspense.lanes, renderLanes2);
-              var _alternate = parentSuspense.alternate;
-              if (_alternate !== null) {
-                _alternate.lanes = mergeLanes(_alternate.lanes, renderLanes2);
-              }
-              scheduleContextWorkOnParentPath(parentSuspense, renderLanes2, workInProgress2);
-              nextFiber = fiber.sibling;
-            } else {
-              nextFiber = fiber.child;
-            }
-            if (nextFiber !== null) {
-              nextFiber.return = fiber;
-            } else {
-              nextFiber = fiber;
-              while (nextFiber !== null) {
-                if (nextFiber === workInProgress2) {
-                  nextFiber = null;
-                  break;
-                }
-                var sibling = nextFiber.sibling;
-                if (sibling !== null) {
-                  sibling.return = nextFiber.return;
-                  nextFiber = sibling;
-                  break;
-                }
-                nextFiber = nextFiber.return;
-              }
-            }
-            fiber = nextFiber;
-          }
-        }
-        function prepareToReadContext(workInProgress2, renderLanes2) {
-          currentlyRenderingFiber = workInProgress2;
-          lastContextDependency = null;
-          lastFullyObservedContext = null;
-          var dependencies = workInProgress2.dependencies;
-          if (dependencies !== null) {
-            {
-              var firstContext = dependencies.firstContext;
-              if (firstContext !== null) {
-                if (includesSomeLane(dependencies.lanes, renderLanes2)) {
-                  markWorkInProgressReceivedUpdate();
-                }
-                dependencies.firstContext = null;
-              }
-            }
-          }
-        }
-        function readContext(context) {
-          {
-            if (isDisallowedContextReadInDEV) {
-              error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
-            }
-          }
-          var value = context._currentValue;
-          if (lastFullyObservedContext === context)
-            ;
-          else {
-            var contextItem = {
-              context,
-              memoizedValue: value,
-              next: null
-            };
-            if (lastContextDependency === null) {
-              if (currentlyRenderingFiber === null) {
-                throw new Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
-              }
-              lastContextDependency = contextItem;
-              currentlyRenderingFiber.dependencies = {
-                lanes: NoLanes,
-                firstContext: contextItem
-              };
-            } else {
-              lastContextDependency = lastContextDependency.next = contextItem;
-            }
-          }
-          return value;
-        }
-        var concurrentQueues = null;
-        function pushConcurrentUpdateQueue(queue) {
-          if (concurrentQueues === null) {
-            concurrentQueues = [queue];
-          } else {
-            concurrentQueues.push(queue);
-          }
-        }
-        function finishQueueingConcurrentUpdates() {
-          if (concurrentQueues !== null) {
-            for (var i2 = 0; i2 < concurrentQueues.length; i2++) {
-              var queue = concurrentQueues[i2];
-              var lastInterleavedUpdate = queue.interleaved;
-              if (lastInterleavedUpdate !== null) {
-                queue.interleaved = null;
-                var firstInterleavedUpdate = lastInterleavedUpdate.next;
-                var lastPendingUpdate = queue.pending;
-                if (lastPendingUpdate !== null) {
-                  var firstPendingUpdate = lastPendingUpdate.next;
-                  lastPendingUpdate.next = firstInterleavedUpdate;
-                  lastInterleavedUpdate.next = firstPendingUpdate;
-                }
-                queue.pending = lastInterleavedUpdate;
-              }
-            }
-            concurrentQueues = null;
-          }
-        }
-        function enqueueConcurrentHookUpdate(fiber, queue, update, lane) {
-          var interleaved = queue.interleaved;
-          if (interleaved === null) {
-            update.next = update;
-            pushConcurrentUpdateQueue(queue);
-          } else {
-            update.next = interleaved.next;
-            interleaved.next = update;
-          }
-          queue.interleaved = update;
-          return markUpdateLaneFromFiberToRoot(fiber, lane);
-        }
-        function enqueueConcurrentHookUpdateAndEagerlyBailout(fiber, queue, update, lane) {
-          var interleaved = queue.interleaved;
-          if (interleaved === null) {
-            update.next = update;
-            pushConcurrentUpdateQueue(queue);
-          } else {
-            update.next = interleaved.next;
-            interleaved.next = update;
-          }
-          queue.interleaved = update;
-        }
-        function enqueueConcurrentClassUpdate(fiber, queue, update, lane) {
-          var interleaved = queue.interleaved;
-          if (interleaved === null) {
-            update.next = update;
-            pushConcurrentUpdateQueue(queue);
-          } else {
-            update.next = interleaved.next;
-            interleaved.next = update;
-          }
-          queue.interleaved = update;
-          return markUpdateLaneFromFiberToRoot(fiber, lane);
-        }
-        function enqueueConcurrentRenderForLane(fiber, lane) {
-          return markUpdateLaneFromFiberToRoot(fiber, lane);
-        }
-        var unsafe_markUpdateLaneFromFiberToRoot = markUpdateLaneFromFiberToRoot;
-        function markUpdateLaneFromFiberToRoot(sourceFiber, lane) {
-          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, lane);
-          var alternate = sourceFiber.alternate;
-          if (alternate !== null) {
-            alternate.lanes = mergeLanes(alternate.lanes, lane);
-          }
-          {
-            if (alternate === null && (sourceFiber.flags & (Placement | Hydrating)) !== NoFlags) {
-              warnAboutUpdateOnNotYetMountedFiberInDEV(sourceFiber);
-            }
-          }
-          var node = sourceFiber;
-          var parent = sourceFiber.return;
-          while (parent !== null) {
-            parent.childLanes = mergeLanes(parent.childLanes, lane);
-            alternate = parent.alternate;
-            if (alternate !== null) {
-              alternate.childLanes = mergeLanes(alternate.childLanes, lane);
-            } else {
-              {
-                if ((parent.flags & (Placement | Hydrating)) !== NoFlags) {
-                  warnAboutUpdateOnNotYetMountedFiberInDEV(sourceFiber);
-                }
-              }
-            }
-            node = parent;
-            parent = parent.return;
-          }
-          if (node.tag === HostRoot) {
-            var root2 = node.stateNode;
-            return root2;
-          } else {
-            return null;
-          }
-        }
-        var UpdateState = 0;
-        var ReplaceState = 1;
-        var ForceUpdate = 2;
-        var CaptureUpdate = 3;
-        var hasForceUpdate = false;
-        var didWarnUpdateInsideUpdate;
-        var currentlyProcessingQueue;
-        {
-          didWarnUpdateInsideUpdate = false;
-          currentlyProcessingQueue = null;
-        }
-        function initializeUpdateQueue(fiber) {
-          var queue = {
-            baseState: fiber.memoizedState,
-            firstBaseUpdate: null,
-            lastBaseUpdate: null,
-            shared: {
-              pending: null,
-              interleaved: null,
-              lanes: NoLanes
-            },
-            effects: null
-          };
-          fiber.updateQueue = queue;
-        }
-        function cloneUpdateQueue(current2, workInProgress2) {
-          var queue = workInProgress2.updateQueue;
-          var currentQueue = current2.updateQueue;
-          if (queue === currentQueue) {
-            var clone2 = {
-              baseState: currentQueue.baseState,
-              firstBaseUpdate: currentQueue.firstBaseUpdate,
-              lastBaseUpdate: currentQueue.lastBaseUpdate,
-              shared: currentQueue.shared,
-              effects: currentQueue.effects
-            };
-            workInProgress2.updateQueue = clone2;
-          }
-        }
-        function createUpdate(eventTime, lane) {
-          var update = {
-            eventTime,
-            lane,
-            tag: UpdateState,
-            payload: null,
-            callback: null,
-            next: null
-          };
-          return update;
-        }
-        function enqueueUpdate(fiber, update, lane) {
-          var updateQueue = fiber.updateQueue;
-          if (updateQueue === null) {
-            return null;
-          }
-          var sharedQueue = updateQueue.shared;
-          {
-            if (currentlyProcessingQueue === sharedQueue && !didWarnUpdateInsideUpdate) {
-              error("An update (setState, replaceState, or forceUpdate) was scheduled from inside an update function. Update functions should be pure, with zero side-effects. Consider using componentDidUpdate or a callback.");
-              didWarnUpdateInsideUpdate = true;
-            }
-          }
-          if (isUnsafeClassRenderPhaseUpdate()) {
-            var pending = sharedQueue.pending;
-            if (pending === null) {
-              update.next = update;
-            } else {
-              update.next = pending.next;
-              pending.next = update;
-            }
-            sharedQueue.pending = update;
-            return unsafe_markUpdateLaneFromFiberToRoot(fiber, lane);
-          } else {
-            return enqueueConcurrentClassUpdate(fiber, sharedQueue, update, lane);
-          }
-        }
-        function entangleTransitions(root2, fiber, lane) {
-          var updateQueue = fiber.updateQueue;
-          if (updateQueue === null) {
-            return;
-          }
-          var sharedQueue = updateQueue.shared;
-          if (isTransitionLane(lane)) {
-            var queueLanes = sharedQueue.lanes;
-            queueLanes = intersectLanes(queueLanes, root2.pendingLanes);
-            var newQueueLanes = mergeLanes(queueLanes, lane);
-            sharedQueue.lanes = newQueueLanes;
-            markRootEntangled(root2, newQueueLanes);
-          }
-        }
-        function enqueueCapturedUpdate(workInProgress2, capturedUpdate) {
-          var queue = workInProgress2.updateQueue;
-          var current2 = workInProgress2.alternate;
-          if (current2 !== null) {
-            var currentQueue = current2.updateQueue;
-            if (queue === currentQueue) {
-              var newFirst = null;
-              var newLast = null;
-              var firstBaseUpdate = queue.firstBaseUpdate;
-              if (firstBaseUpdate !== null) {
-                var update = firstBaseUpdate;
-                do {
-                  var clone2 = {
-                    eventTime: update.eventTime,
-                    lane: update.lane,
-                    tag: update.tag,
-                    payload: update.payload,
-                    callback: update.callback,
-                    next: null
-                  };
-                  if (newLast === null) {
-                    newFirst = newLast = clone2;
-                  } else {
-                    newLast.next = clone2;
-                    newLast = clone2;
-                  }
-                  update = update.next;
-                } while (update !== null);
-                if (newLast === null) {
-                  newFirst = newLast = capturedUpdate;
-                } else {
-                  newLast.next = capturedUpdate;
-                  newLast = capturedUpdate;
-                }
-              } else {
-                newFirst = newLast = capturedUpdate;
-              }
-              queue = {
-                baseState: currentQueue.baseState,
-                firstBaseUpdate: newFirst,
-                lastBaseUpdate: newLast,
-                shared: currentQueue.shared,
-                effects: currentQueue.effects
-              };
-              workInProgress2.updateQueue = queue;
-              return;
-            }
-          }
-          var lastBaseUpdate = queue.lastBaseUpdate;
-          if (lastBaseUpdate === null) {
-            queue.firstBaseUpdate = capturedUpdate;
-          } else {
-            lastBaseUpdate.next = capturedUpdate;
-          }
-          queue.lastBaseUpdate = capturedUpdate;
-        }
-        function getStateFromUpdate(workInProgress2, queue, update, prevState, nextProps, instance) {
-          switch (update.tag) {
-            case ReplaceState: {
-              var payload = update.payload;
-              if (typeof payload === "function") {
-                {
-                  enterDisallowedContextReadInDEV();
-                }
-                var nextState = payload.call(instance, prevState, nextProps);
-                {
-                  if (workInProgress2.mode & StrictLegacyMode) {
-                    setIsStrictModeForDevtools(true);
-                    try {
-                      payload.call(instance, prevState, nextProps);
-                    } finally {
-                      setIsStrictModeForDevtools(false);
-                    }
-                  }
-                  exitDisallowedContextReadInDEV();
-                }
-                return nextState;
-              }
-              return payload;
-            }
-            case CaptureUpdate: {
-              workInProgress2.flags = workInProgress2.flags & ~ShouldCapture | DidCapture;
-            }
-            case UpdateState: {
-              var _payload = update.payload;
-              var partialState;
-              if (typeof _payload === "function") {
-                {
-                  enterDisallowedContextReadInDEV();
-                }
-                partialState = _payload.call(instance, prevState, nextProps);
-                {
-                  if (workInProgress2.mode & StrictLegacyMode) {
-                    setIsStrictModeForDevtools(true);
-                    try {
-                      _payload.call(instance, prevState, nextProps);
-                    } finally {
-                      setIsStrictModeForDevtools(false);
-                    }
-                  }
-                  exitDisallowedContextReadInDEV();
-                }
-              } else {
-                partialState = _payload;
-              }
-              if (partialState === null || partialState === void 0) {
-                return prevState;
-              }
-              return assign({}, prevState, partialState);
-            }
-            case ForceUpdate: {
-              hasForceUpdate = true;
-              return prevState;
-            }
-          }
-          return prevState;
-        }
-        function processUpdateQueue(workInProgress2, props, instance, renderLanes2) {
-          var queue = workInProgress2.updateQueue;
-          hasForceUpdate = false;
-          {
-            currentlyProcessingQueue = queue.shared;
-          }
-          var firstBaseUpdate = queue.firstBaseUpdate;
-          var lastBaseUpdate = queue.lastBaseUpdate;
-          var pendingQueue = queue.shared.pending;
-          if (pendingQueue !== null) {
-            queue.shared.pending = null;
-            var lastPendingUpdate = pendingQueue;
-            var firstPendingUpdate = lastPendingUpdate.next;
-            lastPendingUpdate.next = null;
-            if (lastBaseUpdate === null) {
-              firstBaseUpdate = firstPendingUpdate;
-            } else {
-              lastBaseUpdate.next = firstPendingUpdate;
-            }
-            lastBaseUpdate = lastPendingUpdate;
-            var current2 = workInProgress2.alternate;
-            if (current2 !== null) {
-              var currentQueue = current2.updateQueue;
-              var currentLastBaseUpdate = currentQueue.lastBaseUpdate;
-              if (currentLastBaseUpdate !== lastBaseUpdate) {
-                if (currentLastBaseUpdate === null) {
-                  currentQueue.firstBaseUpdate = firstPendingUpdate;
-                } else {
-                  currentLastBaseUpdate.next = firstPendingUpdate;
-                }
-                currentQueue.lastBaseUpdate = lastPendingUpdate;
-              }
-            }
-          }
-          if (firstBaseUpdate !== null) {
-            var newState = queue.baseState;
-            var newLanes = NoLanes;
-            var newBaseState = null;
-            var newFirstBaseUpdate = null;
-            var newLastBaseUpdate = null;
-            var update = firstBaseUpdate;
-            do {
-              var updateLane = update.lane;
-              var updateEventTime = update.eventTime;
-              if (!isSubsetOfLanes(renderLanes2, updateLane)) {
-                var clone2 = {
-                  eventTime: updateEventTime,
-                  lane: updateLane,
-                  tag: update.tag,
-                  payload: update.payload,
-                  callback: update.callback,
-                  next: null
-                };
-                if (newLastBaseUpdate === null) {
-                  newFirstBaseUpdate = newLastBaseUpdate = clone2;
-                  newBaseState = newState;
-                } else {
-                  newLastBaseUpdate = newLastBaseUpdate.next = clone2;
-                }
-                newLanes = mergeLanes(newLanes, updateLane);
-              } else {
-                if (newLastBaseUpdate !== null) {
-                  var _clone = {
-                    eventTime: updateEventTime,
-                    // This update is going to be committed so we never want uncommit
-                    // it. Using NoLane works because 0 is a subset of all bitmasks, so
-                    // this will never be skipped by the check above.
-                    lane: NoLane,
-                    tag: update.tag,
-                    payload: update.payload,
-                    callback: update.callback,
-                    next: null
-                  };
-                  newLastBaseUpdate = newLastBaseUpdate.next = _clone;
-                }
-                newState = getStateFromUpdate(workInProgress2, queue, update, newState, props, instance);
-                var callback = update.callback;
-                if (callback !== null && // If the update was already committed, we should not queue its
-                // callback again.
-                update.lane !== NoLane) {
-                  workInProgress2.flags |= Callback;
-                  var effects = queue.effects;
-                  if (effects === null) {
-                    queue.effects = [update];
-                  } else {
-                    effects.push(update);
-                  }
-                }
-              }
-              update = update.next;
-              if (update === null) {
-                pendingQueue = queue.shared.pending;
-                if (pendingQueue === null) {
-                  break;
-                } else {
-                  var _lastPendingUpdate = pendingQueue;
-                  var _firstPendingUpdate = _lastPendingUpdate.next;
-                  _lastPendingUpdate.next = null;
-                  update = _firstPendingUpdate;
-                  queue.lastBaseUpdate = _lastPendingUpdate;
-                  queue.shared.pending = null;
-                }
-              }
-            } while (true);
-            if (newLastBaseUpdate === null) {
-              newBaseState = newState;
-            }
-            queue.baseState = newBaseState;
-            queue.firstBaseUpdate = newFirstBaseUpdate;
-            queue.lastBaseUpdate = newLastBaseUpdate;
-            var lastInterleaved = queue.shared.interleaved;
-            if (lastInterleaved !== null) {
-              var interleaved = lastInterleaved;
-              do {
-                newLanes = mergeLanes(newLanes, interleaved.lane);
-                interleaved = interleaved.next;
-              } while (interleaved !== lastInterleaved);
-            } else if (firstBaseUpdate === null) {
-              queue.shared.lanes = NoLanes;
-            }
-            markSkippedUpdateLanes(newLanes);
-            workInProgress2.lanes = newLanes;
-            workInProgress2.memoizedState = newState;
-          }
-          {
-            currentlyProcessingQueue = null;
-          }
-        }
-        function callCallback(callback, context) {
-          if (typeof callback !== "function") {
-            throw new Error("Invalid argument passed as callback. Expected a function. Instead " + ("received: " + callback));
-          }
-          callback.call(context);
-        }
-        function resetHasForceUpdateBeforeProcessing() {
-          hasForceUpdate = false;
-        }
-        function checkHasForceUpdateAfterProcessing() {
-          return hasForceUpdate;
-        }
-        function commitUpdateQueue(finishedWork, finishedQueue, instance) {
-          var effects = finishedQueue.effects;
-          finishedQueue.effects = null;
-          if (effects !== null) {
-            for (var i2 = 0; i2 < effects.length; i2++) {
-              var effect = effects[i2];
-              var callback = effect.callback;
-              if (callback !== null) {
-                effect.callback = null;
-                callCallback(callback, instance);
-              }
-            }
-          }
-        }
-        var fakeInternalInstance = {};
-        var emptyRefsObject = new React66.Component().refs;
-        var didWarnAboutStateAssignmentForComponent;
-        var didWarnAboutUninitializedState;
-        var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
-        var didWarnAboutLegacyLifecyclesAndDerivedState;
-        var didWarnAboutUndefinedDerivedState;
-        var warnOnUndefinedDerivedState;
-        var warnOnInvalidCallback;
-        var didWarnAboutDirectlyAssigningPropsToState;
-        var didWarnAboutContextTypeAndContextTypes;
-        var didWarnAboutInvalidateContextType;
-        {
-          didWarnAboutStateAssignmentForComponent = /* @__PURE__ */ new Set();
-          didWarnAboutUninitializedState = /* @__PURE__ */ new Set();
-          didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate = /* @__PURE__ */ new Set();
-          didWarnAboutLegacyLifecyclesAndDerivedState = /* @__PURE__ */ new Set();
-          didWarnAboutDirectlyAssigningPropsToState = /* @__PURE__ */ new Set();
-          didWarnAboutUndefinedDerivedState = /* @__PURE__ */ new Set();
-          didWarnAboutContextTypeAndContextTypes = /* @__PURE__ */ new Set();
-          didWarnAboutInvalidateContextType = /* @__PURE__ */ new Set();
-          var didWarnOnInvalidCallback = /* @__PURE__ */ new Set();
-          warnOnInvalidCallback = function(callback, callerName) {
-            if (callback === null || typeof callback === "function") {
-              return;
-            }
-            var key = callerName + "_" + callback;
-            if (!didWarnOnInvalidCallback.has(key)) {
-              didWarnOnInvalidCallback.add(key);
-              error("%s(...): Expected the last optional `callback` argument to be a function. Instead received: %s.", callerName, callback);
-            }
-          };
-          warnOnUndefinedDerivedState = function(type, partialState) {
-            if (partialState === void 0) {
-              var componentName = getComponentNameFromType(type) || "Component";
-              if (!didWarnAboutUndefinedDerivedState.has(componentName)) {
-                didWarnAboutUndefinedDerivedState.add(componentName);
-                error("%s.getDerivedStateFromProps(): A valid state object (or null) must be returned. You have returned undefined.", componentName);
-              }
-            }
-          };
-          Object.defineProperty(fakeInternalInstance, "_processChildContext", {
-            enumerable: false,
-            value: function() {
-              throw new Error("_processChildContext is not available in React 16+. This likely means you have multiple copies of React and are attempting to nest a React 15 tree inside a React 16 tree using unstable_renderSubtreeIntoContainer, which isn't supported. Try to make sure you have only one copy of React (and ideally, switch to ReactDOM.createPortal).");
-            }
-          });
-          Object.freeze(fakeInternalInstance);
-        }
-        function applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, nextProps) {
-          var prevState = workInProgress2.memoizedState;
-          var partialState = getDerivedStateFromProps(nextProps, prevState);
-          {
-            if (workInProgress2.mode & StrictLegacyMode) {
-              setIsStrictModeForDevtools(true);
-              try {
-                partialState = getDerivedStateFromProps(nextProps, prevState);
-              } finally {
-                setIsStrictModeForDevtools(false);
-              }
-            }
-            warnOnUndefinedDerivedState(ctor, partialState);
-          }
-          var memoizedState = partialState === null || partialState === void 0 ? prevState : assign({}, prevState, partialState);
-          workInProgress2.memoizedState = memoizedState;
-          if (workInProgress2.lanes === NoLanes) {
-            var updateQueue = workInProgress2.updateQueue;
-            updateQueue.baseState = memoizedState;
-          }
-        }
-        var classComponentUpdater = {
-          isMounted,
-          enqueueSetState: function(inst, payload, callback) {
-            var fiber = get(inst);
-            var eventTime = requestEventTime();
-            var lane = requestUpdateLane(fiber);
-            var update = createUpdate(eventTime, lane);
-            update.payload = payload;
-            if (callback !== void 0 && callback !== null) {
-              {
-                warnOnInvalidCallback(callback, "setState");
-              }
-              update.callback = callback;
-            }
-            var root2 = enqueueUpdate(fiber, update, lane);
-            if (root2 !== null) {
-              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
-              entangleTransitions(root2, fiber, lane);
-            }
-            {
-              markStateUpdateScheduled(fiber, lane);
-            }
-          },
-          enqueueReplaceState: function(inst, payload, callback) {
-            var fiber = get(inst);
-            var eventTime = requestEventTime();
-            var lane = requestUpdateLane(fiber);
-            var update = createUpdate(eventTime, lane);
-            update.tag = ReplaceState;
-            update.payload = payload;
-            if (callback !== void 0 && callback !== null) {
-              {
-                warnOnInvalidCallback(callback, "replaceState");
-              }
-              update.callback = callback;
-            }
-            var root2 = enqueueUpdate(fiber, update, lane);
-            if (root2 !== null) {
-              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
-              entangleTransitions(root2, fiber, lane);
-            }
-            {
-              markStateUpdateScheduled(fiber, lane);
-            }
-          },
-          enqueueForceUpdate: function(inst, callback) {
-            var fiber = get(inst);
-            var eventTime = requestEventTime();
-            var lane = requestUpdateLane(fiber);
-            var update = createUpdate(eventTime, lane);
-            update.tag = ForceUpdate;
-            if (callback !== void 0 && callback !== null) {
-              {
-                warnOnInvalidCallback(callback, "forceUpdate");
-              }
-              update.callback = callback;
-            }
-            var root2 = enqueueUpdate(fiber, update, lane);
-            if (root2 !== null) {
-              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
-              entangleTransitions(root2, fiber, lane);
-            }
-            {
-              markForceUpdateScheduled(fiber, lane);
-            }
-          }
-        };
-        function checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext) {
-          var instance = workInProgress2.stateNode;
-          if (typeof instance.shouldComponentUpdate === "function") {
-            var shouldUpdate = instance.shouldComponentUpdate(newProps, newState, nextContext);
-            {
-              if (workInProgress2.mode & StrictLegacyMode) {
-                setIsStrictModeForDevtools(true);
-                try {
-                  shouldUpdate = instance.shouldComponentUpdate(newProps, newState, nextContext);
-                } finally {
-                  setIsStrictModeForDevtools(false);
-                }
-              }
-              if (shouldUpdate === void 0) {
-                error("%s.shouldComponentUpdate(): Returned undefined instead of a boolean value. Make sure to return true or false.", getComponentNameFromType(ctor) || "Component");
-              }
-            }
-            return shouldUpdate;
-          }
-          if (ctor.prototype && ctor.prototype.isPureReactComponent) {
-            return !shallowEqual2(oldProps, newProps) || !shallowEqual2(oldState, newState);
-          }
-          return true;
-        }
-        function checkClassInstance(workInProgress2, ctor, newProps) {
-          var instance = workInProgress2.stateNode;
-          {
-            var name = getComponentNameFromType(ctor) || "Component";
-            var renderPresent = instance.render;
-            if (!renderPresent) {
-              if (ctor.prototype && typeof ctor.prototype.render === "function") {
-                error("%s(...): No `render` method found on the returned component instance: did you accidentally return an object from the constructor?", name);
-              } else {
-                error("%s(...): No `render` method found on the returned component instance: you may have forgotten to define `render`.", name);
-              }
-            }
-            if (instance.getInitialState && !instance.getInitialState.isReactClassApproved && !instance.state) {
-              error("getInitialState was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Did you mean to define a state property instead?", name);
-            }
-            if (instance.getDefaultProps && !instance.getDefaultProps.isReactClassApproved) {
-              error("getDefaultProps was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Use a static property to define defaultProps instead.", name);
-            }
-            if (instance.propTypes) {
-              error("propTypes was defined as an instance property on %s. Use a static property to define propTypes instead.", name);
-            }
-            if (instance.contextType) {
-              error("contextType was defined as an instance property on %s. Use a static property to define contextType instead.", name);
-            }
-            {
-              if (instance.contextTypes) {
-                error("contextTypes was defined as an instance property on %s. Use a static property to define contextTypes instead.", name);
-              }
-              if (ctor.contextType && ctor.contextTypes && !didWarnAboutContextTypeAndContextTypes.has(ctor)) {
-                didWarnAboutContextTypeAndContextTypes.add(ctor);
-                error("%s declares both contextTypes and contextType static properties. The legacy contextTypes property will be ignored.", name);
-              }
-            }
-            if (typeof instance.componentShouldUpdate === "function") {
-              error("%s has a method called componentShouldUpdate(). Did you mean shouldComponentUpdate()? The name is phrased as a question because the function is expected to return a value.", name);
-            }
-            if (ctor.prototype && ctor.prototype.isPureReactComponent && typeof instance.shouldComponentUpdate !== "undefined") {
-              error("%s has a method called shouldComponentUpdate(). shouldComponentUpdate should not be used when extending React.PureComponent. Please extend React.Component if shouldComponentUpdate is used.", getComponentNameFromType(ctor) || "A pure component");
-            }
-            if (typeof instance.componentDidUnmount === "function") {
-              error("%s has a method called componentDidUnmount(). But there is no such lifecycle method. Did you mean componentWillUnmount()?", name);
-            }
-            if (typeof instance.componentDidReceiveProps === "function") {
-              error("%s has a method called componentDidReceiveProps(). But there is no such lifecycle method. If you meant to update the state in response to changing props, use componentWillReceiveProps(). If you meant to fetch data or run side-effects or mutations after React has updated the UI, use componentDidUpdate().", name);
-            }
-            if (typeof instance.componentWillRecieveProps === "function") {
-              error("%s has a method called componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", name);
-            }
-            if (typeof instance.UNSAFE_componentWillRecieveProps === "function") {
-              error("%s has a method called UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?", name);
-            }
-            var hasMutatedProps = instance.props !== newProps;
-            if (instance.props !== void 0 && hasMutatedProps) {
-              error("%s(...): When calling super() in `%s`, make sure to pass up the same props that your component's constructor was passed.", name, name);
-            }
-            if (instance.defaultProps) {
-              error("Setting defaultProps as an instance property on %s is not supported and will be ignored. Instead, define defaultProps as a static property on %s.", name, name);
-            }
-            if (typeof instance.getSnapshotBeforeUpdate === "function" && typeof instance.componentDidUpdate !== "function" && !didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(ctor)) {
-              didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(ctor);
-              error("%s: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.", getComponentNameFromType(ctor));
-            }
-            if (typeof instance.getDerivedStateFromProps === "function") {
-              error("%s: getDerivedStateFromProps() is defined as an instance method and will be ignored. Instead, declare it as a static method.", name);
-            }
-            if (typeof instance.getDerivedStateFromError === "function") {
-              error("%s: getDerivedStateFromError() is defined as an instance method and will be ignored. Instead, declare it as a static method.", name);
-            }
-            if (typeof ctor.getSnapshotBeforeUpdate === "function") {
-              error("%s: getSnapshotBeforeUpdate() is defined as a static method and will be ignored. Instead, declare it as an instance method.", name);
-            }
-            var _state = instance.state;
-            if (_state && (typeof _state !== "object" || isArray(_state))) {
-              error("%s.state: must be set to an object or null", name);
-            }
-            if (typeof instance.getChildContext === "function" && typeof ctor.childContextTypes !== "object") {
-              error("%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().", name);
-            }
-          }
-        }
-        function adoptClassInstance(workInProgress2, instance) {
-          instance.updater = classComponentUpdater;
-          workInProgress2.stateNode = instance;
-          set(instance, workInProgress2);
-          {
-            instance._reactInternalInstance = fakeInternalInstance;
-          }
-        }
-        function constructClassInstance(workInProgress2, ctor, props) {
-          var isLegacyContextConsumer = false;
-          var unmaskedContext = emptyContextObject;
-          var context = emptyContextObject;
-          var contextType = ctor.contextType;
-          {
-            if ("contextType" in ctor) {
-              var isValid = (
-                // Allow null for conditional declaration
-                contextType === null || contextType !== void 0 && contextType.$$typeof === REACT_CONTEXT_TYPE && contextType._context === void 0
-              );
-              if (!isValid && !didWarnAboutInvalidateContextType.has(ctor)) {
-                didWarnAboutInvalidateContextType.add(ctor);
-                var addendum = "";
-                if (contextType === void 0) {
-                  addendum = " However, it is set to undefined. This can be caused by a typo or by mixing up named and default imports. This can also happen due to a circular dependency, so try moving the createContext() call to a separate file.";
-                } else if (typeof contextType !== "object") {
-                  addendum = " However, it is set to a " + typeof contextType + ".";
-                } else if (contextType.$$typeof === REACT_PROVIDER_TYPE) {
-                  addendum = " Did you accidentally pass the Context.Provider instead?";
-                } else if (contextType._context !== void 0) {
-                  addendum = " Did you accidentally pass the Context.Consumer instead?";
-                } else {
-                  addendum = " However, it is set to an object with keys {" + Object.keys(contextType).join(", ") + "}.";
-                }
-                error("%s defines an invalid contextType. contextType should point to the Context object returned by React.createContext().%s", getComponentNameFromType(ctor) || "Component", addendum);
-              }
-            }
-          }
-          if (typeof contextType === "object" && contextType !== null) {
-            context = readContext(contextType);
-          } else {
-            unmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
-            var contextTypes = ctor.contextTypes;
-            isLegacyContextConsumer = contextTypes !== null && contextTypes !== void 0;
-            context = isLegacyContextConsumer ? getMaskedContext(workInProgress2, unmaskedContext) : emptyContextObject;
-          }
-          var instance = new ctor(props, context);
-          {
-            if (workInProgress2.mode & StrictLegacyMode) {
-              setIsStrictModeForDevtools(true);
-              try {
-                instance = new ctor(props, context);
-              } finally {
-                setIsStrictModeForDevtools(false);
-              }
-            }
-          }
-          var state = workInProgress2.memoizedState = instance.state !== null && instance.state !== void 0 ? instance.state : null;
-          adoptClassInstance(workInProgress2, instance);
-          {
-            if (typeof ctor.getDerivedStateFromProps === "function" && state === null) {
-              var componentName = getComponentNameFromType(ctor) || "Component";
-              if (!didWarnAboutUninitializedState.has(componentName)) {
-                didWarnAboutUninitializedState.add(componentName);
-                error("`%s` uses `getDerivedStateFromProps` but its initial state is %s. This is not recommended. Instead, define the initial state by assigning an object to `this.state` in the constructor of `%s`. This ensures that `getDerivedStateFromProps` arguments have a consistent shape.", componentName, instance.state === null ? "null" : "undefined", componentName);
-              }
-            }
-            if (typeof ctor.getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function") {
-              var foundWillMountName = null;
-              var foundWillReceivePropsName = null;
-              var foundWillUpdateName = null;
-              if (typeof instance.componentWillMount === "function" && instance.componentWillMount.__suppressDeprecationWarning !== true) {
-                foundWillMountName = "componentWillMount";
-              } else if (typeof instance.UNSAFE_componentWillMount === "function") {
-                foundWillMountName = "UNSAFE_componentWillMount";
-              }
-              if (typeof instance.componentWillReceiveProps === "function" && instance.componentWillReceiveProps.__suppressDeprecationWarning !== true) {
-                foundWillReceivePropsName = "componentWillReceiveProps";
-              } else if (typeof instance.UNSAFE_componentWillReceiveProps === "function") {
-                foundWillReceivePropsName = "UNSAFE_componentWillReceiveProps";
-              }
-              if (typeof instance.componentWillUpdate === "function" && instance.componentWillUpdate.__suppressDeprecationWarning !== true) {
-                foundWillUpdateName = "componentWillUpdate";
-              } else if (typeof instance.UNSAFE_componentWillUpdate === "function") {
-                foundWillUpdateName = "UNSAFE_componentWillUpdate";
-              }
-              if (foundWillMountName !== null || foundWillReceivePropsName !== null || foundWillUpdateName !== null) {
-                var _componentName = getComponentNameFromType(ctor) || "Component";
-                var newApiName = typeof ctor.getDerivedStateFromProps === "function" ? "getDerivedStateFromProps()" : "getSnapshotBeforeUpdate()";
-                if (!didWarnAboutLegacyLifecyclesAndDerivedState.has(_componentName)) {
-                  didWarnAboutLegacyLifecyclesAndDerivedState.add(_componentName);
-                  error("Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\nThe above lifecycles should be removed. Learn more about this warning here:\nhttps://reactjs.org/link/unsafe-component-lifecycles", _componentName, newApiName, foundWillMountName !== null ? "\n  " + foundWillMountName : "", foundWillReceivePropsName !== null ? "\n  " + foundWillReceivePropsName : "", foundWillUpdateName !== null ? "\n  " + foundWillUpdateName : "");
-                }
-              }
-            }
-          }
-          if (isLegacyContextConsumer) {
-            cacheContext(workInProgress2, unmaskedContext, context);
-          }
-          return instance;
-        }
-        function callComponentWillMount(workInProgress2, instance) {
-          var oldState = instance.state;
-          if (typeof instance.componentWillMount === "function") {
-            instance.componentWillMount();
-          }
-          if (typeof instance.UNSAFE_componentWillMount === "function") {
-            instance.UNSAFE_componentWillMount();
-          }
-          if (oldState !== instance.state) {
-            {
-              error("%s.componentWillMount(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", getComponentNameFromFiber(workInProgress2) || "Component");
-            }
-            classComponentUpdater.enqueueReplaceState(instance, instance.state, null);
-          }
-        }
-        function callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext) {
-          var oldState = instance.state;
-          if (typeof instance.componentWillReceiveProps === "function") {
-            instance.componentWillReceiveProps(newProps, nextContext);
-          }
-          if (typeof instance.UNSAFE_componentWillReceiveProps === "function") {
-            instance.UNSAFE_componentWillReceiveProps(newProps, nextContext);
-          }
-          if (instance.state !== oldState) {
-            {
-              var componentName = getComponentNameFromFiber(workInProgress2) || "Component";
-              if (!didWarnAboutStateAssignmentForComponent.has(componentName)) {
-                didWarnAboutStateAssignmentForComponent.add(componentName);
-                error("%s.componentWillReceiveProps(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", componentName);
-              }
-            }
-            classComponentUpdater.enqueueReplaceState(instance, instance.state, null);
-          }
-        }
-        function mountClassInstance(workInProgress2, ctor, newProps, renderLanes2) {
-          {
-            checkClassInstance(workInProgress2, ctor, newProps);
-          }
-          var instance = workInProgress2.stateNode;
-          instance.props = newProps;
-          instance.state = workInProgress2.memoizedState;
-          instance.refs = emptyRefsObject;
-          initializeUpdateQueue(workInProgress2);
-          var contextType = ctor.contextType;
-          if (typeof contextType === "object" && contextType !== null) {
-            instance.context = readContext(contextType);
-          } else {
-            var unmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
-            instance.context = getMaskedContext(workInProgress2, unmaskedContext);
-          }
-          {
-            if (instance.state === newProps) {
-              var componentName = getComponentNameFromType(ctor) || "Component";
-              if (!didWarnAboutDirectlyAssigningPropsToState.has(componentName)) {
-                didWarnAboutDirectlyAssigningPropsToState.add(componentName);
-                error("%s: It is not recommended to assign props directly to state because updates to props won't be reflected in state. In most cases, it is better to use props directly.", componentName);
-              }
-            }
-            if (workInProgress2.mode & StrictLegacyMode) {
-              ReactStrictModeWarnings.recordLegacyContextWarning(workInProgress2, instance);
-            }
-            {
-              ReactStrictModeWarnings.recordUnsafeLifecycleWarnings(workInProgress2, instance);
-            }
-          }
-          instance.state = workInProgress2.memoizedState;
-          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
-          if (typeof getDerivedStateFromProps === "function") {
-            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
-            instance.state = workInProgress2.memoizedState;
-          }
-          if (typeof ctor.getDerivedStateFromProps !== "function" && typeof instance.getSnapshotBeforeUpdate !== "function" && (typeof instance.UNSAFE_componentWillMount === "function" || typeof instance.componentWillMount === "function")) {
-            callComponentWillMount(workInProgress2, instance);
-            processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
-            instance.state = workInProgress2.memoizedState;
-          }
-          if (typeof instance.componentDidMount === "function") {
-            var fiberFlags = Update;
-            {
-              fiberFlags |= LayoutStatic;
-            }
-            if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
-              fiberFlags |= MountLayoutDev;
-            }
-            workInProgress2.flags |= fiberFlags;
-          }
-        }
-        function resumeMountClassInstance(workInProgress2, ctor, newProps, renderLanes2) {
-          var instance = workInProgress2.stateNode;
-          var oldProps = workInProgress2.memoizedProps;
-          instance.props = oldProps;
-          var oldContext = instance.context;
-          var contextType = ctor.contextType;
-          var nextContext = emptyContextObject;
-          if (typeof contextType === "object" && contextType !== null) {
-            nextContext = readContext(contextType);
-          } else {
-            var nextLegacyUnmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
-            nextContext = getMaskedContext(workInProgress2, nextLegacyUnmaskedContext);
-          }
-          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
-          var hasNewLifecycles = typeof getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function";
-          if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillReceiveProps === "function" || typeof instance.componentWillReceiveProps === "function")) {
-            if (oldProps !== newProps || oldContext !== nextContext) {
-              callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext);
-            }
-          }
-          resetHasForceUpdateBeforeProcessing();
-          var oldState = workInProgress2.memoizedState;
-          var newState = instance.state = oldState;
-          processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
-          newState = workInProgress2.memoizedState;
-          if (oldProps === newProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing()) {
-            if (typeof instance.componentDidMount === "function") {
-              var fiberFlags = Update;
-              {
-                fiberFlags |= LayoutStatic;
-              }
-              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
-                fiberFlags |= MountLayoutDev;
-              }
-              workInProgress2.flags |= fiberFlags;
-            }
-            return false;
-          }
-          if (typeof getDerivedStateFromProps === "function") {
-            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
-            newState = workInProgress2.memoizedState;
-          }
-          var shouldUpdate = checkHasForceUpdateAfterProcessing() || checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext);
-          if (shouldUpdate) {
-            if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillMount === "function" || typeof instance.componentWillMount === "function")) {
-              if (typeof instance.componentWillMount === "function") {
-                instance.componentWillMount();
-              }
-              if (typeof instance.UNSAFE_componentWillMount === "function") {
-                instance.UNSAFE_componentWillMount();
-              }
-            }
-            if (typeof instance.componentDidMount === "function") {
-              var _fiberFlags = Update;
-              {
-                _fiberFlags |= LayoutStatic;
-              }
-              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
-                _fiberFlags |= MountLayoutDev;
-              }
-              workInProgress2.flags |= _fiberFlags;
-            }
-          } else {
-            if (typeof instance.componentDidMount === "function") {
-              var _fiberFlags2 = Update;
-              {
-                _fiberFlags2 |= LayoutStatic;
-              }
-              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
-                _fiberFlags2 |= MountLayoutDev;
-              }
-              workInProgress2.flags |= _fiberFlags2;
-            }
-            workInProgress2.memoizedProps = newProps;
-            workInProgress2.memoizedState = newState;
-          }
-          instance.props = newProps;
-          instance.state = newState;
-          instance.context = nextContext;
-          return shouldUpdate;
-        }
-        function updateClassInstance(current2, workInProgress2, ctor, newProps, renderLanes2) {
-          var instance = workInProgress2.stateNode;
-          cloneUpdateQueue(current2, workInProgress2);
-          var unresolvedOldProps = workInProgress2.memoizedProps;
-          var oldProps = workInProgress2.type === workInProgress2.elementType ? unresolvedOldProps : resolveDefaultProps(workInProgress2.type, unresolvedOldProps);
-          instance.props = oldProps;
-          var unresolvedNewProps = workInProgress2.pendingProps;
-          var oldContext = instance.context;
-          var contextType = ctor.contextType;
-          var nextContext = emptyContextObject;
-          if (typeof contextType === "object" && contextType !== null) {
-            nextContext = readContext(contextType);
-          } else {
-            var nextUnmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
-            nextContext = getMaskedContext(workInProgress2, nextUnmaskedContext);
-          }
-          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
-          var hasNewLifecycles = typeof getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function";
-          if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillReceiveProps === "function" || typeof instance.componentWillReceiveProps === "function")) {
-            if (unresolvedOldProps !== unresolvedNewProps || oldContext !== nextContext) {
-              callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext);
-            }
-          }
-          resetHasForceUpdateBeforeProcessing();
-          var oldState = workInProgress2.memoizedState;
-          var newState = instance.state = oldState;
-          processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
-          newState = workInProgress2.memoizedState;
-          if (unresolvedOldProps === unresolvedNewProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing() && !enableLazyContextPropagation) {
-            if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
-                workInProgress2.flags |= Update;
-              }
-            }
-            if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
-                workInProgress2.flags |= Snapshot;
-              }
-            }
-            return false;
-          }
-          if (typeof getDerivedStateFromProps === "function") {
-            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
-            newState = workInProgress2.memoizedState;
-          }
-          var shouldUpdate = checkHasForceUpdateAfterProcessing() || checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext) || // TODO: In some cases, we'll end up checking if context has changed twice,
-          // both before and after `shouldComponentUpdate` has been called. Not ideal,
-          // but I'm loath to refactor this function. This only happens for memoized
-          // components so it's not that common.
-          enableLazyContextPropagation;
-          if (shouldUpdate) {
-            if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillUpdate === "function" || typeof instance.componentWillUpdate === "function")) {
-              if (typeof instance.componentWillUpdate === "function") {
-                instance.componentWillUpdate(newProps, newState, nextContext);
-              }
-              if (typeof instance.UNSAFE_componentWillUpdate === "function") {
-                instance.UNSAFE_componentWillUpdate(newProps, newState, nextContext);
-              }
-            }
-            if (typeof instance.componentDidUpdate === "function") {
-              workInProgress2.flags |= Update;
-            }
-            if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              workInProgress2.flags |= Snapshot;
-            }
-          } else {
-            if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
-                workInProgress2.flags |= Update;
-              }
-            }
-            if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
-                workInProgress2.flags |= Snapshot;
-              }
-            }
-            workInProgress2.memoizedProps = newProps;
-            workInProgress2.memoizedState = newState;
-          }
-          instance.props = newProps;
-          instance.state = newState;
-          instance.context = nextContext;
-          return shouldUpdate;
-        }
         var didWarnAboutMaps;
         var didWarnAboutGenerators;
         var didWarnAboutStringRefs;
@@ -13260,6 +11988,9 @@ var require_react_dom_development = __commonJS({
             error('Each child in a list should have a unique "key" prop. See https://reactjs.org/link/warning-keys for more information.');
           };
         }
+        function isReactClass(type) {
+          return type.prototype && type.prototype.isReactComponent;
+        }
         function coerceRef(returnFiber, current2, element) {
           var mixedRef = element.ref;
           if (mixedRef !== null && typeof mixedRef !== "function" && typeof mixedRef !== "object") {
@@ -13267,11 +11998,14 @@ var require_react_dom_development = __commonJS({
               if ((returnFiber.mode & StrictLegacyMode || warnAboutStringRefs) && // We warn in ReactElement.js if owner and self are equal for string refs
               // because these cannot be automatically converted to an arrow function
               // using a codemod. Therefore, we don't have to warn about string refs again.
-              !(element._owner && element._self && element._owner.stateNode !== element._self)) {
+              !(element._owner && element._self && element._owner.stateNode !== element._self) && // Will already throw with "Function components cannot have string refs"
+              !(element._owner && element._owner.tag !== ClassComponent) && // Will already warn with "Function components cannot be given refs"
+              !(typeof element.type === "function" && !isReactClass(element.type)) && // Will already throw with "Element ref was specified as a string (someStringRef) but no owner was set"
+              element._owner) {
                 var componentName = getComponentNameFromFiber(returnFiber) || "Component";
                 if (!didWarnAboutStringRefs[componentName]) {
                   {
-                    error('A string ref, "%s", has been found within a strict mode tree. String refs are a source of potential bugs and should be avoided. We recommend using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', mixedRef);
+                    error('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. We recommend using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', componentName, mixedRef);
                   }
                   didWarnAboutStringRefs[componentName] = true;
                 }
@@ -13300,9 +12034,6 @@ var require_react_dom_development = __commonJS({
               }
               var ref = function(value) {
                 var refs = resolvedInst.refs;
-                if (refs === emptyRefsObject) {
-                  refs = resolvedInst.refs = {};
-                }
                 if (value === null) {
                   delete refs[stringRef];
                 } else {
@@ -13993,6 +12724,673 @@ var require_react_dom_development = __commonJS({
           while (child !== null) {
             resetWorkInProgress(child, lanes);
             child = child.sibling;
+          }
+        }
+        var valueCursor = createCursor(null);
+        var rendererSigil;
+        {
+          rendererSigil = {};
+        }
+        var currentlyRenderingFiber = null;
+        var lastContextDependency = null;
+        var lastFullyObservedContext = null;
+        var isDisallowedContextReadInDEV = false;
+        function resetContextDependencies() {
+          currentlyRenderingFiber = null;
+          lastContextDependency = null;
+          lastFullyObservedContext = null;
+          {
+            isDisallowedContextReadInDEV = false;
+          }
+        }
+        function enterDisallowedContextReadInDEV() {
+          {
+            isDisallowedContextReadInDEV = true;
+          }
+        }
+        function exitDisallowedContextReadInDEV() {
+          {
+            isDisallowedContextReadInDEV = false;
+          }
+        }
+        function pushProvider(providerFiber, context, nextValue) {
+          {
+            push(valueCursor, context._currentValue, providerFiber);
+            context._currentValue = nextValue;
+            {
+              if (context._currentRenderer !== void 0 && context._currentRenderer !== null && context._currentRenderer !== rendererSigil) {
+                error("Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.");
+              }
+              context._currentRenderer = rendererSigil;
+            }
+          }
+        }
+        function popProvider(context, providerFiber) {
+          var currentValue = valueCursor.current;
+          pop(valueCursor, providerFiber);
+          {
+            {
+              context._currentValue = currentValue;
+            }
+          }
+        }
+        function scheduleContextWorkOnParentPath(parent, renderLanes2, propagationRoot) {
+          var node = parent;
+          while (node !== null) {
+            var alternate = node.alternate;
+            if (!isSubsetOfLanes(node.childLanes, renderLanes2)) {
+              node.childLanes = mergeLanes(node.childLanes, renderLanes2);
+              if (alternate !== null) {
+                alternate.childLanes = mergeLanes(alternate.childLanes, renderLanes2);
+              }
+            } else if (alternate !== null && !isSubsetOfLanes(alternate.childLanes, renderLanes2)) {
+              alternate.childLanes = mergeLanes(alternate.childLanes, renderLanes2);
+            }
+            if (node === propagationRoot) {
+              break;
+            }
+            node = node.return;
+          }
+          {
+            if (node !== propagationRoot) {
+              error("Expected to find the propagation root when scheduling context work. This error is likely caused by a bug in React. Please file an issue.");
+            }
+          }
+        }
+        function propagateContextChange(workInProgress2, context, renderLanes2) {
+          {
+            propagateContextChange_eager(workInProgress2, context, renderLanes2);
+          }
+        }
+        function propagateContextChange_eager(workInProgress2, context, renderLanes2) {
+          var fiber = workInProgress2.child;
+          if (fiber !== null) {
+            fiber.return = workInProgress2;
+          }
+          while (fiber !== null) {
+            var nextFiber = void 0;
+            var list = fiber.dependencies;
+            if (list !== null) {
+              nextFiber = fiber.child;
+              var dependency = list.firstContext;
+              while (dependency !== null) {
+                if (dependency.context === context) {
+                  if (fiber.tag === ClassComponent) {
+                    var lane = pickArbitraryLane(renderLanes2);
+                    var update = createUpdate(NoTimestamp, lane);
+                    update.tag = ForceUpdate;
+                    var updateQueue = fiber.updateQueue;
+                    if (updateQueue === null)
+                      ;
+                    else {
+                      var sharedQueue = updateQueue.shared;
+                      var pending = sharedQueue.pending;
+                      if (pending === null) {
+                        update.next = update;
+                      } else {
+                        update.next = pending.next;
+                        pending.next = update;
+                      }
+                      sharedQueue.pending = update;
+                    }
+                  }
+                  fiber.lanes = mergeLanes(fiber.lanes, renderLanes2);
+                  var alternate = fiber.alternate;
+                  if (alternate !== null) {
+                    alternate.lanes = mergeLanes(alternate.lanes, renderLanes2);
+                  }
+                  scheduleContextWorkOnParentPath(fiber.return, renderLanes2, workInProgress2);
+                  list.lanes = mergeLanes(list.lanes, renderLanes2);
+                  break;
+                }
+                dependency = dependency.next;
+              }
+            } else if (fiber.tag === ContextProvider) {
+              nextFiber = fiber.type === workInProgress2.type ? null : fiber.child;
+            } else if (fiber.tag === DehydratedFragment) {
+              var parentSuspense = fiber.return;
+              if (parentSuspense === null) {
+                throw new Error("We just came from a parent so we must have had a parent. This is a bug in React.");
+              }
+              parentSuspense.lanes = mergeLanes(parentSuspense.lanes, renderLanes2);
+              var _alternate = parentSuspense.alternate;
+              if (_alternate !== null) {
+                _alternate.lanes = mergeLanes(_alternate.lanes, renderLanes2);
+              }
+              scheduleContextWorkOnParentPath(parentSuspense, renderLanes2, workInProgress2);
+              nextFiber = fiber.sibling;
+            } else {
+              nextFiber = fiber.child;
+            }
+            if (nextFiber !== null) {
+              nextFiber.return = fiber;
+            } else {
+              nextFiber = fiber;
+              while (nextFiber !== null) {
+                if (nextFiber === workInProgress2) {
+                  nextFiber = null;
+                  break;
+                }
+                var sibling = nextFiber.sibling;
+                if (sibling !== null) {
+                  sibling.return = nextFiber.return;
+                  nextFiber = sibling;
+                  break;
+                }
+                nextFiber = nextFiber.return;
+              }
+            }
+            fiber = nextFiber;
+          }
+        }
+        function prepareToReadContext(workInProgress2, renderLanes2) {
+          currentlyRenderingFiber = workInProgress2;
+          lastContextDependency = null;
+          lastFullyObservedContext = null;
+          var dependencies = workInProgress2.dependencies;
+          if (dependencies !== null) {
+            {
+              var firstContext = dependencies.firstContext;
+              if (firstContext !== null) {
+                if (includesSomeLane(dependencies.lanes, renderLanes2)) {
+                  markWorkInProgressReceivedUpdate();
+                }
+                dependencies.firstContext = null;
+              }
+            }
+          }
+        }
+        function readContext(context) {
+          {
+            if (isDisallowedContextReadInDEV) {
+              error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
+            }
+          }
+          var value = context._currentValue;
+          if (lastFullyObservedContext === context)
+            ;
+          else {
+            var contextItem = {
+              context,
+              memoizedValue: value,
+              next: null
+            };
+            if (lastContextDependency === null) {
+              if (currentlyRenderingFiber === null) {
+                throw new Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
+              }
+              lastContextDependency = contextItem;
+              currentlyRenderingFiber.dependencies = {
+                lanes: NoLanes,
+                firstContext: contextItem
+              };
+            } else {
+              lastContextDependency = lastContextDependency.next = contextItem;
+            }
+          }
+          return value;
+        }
+        var concurrentQueues = null;
+        function pushConcurrentUpdateQueue(queue) {
+          if (concurrentQueues === null) {
+            concurrentQueues = [queue];
+          } else {
+            concurrentQueues.push(queue);
+          }
+        }
+        function finishQueueingConcurrentUpdates() {
+          if (concurrentQueues !== null) {
+            for (var i2 = 0; i2 < concurrentQueues.length; i2++) {
+              var queue = concurrentQueues[i2];
+              var lastInterleavedUpdate = queue.interleaved;
+              if (lastInterleavedUpdate !== null) {
+                queue.interleaved = null;
+                var firstInterleavedUpdate = lastInterleavedUpdate.next;
+                var lastPendingUpdate = queue.pending;
+                if (lastPendingUpdate !== null) {
+                  var firstPendingUpdate = lastPendingUpdate.next;
+                  lastPendingUpdate.next = firstInterleavedUpdate;
+                  lastInterleavedUpdate.next = firstPendingUpdate;
+                }
+                queue.pending = lastInterleavedUpdate;
+              }
+            }
+            concurrentQueues = null;
+          }
+        }
+        function enqueueConcurrentHookUpdate(fiber, queue, update, lane) {
+          var interleaved = queue.interleaved;
+          if (interleaved === null) {
+            update.next = update;
+            pushConcurrentUpdateQueue(queue);
+          } else {
+            update.next = interleaved.next;
+            interleaved.next = update;
+          }
+          queue.interleaved = update;
+          return markUpdateLaneFromFiberToRoot(fiber, lane);
+        }
+        function enqueueConcurrentHookUpdateAndEagerlyBailout(fiber, queue, update, lane) {
+          var interleaved = queue.interleaved;
+          if (interleaved === null) {
+            update.next = update;
+            pushConcurrentUpdateQueue(queue);
+          } else {
+            update.next = interleaved.next;
+            interleaved.next = update;
+          }
+          queue.interleaved = update;
+        }
+        function enqueueConcurrentClassUpdate(fiber, queue, update, lane) {
+          var interleaved = queue.interleaved;
+          if (interleaved === null) {
+            update.next = update;
+            pushConcurrentUpdateQueue(queue);
+          } else {
+            update.next = interleaved.next;
+            interleaved.next = update;
+          }
+          queue.interleaved = update;
+          return markUpdateLaneFromFiberToRoot(fiber, lane);
+        }
+        function enqueueConcurrentRenderForLane(fiber, lane) {
+          return markUpdateLaneFromFiberToRoot(fiber, lane);
+        }
+        var unsafe_markUpdateLaneFromFiberToRoot = markUpdateLaneFromFiberToRoot;
+        function markUpdateLaneFromFiberToRoot(sourceFiber, lane) {
+          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, lane);
+          var alternate = sourceFiber.alternate;
+          if (alternate !== null) {
+            alternate.lanes = mergeLanes(alternate.lanes, lane);
+          }
+          {
+            if (alternate === null && (sourceFiber.flags & (Placement | Hydrating)) !== NoFlags) {
+              warnAboutUpdateOnNotYetMountedFiberInDEV(sourceFiber);
+            }
+          }
+          var node = sourceFiber;
+          var parent = sourceFiber.return;
+          while (parent !== null) {
+            parent.childLanes = mergeLanes(parent.childLanes, lane);
+            alternate = parent.alternate;
+            if (alternate !== null) {
+              alternate.childLanes = mergeLanes(alternate.childLanes, lane);
+            } else {
+              {
+                if ((parent.flags & (Placement | Hydrating)) !== NoFlags) {
+                  warnAboutUpdateOnNotYetMountedFiberInDEV(sourceFiber);
+                }
+              }
+            }
+            node = parent;
+            parent = parent.return;
+          }
+          if (node.tag === HostRoot) {
+            var root2 = node.stateNode;
+            return root2;
+          } else {
+            return null;
+          }
+        }
+        var UpdateState = 0;
+        var ReplaceState = 1;
+        var ForceUpdate = 2;
+        var CaptureUpdate = 3;
+        var hasForceUpdate = false;
+        var didWarnUpdateInsideUpdate;
+        var currentlyProcessingQueue;
+        {
+          didWarnUpdateInsideUpdate = false;
+          currentlyProcessingQueue = null;
+        }
+        function initializeUpdateQueue(fiber) {
+          var queue = {
+            baseState: fiber.memoizedState,
+            firstBaseUpdate: null,
+            lastBaseUpdate: null,
+            shared: {
+              pending: null,
+              interleaved: null,
+              lanes: NoLanes
+            },
+            effects: null
+          };
+          fiber.updateQueue = queue;
+        }
+        function cloneUpdateQueue(current2, workInProgress2) {
+          var queue = workInProgress2.updateQueue;
+          var currentQueue = current2.updateQueue;
+          if (queue === currentQueue) {
+            var clone2 = {
+              baseState: currentQueue.baseState,
+              firstBaseUpdate: currentQueue.firstBaseUpdate,
+              lastBaseUpdate: currentQueue.lastBaseUpdate,
+              shared: currentQueue.shared,
+              effects: currentQueue.effects
+            };
+            workInProgress2.updateQueue = clone2;
+          }
+        }
+        function createUpdate(eventTime, lane) {
+          var update = {
+            eventTime,
+            lane,
+            tag: UpdateState,
+            payload: null,
+            callback: null,
+            next: null
+          };
+          return update;
+        }
+        function enqueueUpdate(fiber, update, lane) {
+          var updateQueue = fiber.updateQueue;
+          if (updateQueue === null) {
+            return null;
+          }
+          var sharedQueue = updateQueue.shared;
+          {
+            if (currentlyProcessingQueue === sharedQueue && !didWarnUpdateInsideUpdate) {
+              error("An update (setState, replaceState, or forceUpdate) was scheduled from inside an update function. Update functions should be pure, with zero side-effects. Consider using componentDidUpdate or a callback.");
+              didWarnUpdateInsideUpdate = true;
+            }
+          }
+          if (isUnsafeClassRenderPhaseUpdate()) {
+            var pending = sharedQueue.pending;
+            if (pending === null) {
+              update.next = update;
+            } else {
+              update.next = pending.next;
+              pending.next = update;
+            }
+            sharedQueue.pending = update;
+            return unsafe_markUpdateLaneFromFiberToRoot(fiber, lane);
+          } else {
+            return enqueueConcurrentClassUpdate(fiber, sharedQueue, update, lane);
+          }
+        }
+        function entangleTransitions(root2, fiber, lane) {
+          var updateQueue = fiber.updateQueue;
+          if (updateQueue === null) {
+            return;
+          }
+          var sharedQueue = updateQueue.shared;
+          if (isTransitionLane(lane)) {
+            var queueLanes = sharedQueue.lanes;
+            queueLanes = intersectLanes(queueLanes, root2.pendingLanes);
+            var newQueueLanes = mergeLanes(queueLanes, lane);
+            sharedQueue.lanes = newQueueLanes;
+            markRootEntangled(root2, newQueueLanes);
+          }
+        }
+        function enqueueCapturedUpdate(workInProgress2, capturedUpdate) {
+          var queue = workInProgress2.updateQueue;
+          var current2 = workInProgress2.alternate;
+          if (current2 !== null) {
+            var currentQueue = current2.updateQueue;
+            if (queue === currentQueue) {
+              var newFirst = null;
+              var newLast = null;
+              var firstBaseUpdate = queue.firstBaseUpdate;
+              if (firstBaseUpdate !== null) {
+                var update = firstBaseUpdate;
+                do {
+                  var clone2 = {
+                    eventTime: update.eventTime,
+                    lane: update.lane,
+                    tag: update.tag,
+                    payload: update.payload,
+                    callback: update.callback,
+                    next: null
+                  };
+                  if (newLast === null) {
+                    newFirst = newLast = clone2;
+                  } else {
+                    newLast.next = clone2;
+                    newLast = clone2;
+                  }
+                  update = update.next;
+                } while (update !== null);
+                if (newLast === null) {
+                  newFirst = newLast = capturedUpdate;
+                } else {
+                  newLast.next = capturedUpdate;
+                  newLast = capturedUpdate;
+                }
+              } else {
+                newFirst = newLast = capturedUpdate;
+              }
+              queue = {
+                baseState: currentQueue.baseState,
+                firstBaseUpdate: newFirst,
+                lastBaseUpdate: newLast,
+                shared: currentQueue.shared,
+                effects: currentQueue.effects
+              };
+              workInProgress2.updateQueue = queue;
+              return;
+            }
+          }
+          var lastBaseUpdate = queue.lastBaseUpdate;
+          if (lastBaseUpdate === null) {
+            queue.firstBaseUpdate = capturedUpdate;
+          } else {
+            lastBaseUpdate.next = capturedUpdate;
+          }
+          queue.lastBaseUpdate = capturedUpdate;
+        }
+        function getStateFromUpdate(workInProgress2, queue, update, prevState, nextProps, instance) {
+          switch (update.tag) {
+            case ReplaceState: {
+              var payload = update.payload;
+              if (typeof payload === "function") {
+                {
+                  enterDisallowedContextReadInDEV();
+                }
+                var nextState = payload.call(instance, prevState, nextProps);
+                {
+                  if (workInProgress2.mode & StrictLegacyMode) {
+                    setIsStrictModeForDevtools(true);
+                    try {
+                      payload.call(instance, prevState, nextProps);
+                    } finally {
+                      setIsStrictModeForDevtools(false);
+                    }
+                  }
+                  exitDisallowedContextReadInDEV();
+                }
+                return nextState;
+              }
+              return payload;
+            }
+            case CaptureUpdate: {
+              workInProgress2.flags = workInProgress2.flags & ~ShouldCapture | DidCapture;
+            }
+            case UpdateState: {
+              var _payload = update.payload;
+              var partialState;
+              if (typeof _payload === "function") {
+                {
+                  enterDisallowedContextReadInDEV();
+                }
+                partialState = _payload.call(instance, prevState, nextProps);
+                {
+                  if (workInProgress2.mode & StrictLegacyMode) {
+                    setIsStrictModeForDevtools(true);
+                    try {
+                      _payload.call(instance, prevState, nextProps);
+                    } finally {
+                      setIsStrictModeForDevtools(false);
+                    }
+                  }
+                  exitDisallowedContextReadInDEV();
+                }
+              } else {
+                partialState = _payload;
+              }
+              if (partialState === null || partialState === void 0) {
+                return prevState;
+              }
+              return assign({}, prevState, partialState);
+            }
+            case ForceUpdate: {
+              hasForceUpdate = true;
+              return prevState;
+            }
+          }
+          return prevState;
+        }
+        function processUpdateQueue(workInProgress2, props, instance, renderLanes2) {
+          var queue = workInProgress2.updateQueue;
+          hasForceUpdate = false;
+          {
+            currentlyProcessingQueue = queue.shared;
+          }
+          var firstBaseUpdate = queue.firstBaseUpdate;
+          var lastBaseUpdate = queue.lastBaseUpdate;
+          var pendingQueue = queue.shared.pending;
+          if (pendingQueue !== null) {
+            queue.shared.pending = null;
+            var lastPendingUpdate = pendingQueue;
+            var firstPendingUpdate = lastPendingUpdate.next;
+            lastPendingUpdate.next = null;
+            if (lastBaseUpdate === null) {
+              firstBaseUpdate = firstPendingUpdate;
+            } else {
+              lastBaseUpdate.next = firstPendingUpdate;
+            }
+            lastBaseUpdate = lastPendingUpdate;
+            var current2 = workInProgress2.alternate;
+            if (current2 !== null) {
+              var currentQueue = current2.updateQueue;
+              var currentLastBaseUpdate = currentQueue.lastBaseUpdate;
+              if (currentLastBaseUpdate !== lastBaseUpdate) {
+                if (currentLastBaseUpdate === null) {
+                  currentQueue.firstBaseUpdate = firstPendingUpdate;
+                } else {
+                  currentLastBaseUpdate.next = firstPendingUpdate;
+                }
+                currentQueue.lastBaseUpdate = lastPendingUpdate;
+              }
+            }
+          }
+          if (firstBaseUpdate !== null) {
+            var newState = queue.baseState;
+            var newLanes = NoLanes;
+            var newBaseState = null;
+            var newFirstBaseUpdate = null;
+            var newLastBaseUpdate = null;
+            var update = firstBaseUpdate;
+            do {
+              var updateLane = update.lane;
+              var updateEventTime = update.eventTime;
+              if (!isSubsetOfLanes(renderLanes2, updateLane)) {
+                var clone2 = {
+                  eventTime: updateEventTime,
+                  lane: updateLane,
+                  tag: update.tag,
+                  payload: update.payload,
+                  callback: update.callback,
+                  next: null
+                };
+                if (newLastBaseUpdate === null) {
+                  newFirstBaseUpdate = newLastBaseUpdate = clone2;
+                  newBaseState = newState;
+                } else {
+                  newLastBaseUpdate = newLastBaseUpdate.next = clone2;
+                }
+                newLanes = mergeLanes(newLanes, updateLane);
+              } else {
+                if (newLastBaseUpdate !== null) {
+                  var _clone = {
+                    eventTime: updateEventTime,
+                    // This update is going to be committed so we never want uncommit
+                    // it. Using NoLane works because 0 is a subset of all bitmasks, so
+                    // this will never be skipped by the check above.
+                    lane: NoLane,
+                    tag: update.tag,
+                    payload: update.payload,
+                    callback: update.callback,
+                    next: null
+                  };
+                  newLastBaseUpdate = newLastBaseUpdate.next = _clone;
+                }
+                newState = getStateFromUpdate(workInProgress2, queue, update, newState, props, instance);
+                var callback = update.callback;
+                if (callback !== null && // If the update was already committed, we should not queue its
+                // callback again.
+                update.lane !== NoLane) {
+                  workInProgress2.flags |= Callback;
+                  var effects = queue.effects;
+                  if (effects === null) {
+                    queue.effects = [update];
+                  } else {
+                    effects.push(update);
+                  }
+                }
+              }
+              update = update.next;
+              if (update === null) {
+                pendingQueue = queue.shared.pending;
+                if (pendingQueue === null) {
+                  break;
+                } else {
+                  var _lastPendingUpdate = pendingQueue;
+                  var _firstPendingUpdate = _lastPendingUpdate.next;
+                  _lastPendingUpdate.next = null;
+                  update = _firstPendingUpdate;
+                  queue.lastBaseUpdate = _lastPendingUpdate;
+                  queue.shared.pending = null;
+                }
+              }
+            } while (true);
+            if (newLastBaseUpdate === null) {
+              newBaseState = newState;
+            }
+            queue.baseState = newBaseState;
+            queue.firstBaseUpdate = newFirstBaseUpdate;
+            queue.lastBaseUpdate = newLastBaseUpdate;
+            var lastInterleaved = queue.shared.interleaved;
+            if (lastInterleaved !== null) {
+              var interleaved = lastInterleaved;
+              do {
+                newLanes = mergeLanes(newLanes, interleaved.lane);
+                interleaved = interleaved.next;
+              } while (interleaved !== lastInterleaved);
+            } else if (firstBaseUpdate === null) {
+              queue.shared.lanes = NoLanes;
+            }
+            markSkippedUpdateLanes(newLanes);
+            workInProgress2.lanes = newLanes;
+            workInProgress2.memoizedState = newState;
+          }
+          {
+            currentlyProcessingQueue = null;
+          }
+        }
+        function callCallback(callback, context) {
+          if (typeof callback !== "function") {
+            throw new Error("Invalid argument passed as callback. Expected a function. Instead " + ("received: " + callback));
+          }
+          callback.call(context);
+        }
+        function resetHasForceUpdateBeforeProcessing() {
+          hasForceUpdate = false;
+        }
+        function checkHasForceUpdateAfterProcessing() {
+          return hasForceUpdate;
+        }
+        function commitUpdateQueue(finishedWork, finishedQueue, instance) {
+          var effects = finishedQueue.effects;
+          finishedQueue.effects = null;
+          if (effects !== null) {
+            for (var i2 = 0; i2 < effects.length; i2++) {
+              var effect = effects[i2];
+              var callback = effect.callback;
+              if (callback !== null) {
+                effect.callback = null;
+                callCallback(callback, instance);
+              }
+            }
           }
         }
         var NO_CONTEXT = {};
@@ -16092,6 +15490,625 @@ var require_react_dom_development = __commonJS({
             child = child.sibling;
           }
         }
+        function resolveDefaultProps(Component2, baseProps) {
+          if (Component2 && Component2.defaultProps) {
+            var props = assign({}, baseProps);
+            var defaultProps = Component2.defaultProps;
+            for (var propName in defaultProps) {
+              if (props[propName] === void 0) {
+                props[propName] = defaultProps[propName];
+              }
+            }
+            return props;
+          }
+          return baseProps;
+        }
+        var fakeInternalInstance = {};
+        var didWarnAboutStateAssignmentForComponent;
+        var didWarnAboutUninitializedState;
+        var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
+        var didWarnAboutLegacyLifecyclesAndDerivedState;
+        var didWarnAboutUndefinedDerivedState;
+        var warnOnUndefinedDerivedState;
+        var warnOnInvalidCallback;
+        var didWarnAboutDirectlyAssigningPropsToState;
+        var didWarnAboutContextTypeAndContextTypes;
+        var didWarnAboutInvalidateContextType;
+        var didWarnAboutLegacyContext$1;
+        {
+          didWarnAboutStateAssignmentForComponent = /* @__PURE__ */ new Set();
+          didWarnAboutUninitializedState = /* @__PURE__ */ new Set();
+          didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate = /* @__PURE__ */ new Set();
+          didWarnAboutLegacyLifecyclesAndDerivedState = /* @__PURE__ */ new Set();
+          didWarnAboutDirectlyAssigningPropsToState = /* @__PURE__ */ new Set();
+          didWarnAboutUndefinedDerivedState = /* @__PURE__ */ new Set();
+          didWarnAboutContextTypeAndContextTypes = /* @__PURE__ */ new Set();
+          didWarnAboutInvalidateContextType = /* @__PURE__ */ new Set();
+          didWarnAboutLegacyContext$1 = /* @__PURE__ */ new Set();
+          var didWarnOnInvalidCallback = /* @__PURE__ */ new Set();
+          warnOnInvalidCallback = function(callback, callerName) {
+            if (callback === null || typeof callback === "function") {
+              return;
+            }
+            var key = callerName + "_" + callback;
+            if (!didWarnOnInvalidCallback.has(key)) {
+              didWarnOnInvalidCallback.add(key);
+              error("%s(...): Expected the last optional `callback` argument to be a function. Instead received: %s.", callerName, callback);
+            }
+          };
+          warnOnUndefinedDerivedState = function(type, partialState) {
+            if (partialState === void 0) {
+              var componentName = getComponentNameFromType(type) || "Component";
+              if (!didWarnAboutUndefinedDerivedState.has(componentName)) {
+                didWarnAboutUndefinedDerivedState.add(componentName);
+                error("%s.getDerivedStateFromProps(): A valid state object (or null) must be returned. You have returned undefined.", componentName);
+              }
+            }
+          };
+          Object.defineProperty(fakeInternalInstance, "_processChildContext", {
+            enumerable: false,
+            value: function() {
+              throw new Error("_processChildContext is not available in React 16+. This likely means you have multiple copies of React and are attempting to nest a React 15 tree inside a React 16 tree using unstable_renderSubtreeIntoContainer, which isn't supported. Try to make sure you have only one copy of React (and ideally, switch to ReactDOM.createPortal).");
+            }
+          });
+          Object.freeze(fakeInternalInstance);
+        }
+        function applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, nextProps) {
+          var prevState = workInProgress2.memoizedState;
+          var partialState = getDerivedStateFromProps(nextProps, prevState);
+          {
+            if (workInProgress2.mode & StrictLegacyMode) {
+              setIsStrictModeForDevtools(true);
+              try {
+                partialState = getDerivedStateFromProps(nextProps, prevState);
+              } finally {
+                setIsStrictModeForDevtools(false);
+              }
+            }
+            warnOnUndefinedDerivedState(ctor, partialState);
+          }
+          var memoizedState = partialState === null || partialState === void 0 ? prevState : assign({}, prevState, partialState);
+          workInProgress2.memoizedState = memoizedState;
+          if (workInProgress2.lanes === NoLanes) {
+            var updateQueue = workInProgress2.updateQueue;
+            updateQueue.baseState = memoizedState;
+          }
+        }
+        var classComponentUpdater = {
+          isMounted,
+          enqueueSetState: function(inst, payload, callback) {
+            var fiber = get(inst);
+            var eventTime = requestEventTime();
+            var lane = requestUpdateLane(fiber);
+            var update = createUpdate(eventTime, lane);
+            update.payload = payload;
+            if (callback !== void 0 && callback !== null) {
+              {
+                warnOnInvalidCallback(callback, "setState");
+              }
+              update.callback = callback;
+            }
+            var root2 = enqueueUpdate(fiber, update, lane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+              entangleTransitions(root2, fiber, lane);
+            }
+            {
+              markStateUpdateScheduled(fiber, lane);
+            }
+          },
+          enqueueReplaceState: function(inst, payload, callback) {
+            var fiber = get(inst);
+            var eventTime = requestEventTime();
+            var lane = requestUpdateLane(fiber);
+            var update = createUpdate(eventTime, lane);
+            update.tag = ReplaceState;
+            update.payload = payload;
+            if (callback !== void 0 && callback !== null) {
+              {
+                warnOnInvalidCallback(callback, "replaceState");
+              }
+              update.callback = callback;
+            }
+            var root2 = enqueueUpdate(fiber, update, lane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+              entangleTransitions(root2, fiber, lane);
+            }
+            {
+              markStateUpdateScheduled(fiber, lane);
+            }
+          },
+          enqueueForceUpdate: function(inst, callback) {
+            var fiber = get(inst);
+            var eventTime = requestEventTime();
+            var lane = requestUpdateLane(fiber);
+            var update = createUpdate(eventTime, lane);
+            update.tag = ForceUpdate;
+            if (callback !== void 0 && callback !== null) {
+              {
+                warnOnInvalidCallback(callback, "forceUpdate");
+              }
+              update.callback = callback;
+            }
+            var root2 = enqueueUpdate(fiber, update, lane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+              entangleTransitions(root2, fiber, lane);
+            }
+            {
+              markForceUpdateScheduled(fiber, lane);
+            }
+          }
+        };
+        function checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext) {
+          var instance = workInProgress2.stateNode;
+          if (typeof instance.shouldComponentUpdate === "function") {
+            var shouldUpdate = instance.shouldComponentUpdate(newProps, newState, nextContext);
+            {
+              if (workInProgress2.mode & StrictLegacyMode) {
+                setIsStrictModeForDevtools(true);
+                try {
+                  shouldUpdate = instance.shouldComponentUpdate(newProps, newState, nextContext);
+                } finally {
+                  setIsStrictModeForDevtools(false);
+                }
+              }
+              if (shouldUpdate === void 0) {
+                error("%s.shouldComponentUpdate(): Returned undefined instead of a boolean value. Make sure to return true or false.", getComponentNameFromType(ctor) || "Component");
+              }
+            }
+            return shouldUpdate;
+          }
+          if (ctor.prototype && ctor.prototype.isPureReactComponent) {
+            return !shallowEqual2(oldProps, newProps) || !shallowEqual2(oldState, newState);
+          }
+          return true;
+        }
+        function checkClassInstance(workInProgress2, ctor, newProps) {
+          var instance = workInProgress2.stateNode;
+          {
+            var name = getComponentNameFromType(ctor) || "Component";
+            var renderPresent = instance.render;
+            if (!renderPresent) {
+              if (ctor.prototype && typeof ctor.prototype.render === "function") {
+                error("%s(...): No `render` method found on the returned component instance: did you accidentally return an object from the constructor?", name);
+              } else {
+                error("%s(...): No `render` method found on the returned component instance: you may have forgotten to define `render`.", name);
+              }
+            }
+            if (instance.getInitialState && !instance.getInitialState.isReactClassApproved && !instance.state) {
+              error("getInitialState was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Did you mean to define a state property instead?", name);
+            }
+            if (instance.getDefaultProps && !instance.getDefaultProps.isReactClassApproved) {
+              error("getDefaultProps was defined on %s, a plain JavaScript class. This is only supported for classes created using React.createClass. Use a static property to define defaultProps instead.", name);
+            }
+            if (instance.propTypes) {
+              error("propTypes was defined as an instance property on %s. Use a static property to define propTypes instead.", name);
+            }
+            if (instance.contextType) {
+              error("contextType was defined as an instance property on %s. Use a static property to define contextType instead.", name);
+            }
+            {
+              if (ctor.childContextTypes && !didWarnAboutLegacyContext$1.has(ctor) && // Strict Mode has its own warning for legacy context, so we can skip
+              // this one.
+              (workInProgress2.mode & StrictLegacyMode) === NoMode) {
+                didWarnAboutLegacyContext$1.add(ctor);
+                error("%s uses the legacy childContextTypes API which is no longer supported and will be removed in the next major release. Use React.createContext() instead\n\n.Learn more about this warning here: https://reactjs.org/link/legacy-context", name);
+              }
+              if (ctor.contextTypes && !didWarnAboutLegacyContext$1.has(ctor) && // Strict Mode has its own warning for legacy context, so we can skip
+              // this one.
+              (workInProgress2.mode & StrictLegacyMode) === NoMode) {
+                didWarnAboutLegacyContext$1.add(ctor);
+                error("%s uses the legacy contextTypes API which is no longer supported and will be removed in the next major release. Use React.createContext() with static contextType instead.\n\nLearn more about this warning here: https://reactjs.org/link/legacy-context", name);
+              }
+              if (instance.contextTypes) {
+                error("contextTypes was defined as an instance property on %s. Use a static property to define contextTypes instead.", name);
+              }
+              if (ctor.contextType && ctor.contextTypes && !didWarnAboutContextTypeAndContextTypes.has(ctor)) {
+                didWarnAboutContextTypeAndContextTypes.add(ctor);
+                error("%s declares both contextTypes and contextType static properties. The legacy contextTypes property will be ignored.", name);
+              }
+            }
+            if (typeof instance.componentShouldUpdate === "function") {
+              error("%s has a method called componentShouldUpdate(). Did you mean shouldComponentUpdate()? The name is phrased as a question because the function is expected to return a value.", name);
+            }
+            if (ctor.prototype && ctor.prototype.isPureReactComponent && typeof instance.shouldComponentUpdate !== "undefined") {
+              error("%s has a method called shouldComponentUpdate(). shouldComponentUpdate should not be used when extending React.PureComponent. Please extend React.Component if shouldComponentUpdate is used.", getComponentNameFromType(ctor) || "A pure component");
+            }
+            if (typeof instance.componentDidUnmount === "function") {
+              error("%s has a method called componentDidUnmount(). But there is no such lifecycle method. Did you mean componentWillUnmount()?", name);
+            }
+            if (typeof instance.componentDidReceiveProps === "function") {
+              error("%s has a method called componentDidReceiveProps(). But there is no such lifecycle method. If you meant to update the state in response to changing props, use componentWillReceiveProps(). If you meant to fetch data or run side-effects or mutations after React has updated the UI, use componentDidUpdate().", name);
+            }
+            if (typeof instance.componentWillRecieveProps === "function") {
+              error("%s has a method called componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", name);
+            }
+            if (typeof instance.UNSAFE_componentWillRecieveProps === "function") {
+              error("%s has a method called UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?", name);
+            }
+            var hasMutatedProps = instance.props !== newProps;
+            if (instance.props !== void 0 && hasMutatedProps) {
+              error("%s(...): When calling super() in `%s`, make sure to pass up the same props that your component's constructor was passed.", name, name);
+            }
+            if (instance.defaultProps) {
+              error("Setting defaultProps as an instance property on %s is not supported and will be ignored. Instead, define defaultProps as a static property on %s.", name, name);
+            }
+            if (typeof instance.getSnapshotBeforeUpdate === "function" && typeof instance.componentDidUpdate !== "function" && !didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(ctor)) {
+              didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(ctor);
+              error("%s: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.", getComponentNameFromType(ctor));
+            }
+            if (typeof instance.getDerivedStateFromProps === "function") {
+              error("%s: getDerivedStateFromProps() is defined as an instance method and will be ignored. Instead, declare it as a static method.", name);
+            }
+            if (typeof instance.getDerivedStateFromError === "function") {
+              error("%s: getDerivedStateFromError() is defined as an instance method and will be ignored. Instead, declare it as a static method.", name);
+            }
+            if (typeof ctor.getSnapshotBeforeUpdate === "function") {
+              error("%s: getSnapshotBeforeUpdate() is defined as a static method and will be ignored. Instead, declare it as an instance method.", name);
+            }
+            var _state = instance.state;
+            if (_state && (typeof _state !== "object" || isArray(_state))) {
+              error("%s.state: must be set to an object or null", name);
+            }
+            if (typeof instance.getChildContext === "function" && typeof ctor.childContextTypes !== "object") {
+              error("%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().", name);
+            }
+          }
+        }
+        function adoptClassInstance(workInProgress2, instance) {
+          instance.updater = classComponentUpdater;
+          workInProgress2.stateNode = instance;
+          set(instance, workInProgress2);
+          {
+            instance._reactInternalInstance = fakeInternalInstance;
+          }
+        }
+        function constructClassInstance(workInProgress2, ctor, props) {
+          var isLegacyContextConsumer = false;
+          var unmaskedContext = emptyContextObject;
+          var context = emptyContextObject;
+          var contextType = ctor.contextType;
+          {
+            if ("contextType" in ctor) {
+              var isValid = (
+                // Allow null for conditional declaration
+                contextType === null || contextType !== void 0 && contextType.$$typeof === REACT_CONTEXT_TYPE && contextType._context === void 0
+              );
+              if (!isValid && !didWarnAboutInvalidateContextType.has(ctor)) {
+                didWarnAboutInvalidateContextType.add(ctor);
+                var addendum = "";
+                if (contextType === void 0) {
+                  addendum = " However, it is set to undefined. This can be caused by a typo or by mixing up named and default imports. This can also happen due to a circular dependency, so try moving the createContext() call to a separate file.";
+                } else if (typeof contextType !== "object") {
+                  addendum = " However, it is set to a " + typeof contextType + ".";
+                } else if (contextType.$$typeof === REACT_PROVIDER_TYPE) {
+                  addendum = " Did you accidentally pass the Context.Provider instead?";
+                } else if (contextType._context !== void 0) {
+                  addendum = " Did you accidentally pass the Context.Consumer instead?";
+                } else {
+                  addendum = " However, it is set to an object with keys {" + Object.keys(contextType).join(", ") + "}.";
+                }
+                error("%s defines an invalid contextType. contextType should point to the Context object returned by React.createContext().%s", getComponentNameFromType(ctor) || "Component", addendum);
+              }
+            }
+          }
+          if (typeof contextType === "object" && contextType !== null) {
+            context = readContext(contextType);
+          } else {
+            unmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
+            var contextTypes = ctor.contextTypes;
+            isLegacyContextConsumer = contextTypes !== null && contextTypes !== void 0;
+            context = isLegacyContextConsumer ? getMaskedContext(workInProgress2, unmaskedContext) : emptyContextObject;
+          }
+          var instance = new ctor(props, context);
+          {
+            if (workInProgress2.mode & StrictLegacyMode) {
+              setIsStrictModeForDevtools(true);
+              try {
+                instance = new ctor(props, context);
+              } finally {
+                setIsStrictModeForDevtools(false);
+              }
+            }
+          }
+          var state = workInProgress2.memoizedState = instance.state !== null && instance.state !== void 0 ? instance.state : null;
+          adoptClassInstance(workInProgress2, instance);
+          {
+            if (typeof ctor.getDerivedStateFromProps === "function" && state === null) {
+              var componentName = getComponentNameFromType(ctor) || "Component";
+              if (!didWarnAboutUninitializedState.has(componentName)) {
+                didWarnAboutUninitializedState.add(componentName);
+                error("`%s` uses `getDerivedStateFromProps` but its initial state is %s. This is not recommended. Instead, define the initial state by assigning an object to `this.state` in the constructor of `%s`. This ensures that `getDerivedStateFromProps` arguments have a consistent shape.", componentName, instance.state === null ? "null" : "undefined", componentName);
+              }
+            }
+            if (typeof ctor.getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function") {
+              var foundWillMountName = null;
+              var foundWillReceivePropsName = null;
+              var foundWillUpdateName = null;
+              if (typeof instance.componentWillMount === "function" && instance.componentWillMount.__suppressDeprecationWarning !== true) {
+                foundWillMountName = "componentWillMount";
+              } else if (typeof instance.UNSAFE_componentWillMount === "function") {
+                foundWillMountName = "UNSAFE_componentWillMount";
+              }
+              if (typeof instance.componentWillReceiveProps === "function" && instance.componentWillReceiveProps.__suppressDeprecationWarning !== true) {
+                foundWillReceivePropsName = "componentWillReceiveProps";
+              } else if (typeof instance.UNSAFE_componentWillReceiveProps === "function") {
+                foundWillReceivePropsName = "UNSAFE_componentWillReceiveProps";
+              }
+              if (typeof instance.componentWillUpdate === "function" && instance.componentWillUpdate.__suppressDeprecationWarning !== true) {
+                foundWillUpdateName = "componentWillUpdate";
+              } else if (typeof instance.UNSAFE_componentWillUpdate === "function") {
+                foundWillUpdateName = "UNSAFE_componentWillUpdate";
+              }
+              if (foundWillMountName !== null || foundWillReceivePropsName !== null || foundWillUpdateName !== null) {
+                var _componentName = getComponentNameFromType(ctor) || "Component";
+                var newApiName = typeof ctor.getDerivedStateFromProps === "function" ? "getDerivedStateFromProps()" : "getSnapshotBeforeUpdate()";
+                if (!didWarnAboutLegacyLifecyclesAndDerivedState.has(_componentName)) {
+                  didWarnAboutLegacyLifecyclesAndDerivedState.add(_componentName);
+                  error("Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\nThe above lifecycles should be removed. Learn more about this warning here:\nhttps://reactjs.org/link/unsafe-component-lifecycles", _componentName, newApiName, foundWillMountName !== null ? "\n  " + foundWillMountName : "", foundWillReceivePropsName !== null ? "\n  " + foundWillReceivePropsName : "", foundWillUpdateName !== null ? "\n  " + foundWillUpdateName : "");
+                }
+              }
+            }
+          }
+          if (isLegacyContextConsumer) {
+            cacheContext(workInProgress2, unmaskedContext, context);
+          }
+          return instance;
+        }
+        function callComponentWillMount(workInProgress2, instance) {
+          var oldState = instance.state;
+          if (typeof instance.componentWillMount === "function") {
+            instance.componentWillMount();
+          }
+          if (typeof instance.UNSAFE_componentWillMount === "function") {
+            instance.UNSAFE_componentWillMount();
+          }
+          if (oldState !== instance.state) {
+            {
+              error("%s.componentWillMount(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", getComponentNameFromFiber(workInProgress2) || "Component");
+            }
+            classComponentUpdater.enqueueReplaceState(instance, instance.state, null);
+          }
+        }
+        function callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext) {
+          var oldState = instance.state;
+          if (typeof instance.componentWillReceiveProps === "function") {
+            instance.componentWillReceiveProps(newProps, nextContext);
+          }
+          if (typeof instance.UNSAFE_componentWillReceiveProps === "function") {
+            instance.UNSAFE_componentWillReceiveProps(newProps, nextContext);
+          }
+          if (instance.state !== oldState) {
+            {
+              var componentName = getComponentNameFromFiber(workInProgress2) || "Component";
+              if (!didWarnAboutStateAssignmentForComponent.has(componentName)) {
+                didWarnAboutStateAssignmentForComponent.add(componentName);
+                error("%s.componentWillReceiveProps(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.", componentName);
+              }
+            }
+            classComponentUpdater.enqueueReplaceState(instance, instance.state, null);
+          }
+        }
+        function mountClassInstance(workInProgress2, ctor, newProps, renderLanes2) {
+          {
+            checkClassInstance(workInProgress2, ctor, newProps);
+          }
+          var instance = workInProgress2.stateNode;
+          instance.props = newProps;
+          instance.state = workInProgress2.memoizedState;
+          instance.refs = {};
+          initializeUpdateQueue(workInProgress2);
+          var contextType = ctor.contextType;
+          if (typeof contextType === "object" && contextType !== null) {
+            instance.context = readContext(contextType);
+          } else {
+            var unmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
+            instance.context = getMaskedContext(workInProgress2, unmaskedContext);
+          }
+          {
+            if (instance.state === newProps) {
+              var componentName = getComponentNameFromType(ctor) || "Component";
+              if (!didWarnAboutDirectlyAssigningPropsToState.has(componentName)) {
+                didWarnAboutDirectlyAssigningPropsToState.add(componentName);
+                error("%s: It is not recommended to assign props directly to state because updates to props won't be reflected in state. In most cases, it is better to use props directly.", componentName);
+              }
+            }
+            if (workInProgress2.mode & StrictLegacyMode) {
+              ReactStrictModeWarnings.recordLegacyContextWarning(workInProgress2, instance);
+            }
+            {
+              ReactStrictModeWarnings.recordUnsafeLifecycleWarnings(workInProgress2, instance);
+            }
+          }
+          instance.state = workInProgress2.memoizedState;
+          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
+          if (typeof getDerivedStateFromProps === "function") {
+            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
+            instance.state = workInProgress2.memoizedState;
+          }
+          if (typeof ctor.getDerivedStateFromProps !== "function" && typeof instance.getSnapshotBeforeUpdate !== "function" && (typeof instance.UNSAFE_componentWillMount === "function" || typeof instance.componentWillMount === "function")) {
+            callComponentWillMount(workInProgress2, instance);
+            processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
+            instance.state = workInProgress2.memoizedState;
+          }
+          if (typeof instance.componentDidMount === "function") {
+            var fiberFlags = Update;
+            {
+              fiberFlags |= LayoutStatic;
+            }
+            if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
+              fiberFlags |= MountLayoutDev;
+            }
+            workInProgress2.flags |= fiberFlags;
+          }
+        }
+        function resumeMountClassInstance(workInProgress2, ctor, newProps, renderLanes2) {
+          var instance = workInProgress2.stateNode;
+          var oldProps = workInProgress2.memoizedProps;
+          instance.props = oldProps;
+          var oldContext = instance.context;
+          var contextType = ctor.contextType;
+          var nextContext = emptyContextObject;
+          if (typeof contextType === "object" && contextType !== null) {
+            nextContext = readContext(contextType);
+          } else {
+            var nextLegacyUnmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
+            nextContext = getMaskedContext(workInProgress2, nextLegacyUnmaskedContext);
+          }
+          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
+          var hasNewLifecycles = typeof getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function";
+          if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillReceiveProps === "function" || typeof instance.componentWillReceiveProps === "function")) {
+            if (oldProps !== newProps || oldContext !== nextContext) {
+              callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext);
+            }
+          }
+          resetHasForceUpdateBeforeProcessing();
+          var oldState = workInProgress2.memoizedState;
+          var newState = instance.state = oldState;
+          processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
+          newState = workInProgress2.memoizedState;
+          if (oldProps === newProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing()) {
+            if (typeof instance.componentDidMount === "function") {
+              var fiberFlags = Update;
+              {
+                fiberFlags |= LayoutStatic;
+              }
+              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
+                fiberFlags |= MountLayoutDev;
+              }
+              workInProgress2.flags |= fiberFlags;
+            }
+            return false;
+          }
+          if (typeof getDerivedStateFromProps === "function") {
+            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
+            newState = workInProgress2.memoizedState;
+          }
+          var shouldUpdate = checkHasForceUpdateAfterProcessing() || checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext);
+          if (shouldUpdate) {
+            if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillMount === "function" || typeof instance.componentWillMount === "function")) {
+              if (typeof instance.componentWillMount === "function") {
+                instance.componentWillMount();
+              }
+              if (typeof instance.UNSAFE_componentWillMount === "function") {
+                instance.UNSAFE_componentWillMount();
+              }
+            }
+            if (typeof instance.componentDidMount === "function") {
+              var _fiberFlags = Update;
+              {
+                _fiberFlags |= LayoutStatic;
+              }
+              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
+                _fiberFlags |= MountLayoutDev;
+              }
+              workInProgress2.flags |= _fiberFlags;
+            }
+          } else {
+            if (typeof instance.componentDidMount === "function") {
+              var _fiberFlags2 = Update;
+              {
+                _fiberFlags2 |= LayoutStatic;
+              }
+              if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
+                _fiberFlags2 |= MountLayoutDev;
+              }
+              workInProgress2.flags |= _fiberFlags2;
+            }
+            workInProgress2.memoizedProps = newProps;
+            workInProgress2.memoizedState = newState;
+          }
+          instance.props = newProps;
+          instance.state = newState;
+          instance.context = nextContext;
+          return shouldUpdate;
+        }
+        function updateClassInstance(current2, workInProgress2, ctor, newProps, renderLanes2) {
+          var instance = workInProgress2.stateNode;
+          cloneUpdateQueue(current2, workInProgress2);
+          var unresolvedOldProps = workInProgress2.memoizedProps;
+          var oldProps = workInProgress2.type === workInProgress2.elementType ? unresolvedOldProps : resolveDefaultProps(workInProgress2.type, unresolvedOldProps);
+          instance.props = oldProps;
+          var unresolvedNewProps = workInProgress2.pendingProps;
+          var oldContext = instance.context;
+          var contextType = ctor.contextType;
+          var nextContext = emptyContextObject;
+          if (typeof contextType === "object" && contextType !== null) {
+            nextContext = readContext(contextType);
+          } else {
+            var nextUnmaskedContext = getUnmaskedContext(workInProgress2, ctor, true);
+            nextContext = getMaskedContext(workInProgress2, nextUnmaskedContext);
+          }
+          var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
+          var hasNewLifecycles = typeof getDerivedStateFromProps === "function" || typeof instance.getSnapshotBeforeUpdate === "function";
+          if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillReceiveProps === "function" || typeof instance.componentWillReceiveProps === "function")) {
+            if (unresolvedOldProps !== unresolvedNewProps || oldContext !== nextContext) {
+              callComponentWillReceiveProps(workInProgress2, instance, newProps, nextContext);
+            }
+          }
+          resetHasForceUpdateBeforeProcessing();
+          var oldState = workInProgress2.memoizedState;
+          var newState = instance.state = oldState;
+          processUpdateQueue(workInProgress2, newProps, instance, renderLanes2);
+          newState = workInProgress2.memoizedState;
+          if (unresolvedOldProps === unresolvedNewProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing() && !enableLazyContextPropagation) {
+            if (typeof instance.componentDidUpdate === "function") {
+              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+                workInProgress2.flags |= Update;
+              }
+            }
+            if (typeof instance.getSnapshotBeforeUpdate === "function") {
+              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+                workInProgress2.flags |= Snapshot;
+              }
+            }
+            return false;
+          }
+          if (typeof getDerivedStateFromProps === "function") {
+            applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromProps, newProps);
+            newState = workInProgress2.memoizedState;
+          }
+          var shouldUpdate = checkHasForceUpdateAfterProcessing() || checkShouldComponentUpdate(workInProgress2, ctor, oldProps, newProps, oldState, newState, nextContext) || // TODO: In some cases, we'll end up checking if context has changed twice,
+          // both before and after `shouldComponentUpdate` has been called. Not ideal,
+          // but I'm loath to refactor this function. This only happens for memoized
+          // components so it's not that common.
+          enableLazyContextPropagation;
+          if (shouldUpdate) {
+            if (!hasNewLifecycles && (typeof instance.UNSAFE_componentWillUpdate === "function" || typeof instance.componentWillUpdate === "function")) {
+              if (typeof instance.componentWillUpdate === "function") {
+                instance.componentWillUpdate(newProps, newState, nextContext);
+              }
+              if (typeof instance.UNSAFE_componentWillUpdate === "function") {
+                instance.UNSAFE_componentWillUpdate(newProps, newState, nextContext);
+              }
+            }
+            if (typeof instance.componentDidUpdate === "function") {
+              workInProgress2.flags |= Update;
+            }
+            if (typeof instance.getSnapshotBeforeUpdate === "function") {
+              workInProgress2.flags |= Snapshot;
+            }
+          } else {
+            if (typeof instance.componentDidUpdate === "function") {
+              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+                workInProgress2.flags |= Update;
+              }
+            }
+            if (typeof instance.getSnapshotBeforeUpdate === "function") {
+              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+                workInProgress2.flags |= Snapshot;
+              }
+            }
+            workInProgress2.memoizedProps = newProps;
+            workInProgress2.memoizedState = newState;
+          }
+          instance.props = newProps;
+          instance.state = newState;
+          instance.context = nextContext;
+          return shouldUpdate;
+        }
         function createCapturedValueAtFiber(value, source) {
           return {
             value,
@@ -16382,6 +16399,7 @@ var require_react_dom_development = __commonJS({
         var didWarnAboutReassigningProps;
         var didWarnAboutRevealOrder;
         var didWarnAboutTailOptions;
+        var didWarnAboutDefaultPropsOnFunctionComponent;
         {
           didWarnAboutBadClass = {};
           didWarnAboutModulePatternComponent = {};
@@ -16391,6 +16409,7 @@ var require_react_dom_development = __commonJS({
           didWarnAboutReassigningProps = false;
           didWarnAboutRevealOrder = {};
           didWarnAboutTailOptions = {};
+          didWarnAboutDefaultPropsOnFunctionComponent = {};
         }
         function reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2) {
           if (current2 === null) {
@@ -16482,6 +16501,13 @@ var require_react_dom_development = __commonJS({
                   "prop",
                   getComponentNameFromType(type)
                 );
+              }
+              if (Component2.defaultProps !== void 0) {
+                var componentName = getComponentNameFromType(type) || "Unknown";
+                if (!didWarnAboutDefaultPropsOnFunctionComponent[componentName]) {
+                  error("%s: Support for defaultProps will be removed from memo components in a future major release. Use JavaScript default parameters instead.", componentName);
+                  didWarnAboutDefaultPropsOnFunctionComponent[componentName] = true;
+                }
               }
             }
             var child = createFiberFromTypeAndProps(Component2.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
@@ -17111,6 +17137,13 @@ var require_react_dom_development = __commonJS({
               if (!didWarnAboutFunctionRefs[warningKey]) {
                 didWarnAboutFunctionRefs[warningKey] = true;
                 error("Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s", info);
+              }
+            }
+            if (Component2.defaultProps !== void 0) {
+              var componentName = getComponentNameFromType(Component2) || "Unknown";
+              if (!didWarnAboutDefaultPropsOnFunctionComponent[componentName]) {
+                error("%s: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.", componentName);
+                didWarnAboutDefaultPropsOnFunctionComponent[componentName] = true;
               }
             }
             if (typeof Component2.getDerivedStateFromProps === "function") {
@@ -22746,7 +22779,7 @@ var require_react_dom_development = __commonJS({
           initializeUpdateQueue(uninitializedFiber);
           return root2;
         }
-        var ReactVersion = "18.2.0";
+        var ReactVersion = "18.3.1";
         function createPortal(children, containerInfo, implementation) {
           var key = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : null;
           {
@@ -23473,8 +23506,13 @@ var require_react_dom_development = __commonJS({
           }
           return getPublicRootInstance(root2);
         }
+        var didWarnAboutFindDOMNode = false;
         function findDOMNode(componentOrElement) {
           {
+            if (!didWarnAboutFindDOMNode) {
+              didWarnAboutFindDOMNode = true;
+              error("findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node");
+            }
             var owner = ReactCurrentOwner$3.current;
             if (owner !== null && owner.stateNode !== null) {
               var warnedAboutRefsInRender = owner.stateNode._warnedAboutRefsInRender;
@@ -23536,7 +23574,14 @@ var require_react_dom_development = __commonJS({
           }
           return legacyRenderSubtreeIntoContainer(parentComponent, element, containerNode, false, callback);
         }
+        var didWarnAboutUnmountComponentAtNode = false;
         function unmountComponentAtNode(container) {
+          {
+            if (!didWarnAboutUnmountComponentAtNode) {
+              didWarnAboutUnmountComponentAtNode = true;
+              error("unmountComponentAtNode is deprecated and will be removed in the next major release. Switch to the createRoot API. Learn more: https://reactjs.org/link/switch-to-createroot");
+            }
+          }
           if (!isValidContainerLegacy(container)) {
             throw new Error("unmountComponentAtNode(...): Target container is not a DOM element.");
           }
@@ -32575,6 +32620,7 @@ var require_react_jsx_runtime_development = __commonJS({
             }
           }
         }
+        var didWarnAboutKeySpread = {};
         function jsxWithValidation(type, props, key, isStaticChildren, source, self2) {
           {
             var validType = isValidElementType2(type);
@@ -32625,6 +32671,20 @@ var require_react_jsx_runtime_development = __commonJS({
                 }
               }
             }
+            {
+              if (hasOwnProperty.call(props, "key")) {
+                var componentName = getComponentNameFromType(type);
+                var keys = Object.keys(props).filter(function(k2) {
+                  return k2 !== "key";
+                });
+                var beforeExample = keys.length > 0 ? "{key: someKey, " + keys.join(": ..., ") + ": ...}" : "{key: someKey}";
+                if (!didWarnAboutKeySpread[componentName + beforeExample]) {
+                  var afterExample = keys.length > 0 ? "{" + keys.join(": ..., ") + ": ...}" : "{}";
+                  error('A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />', beforeExample, componentName, afterExample, componentName);
+                  didWarnAboutKeySpread[componentName + beforeExample] = true;
+                }
+              }
+            }
             if (type === REACT_FRAGMENT_TYPE) {
               validateFragmentProps(element);
             } else {
@@ -32643,11 +32703,11 @@ var require_react_jsx_runtime_development = __commonJS({
             return jsxWithValidation(type, props, key, false);
           }
         }
-        var jsx150 = jsxWithValidationDynamic;
-        var jsxs71 = jsxWithValidationStatic;
+        var jsx151 = jsxWithValidationDynamic;
+        var jsxs72 = jsxWithValidationStatic;
         exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.jsx = jsx150;
-        exports.jsxs = jsxs71;
+        exports.jsx = jsx151;
+        exports.jsxs = jsxs72;
       })();
     }
   }
@@ -43760,7 +43820,7 @@ function toPrimitive(t2, r2) {
 // node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
 function toPropertyKey(t2) {
   var i2 = toPrimitive(t2, "string");
-  return "symbol" == _typeof(i2) ? i2 : String(i2);
+  return "symbol" == _typeof(i2) ? i2 : i2 + "";
 }
 
 // node_modules/@babel/runtime/helpers/esm/defineProperty.js
@@ -46950,6 +47010,53 @@ var MigrateState20 = class {
   }
 };
 
+// src/shared/loom-state/migrate/migrate-state-21.ts
+var MigrateState21 = class {
+  migrate(prevState) {
+    const { rows } = prevState.model;
+    const nextRows = rows.map((row) => {
+      const { cells } = row;
+      const nextCells = cells.map((cell) => {
+        return {
+          ...cell,
+          hasValidFrontmatter: null
+        };
+      });
+      return {
+        ...row,
+        cells: nextCells
+      };
+    });
+    return {
+      ...prevState,
+      model: {
+        ...prevState.model,
+        rows: nextRows
+      }
+    };
+  }
+};
+
+// src/shared/loom-state/migrate/migrate-state-22.ts
+var MigrateState22 = class {
+  migrate(prevState) {
+    const { columns } = prevState.model;
+    const nextColumns = columns.map((column) => {
+      return {
+        ...column,
+        multiTagSortDir: "default" /* NONE */
+      };
+    });
+    return {
+      ...prevState,
+      model: {
+        ...prevState.model,
+        columns: nextColumns
+      }
+    };
+  }
+};
+
 // src/shared/loom-state/validate-state.ts
 var import_runtypes = __toESM(require_lib());
 var FilterOperatorUnion = (0, import_runtypes.Union)((0, import_runtypes.Literal)("and"), (0, import_runtypes.Literal)("or"));
@@ -47210,7 +47317,7 @@ var Tag = (0, import_runtypes.Record)({
   content: import_runtypes.String,
   color: ColorUnion
 });
-var Column = (0, import_runtypes.Record)({
+var Column3 = (0, import_runtypes.Record)({
   id: import_runtypes.String,
   sortDir: SortDirUnion,
   width: import_runtypes.String,
@@ -47231,7 +47338,8 @@ var Column = (0, import_runtypes.Record)({
   calculationType: CalculationTypeUnion,
   aspectRatio: AspectRatioUnion,
   horizontalPadding: PaddingSizeUnion,
-  verticalPadding: PaddingSizeUnion
+  verticalPadding: PaddingSizeUnion,
+  multiTagSortDir: SortDirUnion
 });
 var BaseCell = (0, import_runtypes.Record)({
   id: import_runtypes.String,
@@ -47333,7 +47441,7 @@ var SourceRowOrder = (0, import_runtypes.Record)({
   uniqueId: import_runtypes.String
 });
 var TableModel = (0, import_runtypes.Record)({
-  columns: (0, import_runtypes.Array)(Column),
+  columns: (0, import_runtypes.Array)(Column3),
   rows: (0, import_runtypes.Array)(Row),
   filters: (0, import_runtypes.Array)(Filter2),
   settings: TableSettings,
@@ -47360,33 +47468,6 @@ var DeserializationError = class extends Error {
     this.pluginVersion = pluginVersion;
     this.fileVersion = fileVersion;
     this.failedMigration = failedMigration;
-  }
-};
-
-// src/shared/loom-state/migrate/migrate-state-21.ts
-var MigrateState21 = class {
-  migrate(prevState) {
-    const { rows } = prevState.model;
-    const nextRows = rows.map((row) => {
-      const { cells } = row;
-      const nextCells = cells.map((cell) => {
-        return {
-          ...cell,
-          hasValidFrontmatter: null
-        };
-      });
-      return {
-        ...row,
-        cells: nextCells
-      };
-    });
-    return {
-      ...prevState,
-      model: {
-        ...prevState.model,
-        rows: nextRows
-      }
-    };
   }
 };
 
@@ -47614,6 +47695,15 @@ var deserializeState = (data, pluginVersion) => {
     if (isVersionLessThan(fileVersion, VERSION_8_15_6)) {
       failedMigration = VERSION_8_15_6;
       const nextState = new MigrateState21().migrate(
+        currentState
+      );
+      currentState = nextState;
+      failedMigration = null;
+    }
+    const VERSION_8_16_0 = "8.16.0";
+    if (isVersionLessThan(fileVersion, VERSION_8_16_0)) {
+      failedMigration = VERSION_8_16_0;
+      const nextState = new MigrateState22().migrate(
         currentState
       );
       currentState = nextState;
@@ -49134,10 +49224,12 @@ function useSizeWithElRef(callback, enabled = true) {
   if (typeof ResizeObserver !== "undefined") {
     const observer = import_react5.default.useMemo(() => {
       return new ResizeObserver((entries) => {
-        const element = entries[0].target;
-        if (element.offsetParent !== null) {
-          callback(element);
-        }
+        requestAnimationFrame(() => {
+          const element = entries[0].target;
+          if (element.offsetParent !== null) {
+            callback(element);
+          }
+        });
       });
     }, [callback]);
     callbackRef = (elRef) => {
@@ -50127,6 +50219,7 @@ var scrollToIndexSystem = system(
     { log }
   ]) => {
     const scrollToIndex = stream();
+    const scrollTargetReached = stream();
     const topListHeight = statefulStream(0);
     let unsubscribeNextListRefresh = null;
     let cleartTimeoutRef = null;
@@ -50182,6 +50275,7 @@ var scrollToIndexSystem = system(
                 log2("retrying to scroll to", { location }, LogLevel.DEBUG);
                 publish(scrollToIndex, location);
               } else {
+                publish(scrollTargetReached, true);
                 log2("list did not change, scroll successful", {}, LogLevel.DEBUG);
               }
             };
@@ -50210,6 +50304,7 @@ var scrollToIndexSystem = system(
     );
     return {
       scrollToIndex,
+      scrollTargetReached,
       topListHeight
     };
   },
@@ -50450,10 +50545,10 @@ function getInitialTopMostItemIndexNumber(location, totalCount) {
   return index;
 }
 var initialTopMostItemIndexSystem = system(
-  ([{ sizes, listRefresh, defaultItemSize }, { scrollTop }, { scrollToIndex }, { didMount }]) => {
+  ([{ sizes, listRefresh, defaultItemSize }, { scrollTop }, { scrollToIndex, scrollTargetReached }, { didMount }]) => {
     const scrolledToInitialItem = statefulStream(true);
     const initialTopMostItemIndex = statefulStream(0);
-    const scrollScheduled = statefulStream(false);
+    const initialItemFinalLocationReached = statefulStream(true);
     connect(
       pipe(
         didMount,
@@ -50463,26 +50558,40 @@ var initialTopMostItemIndexSystem = system(
       ),
       scrolledToInitialItem
     );
+    connect(
+      pipe(
+        didMount,
+        withLatestFrom(initialTopMostItemIndex),
+        filter(([_7, location]) => !!location),
+        mapTo(false)
+      ),
+      initialItemFinalLocationReached
+    );
     subscribe(
       pipe(
         combineLatest(listRefresh, didMount),
-        withLatestFrom(scrolledToInitialItem, sizes, defaultItemSize, scrollScheduled),
-        filter(([[, didMount2], scrolledToInitialItem2, { sizeTree }, defaultItemSize2, scrollScheduled2]) => {
-          return didMount2 && (!empty(sizeTree) || isDefined(defaultItemSize2)) && !scrolledToInitialItem2 && !scrollScheduled2;
+        withLatestFrom(scrolledToInitialItem, sizes, defaultItemSize, initialItemFinalLocationReached),
+        filter(([[, didMount2], scrolledToInitialItem2, { sizeTree }, defaultItemSize2, scrollScheduled]) => {
+          return didMount2 && (!empty(sizeTree) || isDefined(defaultItemSize2)) && !scrolledToInitialItem2 && !scrollScheduled;
         }),
         withLatestFrom(initialTopMostItemIndex)
       ),
       ([, initialTopMostItemIndex2]) => {
-        publish(scrollScheduled, true);
-        skipFrames(3, () => {
-          handleNext(scrollTop, () => publish(scrolledToInitialItem, true));
+        handleNext(scrollTargetReached, () => {
+          publish(initialItemFinalLocationReached, true);
+        });
+        skipFrames(4, () => {
+          handleNext(scrollTop, () => {
+            publish(scrolledToInitialItem, true);
+          });
           publish(scrollToIndex, initialTopMostItemIndex2);
         });
       }
     );
     return {
       scrolledToInitialItem,
-      initialTopMostItemIndex
+      initialTopMostItemIndex,
+      initialItemFinalLocationReached
     };
   },
   tup(sizeSystem, domIOSystem, scrollToIndexSystem, propsReadySystem),
@@ -50570,7 +50679,9 @@ var followOutputSystem = system(
         withLatestFrom(followOutput, totalCount)
       ),
       ([, followOutput2]) => {
-        trapNextSizeIncrease(followOutput2 !== false);
+        if (getValue(scrolledToInitialItem)) {
+          trapNextSizeIncrease(followOutput2 !== false);
+        }
       }
     );
     subscribe(autoscrollToBottom, () => {
@@ -51539,7 +51650,7 @@ var listSystem = system(
       gap,
       sizes
     },
-    { initialTopMostItemIndex, scrolledToInitialItem },
+    { initialTopMostItemIndex, scrolledToInitialItem, initialItemFinalLocationReached },
     domIO,
     stateLoad,
     followOutput,
@@ -51566,6 +51677,7 @@ var listSystem = system(
       sizeRanges,
       initialTopMostItemIndex,
       scrolledToInitialItem,
+      initialItemFinalLocationReached,
       topItemsIndexes,
       topItemCount,
       groupCounts,
@@ -51648,7 +51760,9 @@ function useWindowViewportRectRef(callback, customScrollParent) {
   import_react5.default.useEffect(() => {
     if (customScrollParent) {
       customScrollParent.addEventListener("scroll", scrollAndResizeEventHandler);
-      const observer = new ResizeObserver(scrollAndResizeEventHandler);
+      const observer = new ResizeObserver(() => {
+        requestAnimationFrame(scrollAndResizeEventHandler);
+      });
       observer.observe(customScrollParent);
       return () => {
         customScrollParent.removeEventListener("scroll", scrollAndResizeEventHandler);
@@ -51751,14 +51865,14 @@ var Items$1 = /* @__PURE__ */ import_react5.default.memo(function VirtuosoItems(
   const computeItemKey = useEmitterValue$2("computeItemKey");
   const isSeeking = useEmitterValue$2("isSeeking");
   const hasGroups2 = useEmitterValue$2("groupIndices").length > 0;
-  const paddingTopAddition = useEmitterValue$2("paddingTopAddition");
-  const scrolledToInitialItem = useEmitterValue$2("scrolledToInitialItem");
+  const alignToBottom = useEmitterValue$2("alignToBottom");
+  const initialItemFinalLocationReached = useEmitterValue$2("initialItemFinalLocationReached");
   const containerStyle = showTopList ? {} : {
     boxSizing: "border-box",
-    paddingTop: listState.offsetTop + paddingTopAddition,
+    paddingTop: listState.offsetTop,
     paddingBottom: listState.offsetBottom,
-    marginTop: deviation,
-    ...scrolledToInitialItem ? {} : { visibility: "hidden" }
+    marginTop: deviation !== 0 ? deviation : alignToBottom ? "auto" : 0,
+    ...initialItemFinalLocationReached ? {} : { visibility: "hidden" }
   };
   if (!showTopList && listState.totalCount === 0 && EmptyPlaceholder) {
     return import_react5.default.createElement(EmptyPlaceholder, contextPropIfNotDomElement(EmptyPlaceholder, context));
@@ -51769,7 +51883,7 @@ var Items$1 = /* @__PURE__ */ import_react5.default.memo(function VirtuosoItems(
       ...contextPropIfNotDomElement(ListComponent, context),
       ref: callbackRef,
       style: containerStyle,
-      "data-test-id": showTopList ? "virtuoso-top-item-list" : "virtuoso-item-list"
+      "data-testid": showTopList ? "virtuoso-top-item-list" : "virtuoso-item-list"
     },
     (showTopList ? listState.topItems : listState.items).map((item) => {
       const index = item.originalIndex;
@@ -51823,12 +51937,13 @@ var scrollerStyle = {
   position: "relative",
   WebkitOverflowScrolling: "touch"
 };
-var viewportStyle = {
+var viewportStyle = (alignToBottom) => ({
   width: "100%",
   height: "100%",
   position: "absolute",
-  top: 0
-};
+  top: 0,
+  ...alignToBottom ? { display: "flex", flexDirection: "column" } : {}
+});
 var topItemListStyle = {
   width: "100%",
   position: positionStickyCssValue(),
@@ -51880,7 +51995,7 @@ function buildScroller({ usePublisher: usePublisher2, useEmitter: useEmitter2, u
       {
         ref: scrollerRef,
         style: { ...scrollerStyle, ...style },
-        "data-test-id": "virtuoso-scroller",
+        "data-testid": "virtuoso-scroller",
         "data-virtuoso-scroller": true,
         tabIndex: 0,
         ...props,
@@ -51932,6 +52047,7 @@ var Viewport$2 = ({ children }) => {
   const ctx = import_react5.default.useContext(VirtuosoMockContext);
   const viewportHeight = usePublisher$2("viewportHeight");
   const fixedItemHeight = usePublisher$2("fixedItemHeight");
+  const alignToBottom = useEmitterValue$2("alignToBottom");
   const viewportRef = useSize(compose2(viewportHeight, (el) => correctItemSize(el, "height")));
   import_react5.default.useEffect(() => {
     if (ctx) {
@@ -51939,7 +52055,7 @@ var Viewport$2 = ({ children }) => {
       fixedItemHeight(ctx.itemHeight);
     }
   }, [ctx, viewportHeight, fixedItemHeight]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle, ref: viewportRef, "data-viewport-type": "element" }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle(alignToBottom), ref: viewportRef, "data-viewport-type": "element" }, children);
 };
 var WindowViewport$2 = ({ children }) => {
   const ctx = import_react5.default.useContext(VirtuosoMockContext);
@@ -51947,13 +52063,14 @@ var WindowViewport$2 = ({ children }) => {
   const fixedItemHeight = usePublisher$2("fixedItemHeight");
   const customScrollParent = useEmitterValue$2("customScrollParent");
   const viewportRef = useWindowViewportRectRef(windowViewportRect, customScrollParent);
+  const alignToBottom = useEmitterValue$2("alignToBottom");
   import_react5.default.useEffect(() => {
     if (ctx) {
       fixedItemHeight(ctx.itemHeight);
       windowViewportRect({ offsetTop: 0, visibleHeight: ctx.viewportHeight, visibleWidth: 100 });
     }
   }, [ctx, windowViewportRect, fixedItemHeight]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle, "data-viewport-type": "window" }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle(alignToBottom), "data-viewport-type": "window" }, children);
 };
 var TopItemListContainer = ({ children }) => {
   const TopItemList = useEmitterValue$2("TopItemListComponent") || "div";
@@ -52496,7 +52613,7 @@ var GridItems = /* @__PURE__ */ import_react5.default.memo(function GridItems2()
       className: listClassName,
       ...contextPropIfNotDomElement(ListComponent, context),
       style: { paddingTop: gridState.offsetTop, paddingBottom: gridState.offsetBottom },
-      "data-test-id": "virtuoso-item-list"
+      "data-testid": "virtuoso-item-list"
     },
     gridState.items.map((item) => {
       const key = computeItemKey(item.index, item.data, context);
@@ -52543,7 +52660,7 @@ var Viewport$1 = ({ children }) => {
       itemDimensions({ height: ctx.itemHeight, width: ctx.itemWidth });
     }
   }, [ctx, viewportDimensions, itemDimensions]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle, ref: viewportRef }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle(false), ref: viewportRef }, children);
 };
 var WindowViewport$1 = ({ children }) => {
   const ctx = import_react5.default.useContext(VirtuosoGridMockContext);
@@ -52557,7 +52674,7 @@ var WindowViewport$1 = ({ children }) => {
       windowViewportRect({ offsetTop: 0, visibleHeight: ctx.viewportHeight, visibleWidth: ctx.viewportWidth });
     }
   }, [ctx, windowViewportRect, itemDimensions]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle(false) }, children);
 };
 var GridRoot = /* @__PURE__ */ import_react5.default.memo(function GridRoot2({ ...props }) {
   const useWindowScroll = useEmitterValue$1("useWindowScroll");
@@ -52739,7 +52856,7 @@ var Items = /* @__PURE__ */ import_react5.default.memo(function VirtuosoItems2()
   });
   return import_react5.default.createElement(
     TableBodyComponent,
-    { ref: callbackRef, "data-test-id": "virtuoso-item-list", ...contextPropIfNotDomElement(TableBodyComponent, context) },
+    { ref: callbackRef, "data-testid": "virtuoso-item-list", ...contextPropIfNotDomElement(TableBodyComponent, context) },
     [paddingTopEl, ...items, paddingBottomEl]
   );
 });
@@ -52754,7 +52871,7 @@ var Viewport = ({ children }) => {
       fixedItemHeight(ctx.itemHeight);
     }
   }, [ctx, viewportHeight, fixedItemHeight]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle, ref: viewportRef, "data-viewport-type": "element" }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { style: viewportStyle(false), ref: viewportRef, "data-viewport-type": "element" }, children);
 };
 var WindowViewport = ({ children }) => {
   const ctx = import_react5.default.useContext(VirtuosoMockContext);
@@ -52768,7 +52885,7 @@ var WindowViewport = ({ children }) => {
       windowViewportRect({ offsetTop: 0, visibleHeight: ctx.viewportHeight, visibleWidth: 100 });
     }
   }, [ctx, windowViewportRect, fixedItemHeight]);
-  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle, "data-viewport-type": "window" }, children);
+  return /* @__PURE__ */ import_react5.default.createElement("div", { ref: viewportRef, style: viewportStyle(false), "data-viewport-type": "window" }, children);
 };
 var TableRoot = /* @__PURE__ */ import_react5.default.memo(function TableVirtuosoRoot(props) {
   const useWindowScroll = useEmitterValue("useWindowScroll");
@@ -54576,6 +54693,16 @@ var getDisplayNameForDateFormatSeparator = (format) => {
       return "";
   }
 };
+var getDisplayNameForSortDir = (dir) => {
+  switch (dir) {
+    case "asc" /* ASC */:
+      return "Ascending";
+    case "desc" /* DESC */:
+      return "Descending";
+    default:
+      return "Default";
+  }
+};
 var getDisplayNameForCurrencyType = (type) => {
   switch (type) {
     case "USD" /* UNITED_STATES */:
@@ -55671,6 +55798,7 @@ function OptionSubmenu({
   horizontalPadding,
   title,
   dateFormat,
+  multiTagSortDir,
   onBackClick,
   onSubmenuChange
 }) {
@@ -55767,7 +55895,15 @@ function OptionSubmenu({
           onClick: () => onSubmenuChange(6 /* TIME_FORMAT */)
         }
       )
-    ] })
+    ] }),
+    type === "multi-tag" /* MULTI_TAG */ && /* @__PURE__ */ (0, import_jsx_runtime22.jsx)(
+      MenuItem,
+      {
+        name: "Sort",
+        value: getDisplayNameForSortDir(multiTagSortDir),
+        onClick: () => onSubmenuChange(13 /* CONTENTS_SORT_DIR */)
+      }
+    )
   ] }) }) });
 }
 
@@ -56151,7 +56287,7 @@ function BaseSubmenu({
   function handleInputChange(inputValue) {
     onColumnNameChange(inputValue);
   }
-  const hasOptions = columnType === "embed" /* EMBED */ || columnType === "number" /* NUMBER */ || columnType === "last-edited-time" /* LAST_EDITED_TIME */ || columnType === "creation-time" /* CREATION_TIME */;
+  const hasOptions = columnType === "embed" /* EMBED */ || columnType === "number" /* NUMBER */ || columnType === "last-edited-time" /* LAST_EDITED_TIME */ || columnType === "creation-time" /* CREATION_TIME */ || columnType === "multi-tag" /* MULTI_TAG */;
   return /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(Stack, { spacing: "sm", children: [
     /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)(Stack, { spacing: "sm", width: "100%", children: [
       /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(Padding, { px: "md", py: "sm", width: "100%", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
@@ -56312,8 +56448,47 @@ function TimeFormatSubmenu({
   ] });
 }
 
-// src/react/loom-app/header-menu/index.tsx
+// src/react/loom-app/header-menu/multitag-sort-dir-submenu.tsx
 var import_jsx_runtime35 = __toESM(require_jsx_runtime());
+function MultiTagSortDirSubmenu({
+  title,
+  value,
+  onValueClick,
+  onBackClick
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime35.jsxs)(Submenu, { title, onBackClick, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+      MenuItem,
+      {
+        name: "Ascending",
+        onClick: () => onValueClick("asc" /* ASC */),
+        isSelected: value === "asc" /* ASC */
+      },
+      "asc" /* ASC */
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+      MenuItem,
+      {
+        name: "Descending",
+        onClick: () => onValueClick("desc" /* DESC */),
+        isSelected: value === "desc" /* DESC */
+      },
+      "desc" /* DESC */
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+      MenuItem,
+      {
+        name: "Default",
+        onClick: () => onValueClick("default" /* NONE */),
+        isSelected: value === "default" /* NONE */
+      },
+      "default" /* NONE */
+    )
+  ] });
+}
+
+// src/react/loom-app/header-menu/index.tsx
+var import_jsx_runtime36 = __toESM(require_jsx_runtime());
 function HeaderMenu({
   index,
   isOpen,
@@ -56348,7 +56523,8 @@ function HeaderMenu({
     numberPrefix,
     numberSeparator,
     numberSuffix,
-    frontmatterKey
+    frontmatterKey,
+    multiTagSortDir
   } = column;
   const [submenu, setSubmenu] = import_react21.default.useState(null);
   const [localValue, setLocalValue] = import_react21.default.useState(content);
@@ -56476,8 +56652,12 @@ function HeaderMenu({
     );
     onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(Menu, { isOpen, id: id2, position, width: 190, children: /* @__PURE__ */ (0, import_jsx_runtime35.jsxs)("div", { className: "dataloom-header-menu", children: [
-    submenu === null && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+  function handleMultiTagSortDirClick(value) {
+    onColumnChange(columnId, { multiTagSortDir: value });
+    setSubmenu(1 /* OPTIONS */);
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(Menu, { isOpen, id: id2, position, width: 190, children: /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)("div", { className: "dataloom-header-menu", children: [
+    submenu === null && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       BaseSubmenu,
       {
         index,
@@ -56499,7 +56679,7 @@ function HeaderMenu({
         onFrozenColumnsChange: handleFrozenColumnsChange
       }
     ),
-    submenu === 1 /* OPTIONS */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 1 /* OPTIONS */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       OptionSubmenu,
       {
         title: "Options",
@@ -56515,11 +56695,12 @@ function HeaderMenu({
         numberPrefix,
         numberSuffix,
         numberSeparator,
+        multiTagSortDir,
         onBackClick: () => setSubmenu(null),
         onSubmenuChange: setSubmenu
       }
     ),
-    submenu === 8 /* ASPECT_RATIO */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 8 /* ASPECT_RATIO */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       AspectRatioSubmenu,
       {
         title: "Aspect ratio",
@@ -56528,7 +56709,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(null)
       }
     ),
-    submenu === 5 /* HORIZONTAL_PADDING */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 5 /* HORIZONTAL_PADDING */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       PaddingSubmenu,
       {
         title: "Horizontal padding",
@@ -56537,7 +56718,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(null)
       }
     ),
-    submenu === 7 /* VERTICAL_PADDING */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 7 /* VERTICAL_PADDING */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       PaddingSubmenu,
       {
         title: "Vertical padding",
@@ -56546,7 +56727,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(null)
       }
     ),
-    submenu === 0 /* TYPE */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 0 /* TYPE */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       TypeSubmenu,
       {
         title: "Type",
@@ -56555,7 +56736,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(null)
       }
     ),
-    submenu === 3 /* DATE_FORMAT */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 3 /* DATE_FORMAT */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       DateFormatSubmenu,
       {
         title: "Date format",
@@ -56564,7 +56745,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 4 /* DATE_FORMAT_SEPARATOR */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 4 /* DATE_FORMAT_SEPARATOR */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       DateFormatSeparatorSubmenu,
       {
         title: "Date separator",
@@ -56573,7 +56754,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 6 /* TIME_FORMAT */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 6 /* TIME_FORMAT */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       TimeFormatSubmenu,
       {
         title: "Time format",
@@ -56582,7 +56763,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 2 /* CURRENCY */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 2 /* CURRENCY */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       NumberFormatSubmenu,
       {
         title: "Number format",
@@ -56592,7 +56773,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 9 /* TEXT_INPUT_NUMBER_PREFIX */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 9 /* TEXT_INPUT_NUMBER_PREFIX */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       TextInputSubmenu,
       {
         title: "Prefix",
@@ -56603,7 +56784,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 10 /* TEXT_INPUT_NUMBER_SUFFIX */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 10 /* TEXT_INPUT_NUMBER_SUFFIX */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       TextInputSubmenu,
       {
         title: "Suffix",
@@ -56614,7 +56795,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 11 /* TEXT_INPUT_NUMBER_SEPARATOR */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 11 /* TEXT_INPUT_NUMBER_SEPARATOR */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       TextInputSubmenu,
       {
         title: "Separator",
@@ -56625,7 +56806,7 @@ function HeaderMenu({
         onBackClick: () => setSubmenu(1 /* OPTIONS */)
       }
     ),
-    submenu === 12 /* FRONTMATTER_KEY */ && /* @__PURE__ */ (0, import_jsx_runtime35.jsx)(
+    submenu === 12 /* FRONTMATTER_KEY */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
       FrontmatterKeySubmenu,
       {
         title: "Frontmatter key",
@@ -56634,12 +56815,21 @@ function HeaderMenu({
         onFrontmatterKeyChange: handleFrontmatterKeyChange,
         onBackClick: () => setSubmenu(null)
       }
+    ),
+    submenu === 13 /* CONTENTS_SORT_DIR */ && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
+      MultiTagSortDirSubmenu,
+      {
+        title: "Sort",
+        value: multiTagSortDir,
+        onValueClick: handleMultiTagSortDirClick,
+        onBackClick: () => setSubmenu(null)
+      }
     )
   ] }) });
 }
 
 // src/react/loom-app/header-cell-container/index.tsx
-var import_jsx_runtime36 = __toESM(require_jsx_runtime());
+var import_jsx_runtime37 = __toESM(require_jsx_runtime());
 function HeaderCellContainer({
   index,
   column,
@@ -56660,8 +56850,8 @@ function HeaderCellContainer({
   let contentClassName = "dataloom-cell--header__inner-container";
   if (resizingColumnId == null)
     contentClassName += " dataloom-selectable";
-  return /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(import_jsx_runtime36.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(import_jsx_runtime37.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(
       menu_trigger_default,
       {
         ref: menu.triggerRef,
@@ -56673,7 +56863,7 @@ function HeaderCellContainer({
         onOpen: () => menu.onOpen(1 /* ONE */, {
           shouldRequestOnClose: true
         }),
-        children: /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(
           "div",
           {
             className: "dataloom-cell--header__container",
@@ -56681,11 +56871,11 @@ function HeaderCellContainer({
               width
             },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime36.jsx)("div", { className: contentClassName, children: /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(Stack, { isHorizontal: true, spacing: "md", align: "center", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(Icon, { lucideId, size: "md" }),
+              /* @__PURE__ */ (0, import_jsx_runtime37.jsx)("div", { className: contentClassName, children: /* @__PURE__ */ (0, import_jsx_runtime37.jsxs)(Stack, { isHorizontal: true, spacing: "md", align: "center", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(Icon, { lucideId, size: "md" }),
                 content
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(
                 ColumnResize,
                 {
                   columnIndex: index,
@@ -56705,7 +56895,7 @@ function HeaderCellContainer({
         )
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(
       HeaderMenu,
       {
         id: menu.id,
@@ -56731,7 +56921,7 @@ function HeaderCellContainer({
 
 // src/shared/dragging/drag-context.tsx
 var import_react22 = __toESM(require_react());
-var import_jsx_runtime37 = __toESM(require_jsx_runtime());
+var import_jsx_runtime38 = __toESM(require_jsx_runtime());
 var DragContext = import_react22.default.createContext(null);
 var useDragContext = () => {
   const value = import_react22.default.useContext(DragContext);
@@ -56747,7 +56937,7 @@ function DragProvider({ children }) {
   const [touchDropZone, setTouchDropZone] = import_react22.default.useState(
     null
   );
-  return /* @__PURE__ */ (0, import_jsx_runtime37.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
     DragContext.Provider,
     {
       value: { dragData, touchDropZone, setDragData, setTouchDropZone },
@@ -56766,7 +56956,7 @@ var getRowId = (rowEl) => {
 };
 
 // src/react/loom-app/table/body-row.tsx
-var import_jsx_runtime38 = __toESM(require_jsx_runtime());
+var import_jsx_runtime39 = __toESM(require_jsx_runtime());
 function BodyRow({
   style,
   children,
@@ -56807,7 +56997,7 @@ function BodyRow({
   function handleDragOver(e) {
     e.preventDefault();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime38.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
     "div",
     {
       className: "dataloom-row",
@@ -56864,7 +57054,7 @@ var useStickyOffset = (ref, numFrozenColumns, columnIndex) => {
 };
 
 // src/react/loom-app/table/header-cell.tsx
-var import_jsx_runtime39 = __toESM(require_jsx_runtime());
+var import_jsx_runtime40 = __toESM(require_jsx_runtime());
 function HeaderCell({
   index,
   columnId,
@@ -56985,7 +57175,7 @@ function HeaderCell({
   let className = "dataloom-cell dataloom-cell--header";
   if (shouldFreeze)
     className += " dataloom-cell--freeze dataloom-cell--freeze-header";
-  return /* @__PURE__ */ (0, import_jsx_runtime39.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     "div",
     {
       className,
@@ -57012,7 +57202,7 @@ function HeaderCell({
 
 // src/react/loom-app/table/body-cell.tsx
 var import_react25 = __toESM(require_react());
-var import_jsx_runtime40 = __toESM(require_jsx_runtime());
+var import_jsx_runtime41 = __toESM(require_jsx_runtime());
 function BodyCell({
   rowId,
   index,
@@ -57025,7 +57215,7 @@ function BodyCell({
   let className = "dataloom-cell dataloom-cell--body";
   if (shouldFreeze)
     className += " dataloom-cell--freeze";
-  return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
     "div",
     {
       className,
@@ -57039,7 +57229,7 @@ function BodyCell({
 
 // src/react/loom-app/table/footer-cell.tsx
 var import_react26 = __toESM(require_react());
-var import_jsx_runtime41 = __toESM(require_jsx_runtime());
+var import_jsx_runtime42 = __toESM(require_jsx_runtime());
 function FooterCell({
   index,
   content,
@@ -57051,7 +57241,7 @@ function FooterCell({
   let className = "dataloom-cell dataloom-cell--footer";
   if (shouldFreeze)
     className += " dataloom-cell--freeze dataloom-cell--freeze-footer";
-  return /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(
     "div",
     {
       ref,
@@ -57065,12 +57255,12 @@ function FooterCell({
 }
 
 // src/react/loom-app/new-column-button/index.tsx
-var import_jsx_runtime42 = __toESM(require_jsx_runtime());
+var import_jsx_runtime43 = __toESM(require_jsx_runtime());
 function NewColumnButton({ onClick }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)("div", { className: "dataloom-new-column", children: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime43.jsx)("div", { className: "dataloom-new-column", children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
     Button,
     {
-      icon: /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(Icon, { lucideId: "plus" }),
+      icon: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(Icon, { lucideId: "plus" }),
       ariaLabel: "New column",
       onClick: () => onClick()
     }
@@ -57079,7 +57269,7 @@ function NewColumnButton({ onClick }) {
 
 // src/react/shared/menu-button/index.tsx
 var import_react27 = __toESM(require_react());
-var import_jsx_runtime43 = __toESM(require_jsx_runtime());
+var import_jsx_runtime44 = __toESM(require_jsx_runtime());
 var MenuButton = import_react27.default.forwardRef(
   ({
     menuId,
@@ -57094,7 +57284,7 @@ var MenuButton = import_react27.default.forwardRef(
     onMouseDown,
     onOpen
   }, ref) => {
-    return /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
       menu_trigger_default,
       {
         ref,
@@ -57105,7 +57295,7 @@ var MenuButton = import_react27.default.forwardRef(
         onClick,
         onMouseDown,
         onOpen,
-        children: /* @__PURE__ */ (0, import_jsx_runtime43.jsx)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
           Button,
           {
             isDisabled,
@@ -57123,7 +57313,7 @@ var MenuButton = import_react27.default.forwardRef(
 var menu_button_default = MenuButton;
 
 // src/react/loom-app/row-options/row-menu/index.tsx
-var import_jsx_runtime44 = __toESM(require_jsx_runtime());
+var import_jsx_runtime45 = __toESM(require_jsx_runtime());
 function RowOptions({
   id: id2,
   isOpen,
@@ -57133,15 +57323,15 @@ function RowOptions({
   onInsertAboveClick,
   onInsertBelowClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
     Menu,
     {
       id: id2,
       isOpen,
       openDirection: "bottom-right",
       position,
-      children: /* @__PURE__ */ (0, import_jsx_runtime44.jsxs)("div", { className: "dataloom-row-menu", children: [
-        canDeleteRow && /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "dataloom-row-menu", children: [
+        canDeleteRow && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           MenuItem,
           {
             lucideId: "trash-2",
@@ -57149,7 +57339,7 @@ function RowOptions({
             onClick: () => onDeleteClick()
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           MenuItem,
           {
             lucideId: "chevrons-up",
@@ -57157,7 +57347,7 @@ function RowOptions({
             onClick: () => onInsertAboveClick()
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime44.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
           MenuItem,
           {
             lucideId: "chevrons-down",
@@ -57171,7 +57361,7 @@ function RowOptions({
 }
 
 // src/react/loom-app/row-options/index.tsx
-var import_jsx_runtime45 = __toESM(require_jsx_runtime());
+var import_jsx_runtime46 = __toESM(require_jsx_runtime());
 function RowOptions2({
   rowId,
   source,
@@ -57288,8 +57478,8 @@ function RowOptions2({
       children[i2].classList.remove("dataloom-tr--drag-over");
     }
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "dataloom-row-options", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Padding, { p: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)(import_jsx_runtime46.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "dataloom-row-options", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Padding, { p: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
       "div",
       {
         className: "dataloom-row-options__container",
@@ -57297,14 +57487,14 @@ function RowOptions2({
         onTouchMove: handleTouchMove,
         onTouchEnd: handleTouchEnd,
         onTouchCancel: handleTouchCancel,
-        children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
           menu_button_default,
           {
             isFocused: menu.isTriggerFocused,
             menuId: menu.id,
             ref: menu.triggerRef,
             level: 1 /* ONE */,
-            icon: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Icon, { lucideId: "grip-vertical" }),
+            icon: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Icon, { lucideId: "grip-vertical" }),
             ariaLabel: "Drag to move or click to open",
             onMouseDown: handleMouseDown,
             onOpen: () => menu.onOpen(1 /* ONE */)
@@ -57312,7 +57502,7 @@ function RowOptions2({
         )
       }
     ) }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
       RowOptions,
       {
         id: menu.id,
@@ -57332,10 +57522,10 @@ var import_react38 = __toESM(require_react());
 var import_obsidian13 = require("obsidian");
 
 // src/react/loom-app/text-cell/index.tsx
-var import_jsx_runtime46 = __toESM(require_jsx_runtime());
+var import_jsx_runtime47 = __toESM(require_jsx_runtime());
 function TextCell6({ value }) {
   const { containerRef, renderRef } = useRenderMarkdown(value);
-  return /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "dataloom-text-cell", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "dataloom-text-cell", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
     "div",
     {
       className: "dataloom-text-cell__container",
@@ -57380,7 +57570,7 @@ var randomColor = () => {
 };
 
 // src/react/shared/tag/index.tsx
-var import_jsx_runtime47 = __toESM(require_jsx_runtime());
+var import_jsx_runtime48 = __toESM(require_jsx_runtime());
 function Tag5({
   id: id2,
   color,
@@ -57401,8 +57591,8 @@ function Tag5({
   if (maxWidth !== void 0) {
     contentClassName += " dataloom-overflow--ellipsis";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: tagClassName, children: /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(Stack, { spacing: "sm", justify: "center", isHorizontal: true, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("div", { className: tagClassName, children: /* @__PURE__ */ (0, import_jsx_runtime48.jsxs)(Stack, { spacing: "sm", justify: "center", isHorizontal: true, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(
       "div",
       {
         className: contentClassName,
@@ -57412,11 +57602,11 @@ function Tag5({
         children: content
       }
     ),
-    showRemoveButton && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Padding, { width: "max-content", children: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
+    showRemoveButton && /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(Padding, { width: "max-content", children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(
       Button,
       {
         size: "sm",
-        icon: /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Icon, { lucideId: "x" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(Icon, { lucideId: "x" }),
         onClick: () => {
           if (id2 && onRemoveClick)
             onRemoveClick(id2);
@@ -57427,15 +57617,15 @@ function Tag5({
 }
 
 // src/react/loom-app/tag-cell/index.tsx
-var import_jsx_runtime48 = __toESM(require_jsx_runtime());
+var import_jsx_runtime49 = __toESM(require_jsx_runtime());
 function TagCell6({ content, color }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime48.jsx)("div", { className: "dataloom-tag-cell", children: /* @__PURE__ */ (0, import_jsx_runtime48.jsx)(Tag5, { content, color }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "dataloom-tag-cell", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Tag5, { content, color }) });
 }
 
 // src/react/loom-app/checkbox-cell/index.tsx
-var import_jsx_runtime49 = __toESM(require_jsx_runtime());
+var import_jsx_runtime50 = __toESM(require_jsx_runtime());
 function CheckboxCell6({ value }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "dataloom-checkbox-cell", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime50.jsx)("div", { className: "dataloom-checkbox-cell", children: /* @__PURE__ */ (0, import_jsx_runtime50.jsx)(
     "input",
     {
       className: "task-list-item-checkbox",
@@ -57448,20 +57638,20 @@ function CheckboxCell6({ value }) {
 }
 
 // src/react/loom-app/date-cell/index.tsx
-var import_jsx_runtime50 = __toESM(require_jsx_runtime());
+var import_jsx_runtime51 = __toESM(require_jsx_runtime());
 function DateCell6({ content }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime50.jsx)("div", { className: "dataloom-date-cell", children: content });
+  return /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "dataloom-date-cell", children: content });
 }
 
 // src/react/loom-app/number-cell/index.tsx
-var import_jsx_runtime51 = __toESM(require_jsx_runtime());
+var import_jsx_runtime52 = __toESM(require_jsx_runtime());
 function NumberCell7({ content }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "dataloom-number-cell", children: content });
+  return /* @__PURE__ */ (0, import_jsx_runtime52.jsx)("div", { className: "dataloom-number-cell", children: content });
 }
 
 // src/react/loom-app/number-cell-edit/index.tsx
 var import_react28 = __toESM(require_react());
-var import_jsx_runtime52 = __toESM(require_jsx_runtime());
+var import_jsx_runtime53 = __toESM(require_jsx_runtime());
 function NumberCellEdit({
   closeRequest,
   value,
@@ -57484,7 +57674,7 @@ function NumberCellEdit({
   function handleChange(inputValue) {
     setLocalValue(inputValue);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime52.jsx)("div", { className: "dataloom-number-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime53.jsx)("div", { className: "dataloom-number-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime53.jsx)(
     input_default,
     {
       isNumeric: true,
@@ -57509,7 +57699,7 @@ var import_fuzzysort = __toESM(require_fuzzysort());
 // src/react/shared/suggest-list/suggest-item/index.tsx
 var import_react29 = __toESM(require_react());
 var import_js_logger9 = __toESM(require_logger());
-var import_jsx_runtime53 = __toESM(require_jsx_runtime());
+var import_jsx_runtime54 = __toESM(require_jsx_runtime());
 var SuggestItem = import_react29.default.forwardRef(
   function SuggestItem2({ index, file, isHighlighted, onItemClick }, ref) {
     const handleClick = import_react29.default.useCallback(
@@ -57540,7 +57730,7 @@ var SuggestItem = import_react29.default.forwardRef(
         path = file.parent.path + "/";
       }
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime53.jsxs)(
+    return /* @__PURE__ */ (0, import_jsx_runtime54.jsxs)(
       "div",
       {
         tabIndex: 0,
@@ -57553,7 +57743,7 @@ var SuggestItem = import_react29.default.forwardRef(
         onClick: handleClick,
         onKeyDown: handleKeyDown,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime53.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime54.jsx)(
             Text,
             {
               variant: "semibold",
@@ -57562,7 +57752,7 @@ var SuggestItem = import_react29.default.forwardRef(
               maxWidth: "275px"
             }
           ),
-          path && /* @__PURE__ */ (0, import_jsx_runtime53.jsx)(Text, { value: path, size: "xs" })
+          path && /* @__PURE__ */ (0, import_jsx_runtime54.jsx)(Text, { value: path, size: "xs" })
         ]
       }
     );
@@ -57571,9 +57761,9 @@ var SuggestItem = import_react29.default.forwardRef(
 var suggest_item_default = SuggestItem;
 
 // src/react/shared/suggest-list/suggest-input/index.tsx
-var import_jsx_runtime54 = __toESM(require_jsx_runtime());
+var import_jsx_runtime55 = __toESM(require_jsx_runtime());
 function SuggestInput({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime54.jsx)("div", { className: "dataloom-suggest-input", children: /* @__PURE__ */ (0, import_jsx_runtime54.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime55.jsx)("div", { className: "dataloom-suggest-input", children: /* @__PURE__ */ (0, import_jsx_runtime55.jsx)(
     input_default,
     {
       isTransparent: true,
@@ -57586,32 +57776,32 @@ function SuggestInput({ value, onChange }) {
 }
 
 // src/react/shared/suggest-list/clear-button.tsx
-var import_jsx_runtime55 = __toESM(require_jsx_runtime());
+var import_jsx_runtime56 = __toESM(require_jsx_runtime());
 function ClearButton({ onClick }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime55.jsxs)(import_jsx_runtime55.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime55.jsx)(Divider, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime55.jsx)(MenuItem, { name: "Clear", onClick })
+  return /* @__PURE__ */ (0, import_jsx_runtime56.jsxs)(import_jsx_runtime56.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime56.jsx)(Divider, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime56.jsx)(MenuItem, { name: "Clear", onClick })
   ] });
 }
 
 // src/react/shared/suggest-list/create-button.tsx
-var import_jsx_runtime56 = __toESM(require_jsx_runtime());
+var import_jsx_runtime57 = __toESM(require_jsx_runtime());
 function CreateButton({ value, onClick }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime56.jsxs)(import_jsx_runtime56.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime56.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime57.jsxs)(import_jsx_runtime57.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(
       MenuItem,
       {
         name: `Create ${value}`,
         onClick: () => onClick == null ? void 0 : onClick(value)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime56.jsx)(Divider, {})
+    /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(Divider, {})
   ] });
 }
 
 // src/react/shared/suggest-list/index.tsx
 var import_js_logger10 = __toESM(require_logger());
-var import_jsx_runtime57 = __toESM(require_jsx_runtime());
+var import_jsx_runtime58 = __toESM(require_jsx_runtime());
 function SuggestList({
   hiddenExtensions = [],
   showInput,
@@ -57667,26 +57857,26 @@ function SuggestList({
     setHighlightIndex(-1);
   }
   const doesFilterFileExist = filteredFiles.map((file) => file.path).includes(localFilterValue);
-  return /* @__PURE__ */ (0, import_jsx_runtime57.jsxs)("div", { className: "dataloom-suggest-menu", onKeyDown: handleKeyDown, children: [
-    showInput && files.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime57.jsxs)(import_jsx_runtime57.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime58.jsxs)("div", { className: "dataloom-suggest-menu", onKeyDown: handleKeyDown, children: [
+    showInput && files.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime58.jsxs)(import_jsx_runtime58.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(
         SuggestInput,
         {
           value: localFilterValue,
           onChange: setLocalFilterValue
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(Divider, {})
+      /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(Divider, {})
     ] }),
-    showCreate && !doesFilterFileExist && localFilterValue !== "" && /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(
+    showCreate && !doesFilterFileExist && localFilterValue !== "" && /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(
       CreateButton,
       {
         value: localFilterValue,
         onClick: onCreateClick
       }
     ),
-    files.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime57.jsxs)("div", { className: "dataloom-suggest-menu__container", children: [
-      filteredFiles.length === 0 && !showCreate && /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(
+    files.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime58.jsxs)("div", { className: "dataloom-suggest-menu__container", children: [
+      filteredFiles.length === 0 && !showCreate && /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(
         suggest_item_default,
         {
           index: 0,
@@ -57696,7 +57886,7 @@ function SuggestList({
           onItemClick
         }
       ),
-      filteredFiles.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(import_jsx_runtime57.Fragment, { children: filteredFiles.map((file, index) => /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(
+      filteredFiles.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(import_jsx_runtime58.Fragment, { children: filteredFiles.map((file, index) => /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(
         suggest_item_default,
         {
           index,
@@ -57708,13 +57898,13 @@ function SuggestList({
         file.path
       )) })
     ] }),
-    files.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(Padding, { px: "md", pb: "md", children: /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(Text, { value: "No image files found" }) }),
-    showClear && /* @__PURE__ */ (0, import_jsx_runtime57.jsx)(ClearButton, { onClick: onClearClick })
+    files.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(Padding, { px: "md", pb: "md", children: /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(Text, { value: "No image files found" }) }),
+    showClear && /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(ClearButton, { onClick: onClearClick })
   ] });
 }
 
 // src/react/loom-app/text-cell-edit/suggest-menu.tsx
-var import_jsx_runtime58 = __toESM(require_jsx_runtime());
+var import_jsx_runtime59 = __toESM(require_jsx_runtime());
 function SuggestMenu({
   id: id2,
   isOpen,
@@ -57722,7 +57912,7 @@ function SuggestMenu({
   filterValue,
   onItemClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime59.jsx)(
     Menu,
     {
       id: id2,
@@ -57731,7 +57921,7 @@ function SuggestMenu({
       width: 275,
       topOffset: 30,
       leftOffset: 30,
-      children: /* @__PURE__ */ (0, import_jsx_runtime58.jsx)(SuggestList, { filterValue, onItemClick })
+      children: /* @__PURE__ */ (0, import_jsx_runtime59.jsx)(SuggestList, { filterValue, onItemClick })
     }
   );
 }
@@ -57810,7 +58000,7 @@ var removeClosingBracket = (previousValue, value, selectionStart) => {
 
 // src/react/loom-app/text-cell-edit/index.tsx
 var import_js_logger11 = __toESM(require_logger());
-var import_jsx_runtime59 = __toESM(require_jsx_runtime());
+var import_jsx_runtime60 = __toESM(require_jsx_runtime());
 function TextCellEdit({
   cellId,
   shouldWrapOverflow,
@@ -57922,8 +58112,8 @@ function TextCellEdit({
   if (menu.isTriggerFocused) {
     className += " dataloom-focusable--focused";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime59.jsxs)(import_jsx_runtime59.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime59.jsx)("div", { className: "dataloom-text-cell-edit", ref: menu.triggerRef, children: /* @__PURE__ */ (0, import_jsx_runtime59.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime60.jsxs)(import_jsx_runtime60.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime60.jsx)("div", { className: "dataloom-text-cell-edit", ref: menu.triggerRef, children: /* @__PURE__ */ (0, import_jsx_runtime60.jsx)(
       "textarea",
       {
         "data-menu-id": menu.id,
@@ -57938,7 +58128,7 @@ function TextCellEdit({
         }
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime59.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime60.jsx)(
       SuggestMenu,
       {
         id: menu.id,
@@ -57958,7 +58148,7 @@ var import_react34 = __toESM(require_react());
 var import_react32 = __toESM(require_react());
 
 // src/react/shared/wrap/index.tsx
-var import_jsx_runtime60 = __toESM(require_jsx_runtime());
+var import_jsx_runtime61 = __toESM(require_jsx_runtime());
 function Wrap({
   justify,
   align = "center",
@@ -57969,7 +58159,7 @@ function Wrap({
 }) {
   const justifyContent = getDynamicSize("flex-start", justify);
   const renderWidth = getDynamicSize("100%", width);
-  return /* @__PURE__ */ (0, import_jsx_runtime60.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime61.jsx)(
     "div",
     {
       className: "dataloom-wrap",
@@ -57986,7 +58176,7 @@ function Wrap({
 }
 
 // src/react/loom-app/tag-cell-edit/menu-header/index.tsx
-var import_jsx_runtime61 = __toESM(require_jsx_runtime());
+var import_jsx_runtime62 = __toESM(require_jsx_runtime());
 function MenuHeader({
   cellTags,
   inputValue,
@@ -57999,8 +58189,8 @@ function MenuHeader({
       return;
     onInputValueChange(value);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime61.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-header", children: [
-    cellTags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime61.jsx)(Padding, { px: "md", pt: "md", pb: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime61.jsx)(Wrap, { spacingX: "sm", children: cellTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime61.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime62.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-header", children: [
+    cellTags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(Padding, { px: "md", pt: "md", pb: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(Wrap, { spacingX: "sm", children: cellTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(
       Tag5,
       {
         id: tag.id,
@@ -58012,7 +58202,7 @@ function MenuHeader({
       },
       tag.id
     )) }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime61.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(
       input_default,
       {
         ref: inputRef,
@@ -58027,17 +58217,17 @@ function MenuHeader({
 }
 
 // src/react/loom-app/tag-cell-edit/create-tag/index.tsx
-var import_jsx_runtime62 = __toESM(require_jsx_runtime());
+var import_jsx_runtime63 = __toESM(require_jsx_runtime());
 function CreateTag({ content, color, onTagAdd }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime62.jsx)("div", { className: "dataloom-create-tag", children: /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime63.jsx)("div", { className: "dataloom-create-tag", children: /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(
     Button,
     {
       variant: "text",
       isFullWidth: true,
       onClick: () => onTagAdd(content, color),
-      children: /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(Padding, { px: "md", children: /* @__PURE__ */ (0, import_jsx_runtime62.jsxs)(Stack, { spacing: "sm", isHorizontal: true, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime62.jsx)("div", { children: "Create" }),
-        /* @__PURE__ */ (0, import_jsx_runtime62.jsx)(Tag5, { content, color, maxWidth: "120px" })
+      children: /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(Padding, { px: "md", children: /* @__PURE__ */ (0, import_jsx_runtime63.jsxs)(Stack, { spacing: "sm", isHorizontal: true, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime63.jsx)("div", { children: "Create" }),
+        /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(Tag5, { content, color, maxWidth: "120px" })
       ] }) })
     }
   ) });
@@ -58052,7 +58242,7 @@ var uppercaseFirst = (input) => {
 };
 
 // src/react/loom-app/tag-color-menu/components/color-item/index.tsx
-var import_jsx_runtime63 = __toESM(require_jsx_runtime());
+var import_jsx_runtime64 = __toESM(require_jsx_runtime());
 function ColorItem({
   isDarkMode,
   color,
@@ -58071,7 +58261,7 @@ function ColorItem({
   const colorClass = findColorClassName(isDarkMode, color);
   let squareClass = "dataloom-color-item__square";
   squareClass += " " + colorClass;
-  return /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(
     "div",
     {
       tabIndex: 0,
@@ -58080,16 +58270,16 @@ function ColorItem({
       onClick: () => {
         onColorClick(color);
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(Padding, { px: "lg", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime63.jsxs)(Stack, { isHorizontal: true, spacing: "lg", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime63.jsx)("div", { className: squareClass }),
-        /* @__PURE__ */ (0, import_jsx_runtime63.jsx)(Text, { value: uppercaseFirst(color), size: "sm" })
+      children: /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Padding, { px: "lg", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime64.jsxs)(Stack, { isHorizontal: true, spacing: "lg", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)("div", { className: squareClass }),
+        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Text, { value: uppercaseFirst(color), size: "sm" })
       ] }) })
     }
   );
 }
 
 // src/react/loom-app/tag-color-menu/index.tsx
-var import_jsx_runtime64 = __toESM(require_jsx_runtime());
+var import_jsx_runtime65 = __toESM(require_jsx_runtime());
 function TagColorMenu({
   id: id2,
   isOpen,
@@ -58114,7 +58304,7 @@ function TagColorMenu({
     },
     [closeRequest, content, localValue, onTagContentChange, onClose]
   );
-  return /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(
     Menu,
     {
       id: id2,
@@ -58122,9 +58312,9 @@ function TagColorMenu({
       position,
       topOffset: -75,
       leftOffset: -50,
-      children: /* @__PURE__ */ (0, import_jsx_runtime64.jsx)("div", { className: "dataloom-tag-color-menu", children: /* @__PURE__ */ (0, import_jsx_runtime64.jsxs)(Stack, { spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Padding, { px: "md", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(input_default, { value: localValue, onChange: setLocalValue }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime65.jsx)("div", { className: "dataloom-tag-color-menu", children: /* @__PURE__ */ (0, import_jsx_runtime65.jsxs)(Stack, { spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Padding, { px: "md", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(input_default, { value: localValue, onChange: setLocalValue }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(
           MenuItem,
           {
             lucideId: "trash-2",
@@ -58132,9 +58322,9 @@ function TagColorMenu({
             onClick: onDeleteClick
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Divider, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Padding, { px: "lg", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(Text, { value: "Colors" }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime64.jsx)("div", { className: "dataloom-tag-color-menu__color-container", children: Object.values(Color).map((color) => /* @__PURE__ */ (0, import_jsx_runtime64.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Divider, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Padding, { px: "lg", py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Text, { value: "Colors" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime65.jsx)("div", { className: "dataloom-tag-color-menu__color-container", children: Object.values(Color).map((color) => /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(
           ColorItem,
           {
             isDarkMode,
@@ -58150,7 +58340,7 @@ function TagColorMenu({
 }
 
 // src/react/loom-app/tag-cell-edit/selectable-tag/index.tsx
-var import_jsx_runtime65 = __toESM(require_jsx_runtime());
+var import_jsx_runtime66 = __toESM(require_jsx_runtime());
 function SelectableTag({
   id: id2,
   content,
@@ -58187,8 +58377,8 @@ function SelectableTag({
     e.stopPropagation();
     onClick(id2);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime65.jsxs)(import_jsx_runtime65.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime65.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime66.jsxs)(import_jsx_runtime66.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime66.jsxs)(
       "div",
       {
         tabIndex: 0,
@@ -58196,15 +58386,15 @@ function SelectableTag({
         onClick: handleClick,
         onKeyDown: handleKeyDown,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Tag5, { content, color, maxWidth: "150px" }),
-          /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(Tag5, { content, color, maxWidth: "150px" }),
+          /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(
             menu_button_default,
             {
               isFocused: menu.isTriggerFocused,
               menuId: menu.id,
               ref: menu.triggerRef,
               level: 2 /* TWO */,
-              icon: /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(Icon, { lucideId: "more-horizontal" }),
+              icon: /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(Icon, { lucideId: "more-horizontal" }),
               onOpen: () => menu.onOpen(2 /* TWO */, {
                 shouldRequestOnClose: true
               })
@@ -58213,7 +58403,7 @@ function SelectableTag({
         ]
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime65.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(
       TagColorMenu,
       {
         isOpen: menu.isOpen,
@@ -58232,7 +58422,7 @@ function SelectableTag({
 }
 
 // src/react/loom-app/tag-cell-edit/menu-body/index.tsx
-var import_jsx_runtime66 = __toESM(require_jsx_runtime());
+var import_jsx_runtime67 = __toESM(require_jsx_runtime());
 function MenuBody({
   columnTags,
   inputValue,
@@ -58247,10 +58437,10 @@ function MenuBody({
   const filteredTags = columnTags.filter(
     (tag) => tag.content.toLowerCase().includes(inputValue.toLowerCase())
   );
-  return /* @__PURE__ */ (0, import_jsx_runtime66.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-body", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(Padding, { px: "lg", py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(Text, { value: "Select a tag or create one" }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime66.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-body-container", children: [
-      !hasTagWithSameCase && inputValue !== "" && /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime67.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-body", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(Padding, { px: "lg", py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(Text, { value: "Select a tag or create one" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime67.jsxs)("div", { className: "dataloom-tag-cell-edit__menu-body-container", children: [
+      !hasTagWithSameCase && inputValue !== "" && /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(
         CreateTag,
         {
           content: inputValue,
@@ -58258,7 +58448,7 @@ function MenuBody({
           onTagAdd
         }
       ),
-      filteredTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime66.jsx)(
+      filteredTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(
         SelectableTag,
         {
           id: tag.id,
@@ -58276,7 +58466,7 @@ function MenuBody({
 }
 
 // src/react/loom-app/tag-cell-edit/index.tsx
-var import_jsx_runtime67 = __toESM(require_jsx_runtime());
+var import_jsx_runtime68 = __toESM(require_jsx_runtime());
 function TagCellEdit({
   isMulti = false,
   columnTags,
@@ -58330,8 +58520,8 @@ function TagCellEdit({
     if (!isMulti)
       onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime67.jsxs)("div", { className: "dataloom-tag-cell-edit", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime68.jsxs)("div", { className: "dataloom-tag-cell-edit", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime68.jsx)(
       MenuHeader,
       {
         inputValue,
@@ -58340,7 +58530,7 @@ function TagCellEdit({
         onRemoveTag
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime67.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime68.jsx)(
       MenuBody,
       {
         inputValue,
@@ -58360,41 +58550,8 @@ function TagCellEdit({
 var import_react35 = __toESM(require_react());
 
 // src/react/loom-app/date-cell-edit/date-format-menu.tsx
-var import_jsx_runtime68 = __toESM(require_jsx_runtime());
-function DateFormatMenu({
-  id: id2,
-  position,
-  isOpen,
-  value,
-  onChange
-}) {
-  return /* @__PURE__ */ (0, import_jsx_runtime68.jsx)(
-    Menu,
-    {
-      isOpen,
-      id: id2,
-      position,
-      width: 175,
-      topOffset: 10,
-      leftOffset: 75,
-      children: /* @__PURE__ */ (0, import_jsx_runtime68.jsx)("div", { className: "dataloom-date-format-menu", children: Object.values(DateFormat2).map((format) => /* @__PURE__ */ (0, import_jsx_runtime68.jsx)(
-        MenuItem,
-        {
-          name: getDisplayNameForDateFormat(format),
-          isSelected: value === format,
-          onClick: () => {
-            onChange(format);
-          }
-        },
-        format
-      )) })
-    }
-  );
-}
-
-// src/react/loom-app/date-cell-edit/date-format-separator-menu.tsx
 var import_jsx_runtime69 = __toESM(require_jsx_runtime());
-function DateFormatSeparatorMenu({
+function DateFormatMenu({
   id: id2,
   position,
   isOpen,
@@ -58410,7 +58567,40 @@ function DateFormatSeparatorMenu({
       width: 175,
       topOffset: 10,
       leftOffset: 75,
-      children: /* @__PURE__ */ (0, import_jsx_runtime69.jsx)("div", { className: "dataloom-date-format-separator-menu", children: Object.values(DateFormatSeparator).map((format) => /* @__PURE__ */ (0, import_jsx_runtime69.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime69.jsx)("div", { className: "dataloom-date-format-menu", children: Object.values(DateFormat2).map((format) => /* @__PURE__ */ (0, import_jsx_runtime69.jsx)(
+        MenuItem,
+        {
+          name: getDisplayNameForDateFormat(format),
+          isSelected: value === format,
+          onClick: () => {
+            onChange(format);
+          }
+        },
+        format
+      )) })
+    }
+  );
+}
+
+// src/react/loom-app/date-cell-edit/date-format-separator-menu.tsx
+var import_jsx_runtime70 = __toESM(require_jsx_runtime());
+function DateFormatSeparatorMenu({
+  id: id2,
+  position,
+  isOpen,
+  value,
+  onChange
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
+    Menu,
+    {
+      isOpen,
+      id: id2,
+      position,
+      width: 175,
+      topOffset: 10,
+      leftOffset: 75,
+      children: /* @__PURE__ */ (0, import_jsx_runtime70.jsx)("div", { className: "dataloom-date-format-separator-menu", children: Object.values(DateFormatSeparator).map((format) => /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
         MenuItem,
         {
           name: getDisplayNameForDateFormatSeparator(format),
@@ -58447,7 +58637,7 @@ var isValidTimeString = (value, hour12) => {
 };
 
 // src/react/loom-app/date-cell-edit/time-format.menu.tsx
-var import_jsx_runtime70 = __toESM(require_jsx_runtime());
+var import_jsx_runtime71 = __toESM(require_jsx_runtime());
 function TimeFormatMenu({
   id: id2,
   position,
@@ -58455,7 +58645,7 @@ function TimeFormatMenu({
   value,
   onChange
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
     Menu,
     {
       isOpen,
@@ -58464,8 +58654,8 @@ function TimeFormatMenu({
       width: 175,
       topOffset: 10,
       leftOffset: 75,
-      children: /* @__PURE__ */ (0, import_jsx_runtime70.jsxs)("div", { className: "dataloom-time-format-menu", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime71.jsxs)("div", { className: "dataloom-time-format-menu", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
           MenuItem,
           {
             name: "12 hour",
@@ -58475,7 +58665,7 @@ function TimeFormatMenu({
             }
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime70.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
           MenuItem,
           {
             name: "24 hour",
@@ -58507,7 +58697,7 @@ var dateStringToDateTime = (dateString, format, separator, options) => {
 };
 
 // src/react/loom-app/date-cell-edit/index.tsx
-var import_jsx_runtime71 = __toESM(require_jsx_runtime());
+var import_jsx_runtime72 = __toESM(require_jsx_runtime());
 function DateCellEdit({
   cellId,
   value,
@@ -58679,10 +58869,10 @@ function DateCellEdit({
     onDateTimeChange(null);
     onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime71.jsxs)(import_jsx_runtime71.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime71.jsx)("div", { className: "dataloom-date-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime71.jsxs)(Stack, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(Padding, { p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime71.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime72.jsxs)(import_jsx_runtime72.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime72.jsx)("div", { className: "dataloom-date-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime72.jsxs)(Stack, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(Padding, { p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime72.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
           input_default,
           {
             ref: dateInputRef,
@@ -58697,7 +58887,7 @@ function DateCellEdit({
             onChange: setDateString
           }
         ),
-        includeTime && /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+        includeTime && /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
           input_default,
           {
             ref: timeInputRef,
@@ -58715,7 +58905,7 @@ function DateCellEdit({
           }
         )
       ] }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
         menu_trigger_default,
         {
           ref: dateFormatMenu.triggerRef,
@@ -58724,7 +58914,7 @@ function DateCellEdit({
           isFocused: dateFormatMenu.isTriggerFocused,
           level: 2 /* TWO */,
           onOpen: () => dateFormatMenu.onOpen(2 /* TWO */),
-          children: /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+          children: /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
             MenuItem,
             {
               isFocusable: false,
@@ -58734,7 +58924,7 @@ function DateCellEdit({
           )
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
         menu_trigger_default,
         {
           ref: dateFormatSeparatorMenu.triggerRef,
@@ -58743,7 +58933,7 @@ function DateCellEdit({
           isFocused: dateFormatSeparatorMenu.isTriggerFocused,
           level: 2 /* TWO */,
           onOpen: () => dateFormatSeparatorMenu.onOpen(2 /* TWO */),
-          children: /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+          children: /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
             MenuItem,
             {
               isFocusable: false,
@@ -58755,9 +58945,9 @@ function DateCellEdit({
           )
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(Padding, { px: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime71.jsxs)(Stack, { spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime71.jsx)("label", { htmlFor: includeTimeToggleId, children: "Include time" }),
-        /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(Padding, { px: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime72.jsxs)(Stack, { spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime72.jsx)("label", { htmlFor: includeTimeToggleId, children: "Include time" }),
+        /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
           Switch,
           {
             id: includeTimeToggleId,
@@ -58766,7 +58956,7 @@ function DateCellEdit({
           }
         )
       ] }) }),
-      includeTime && /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+      includeTime && /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
         menu_trigger_default,
         {
           ref: timeFormatMenu.triggerRef,
@@ -58775,7 +58965,7 @@ function DateCellEdit({
           isFocused: timeFormatMenu.isTriggerFocused,
           level: 2 /* TWO */,
           onOpen: () => timeFormatMenu.onOpen(2 /* TWO */),
-          children: /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+          children: /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
             MenuItem,
             {
               isFocusable: false,
@@ -58785,10 +58975,10 @@ function DateCellEdit({
           )
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(MenuItem, { name: "Today", onClick: handleTodayClick }),
-      /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(MenuItem, { name: "Clear", onClick: handleClearClick })
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(MenuItem, { name: "Today", onClick: handleTodayClick }),
+      /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(MenuItem, { name: "Clear", onClick: handleClearClick })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
       DateFormatMenu,
       {
         id: dateFormatMenu.id,
@@ -58798,7 +58988,7 @@ function DateCellEdit({
         onChange: handleDateFormatChange
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
       DateFormatSeparatorMenu,
       {
         id: dateFormatSeparatorMenu.id,
@@ -58808,7 +58998,7 @@ function DateCellEdit({
         onChange: handleDateFormatSeparatorChange
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime71.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(
       TimeFormatMenu,
       {
         id: timeFormatMenu.id,
@@ -58822,16 +59012,16 @@ function DateCellEdit({
 }
 
 // src/react/loom-app/multi-tag-cell/index.tsx
-var import_jsx_runtime72 = __toESM(require_jsx_runtime());
+var import_jsx_runtime73 = __toESM(require_jsx_runtime());
 function MultiTagCell6({ cellTags }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime72.jsx)("div", { className: "dataloom-multi-tag-cell", children: /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(Wrap, { children: cellTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime72.jsx)(Tag5, { content: tag.content, color: tag.color }, tag.id)) }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime73.jsx)("div", { className: "dataloom-multi-tag-cell", children: /* @__PURE__ */ (0, import_jsx_runtime73.jsx)(Wrap, { children: cellTags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime73.jsx)(Tag5, { content: tag.content, color: tag.color }, tag.id)) }) });
 }
 
 // src/react/loom-app/file-cell/index.tsx
-var import_jsx_runtime73 = __toESM(require_jsx_runtime());
+var import_jsx_runtime74 = __toESM(require_jsx_runtime());
 function FileCell6({ content }) {
   const { containerRef, renderRef } = useRenderMarkdown(content);
-  return /* @__PURE__ */ (0, import_jsx_runtime73.jsx)("div", { className: "dataloom-file-cell", children: /* @__PURE__ */ (0, import_jsx_runtime73.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime74.jsx)("div", { className: "dataloom-file-cell", children: /* @__PURE__ */ (0, import_jsx_runtime74.jsx)(
     "div",
     {
       ref: (node) => {
@@ -58843,7 +59033,7 @@ function FileCell6({ content }) {
 }
 
 // src/react/loom-app/file-cell-edit/index.tsx
-var import_jsx_runtime74 = __toESM(require_jsx_runtime());
+var import_jsx_runtime75 = __toESM(require_jsx_runtime());
 function FileCellEdit({ onChange, onClose }) {
   function handleSuggestItemClick(file) {
     if (file) {
@@ -58864,7 +59054,7 @@ function FileCellEdit({ onChange, onClose }) {
     onChange(value);
     onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime74.jsx)("div", { className: "dataloom-file-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime74.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime75.jsx)("div", { className: "dataloom-file-cell-edit", children: /* @__PURE__ */ (0, import_jsx_runtime75.jsx)(
     SuggestList,
     {
       showInput: true,
@@ -58900,7 +59090,7 @@ var getEmbedCellContent = (app, pathOrUrl, options) => {
 };
 
 // src/react/loom-app/embed-cell/embed/index.tsx
-var import_jsx_runtime75 = __toESM(require_jsx_runtime());
+var import_jsx_runtime76 = __toESM(require_jsx_runtime());
 function Embed({
   isExternalLink: isExternalLink2,
   content,
@@ -58914,7 +59104,7 @@ function Embed({
   });
   const paddingX = getSpacing(horizontalPadding);
   const paddingY = getSpacing(verticalPadding);
-  return /* @__PURE__ */ (0, import_jsx_runtime75.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime76.jsx)(
     "div",
     {
       style: {
@@ -58933,7 +59123,7 @@ function Embed({
 }
 
 // src/react/loom-app/embed-cell/index.tsx
-var import_jsx_runtime76 = __toESM(require_jsx_runtime());
+var import_jsx_runtime77 = __toESM(require_jsx_runtime());
 function EmbedCell6({
   isExternal,
   pathOrUrl,
@@ -58945,7 +59135,7 @@ function EmbedCell6({
   const content = getEmbedCellContent(app, pathOrUrl, {
     isExternal
   });
-  return /* @__PURE__ */ (0, import_jsx_runtime76.jsx)("div", { className: "dataloom-embed-cell", children: /* @__PURE__ */ (0, import_jsx_runtime76.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime77.jsx)("div", { className: "dataloom-embed-cell", children: /* @__PURE__ */ (0, import_jsx_runtime77.jsx)(
     Embed,
     {
       isExternalLink: isExternal,
@@ -58962,11 +59152,11 @@ var import_react37 = __toESM(require_react());
 
 // src/react/loom-app/embed-cell-edit/external-embed-input.tsx
 var import_react36 = __toESM(require_react());
-var import_jsx_runtime77 = __toESM(require_jsx_runtime());
+var import_jsx_runtime78 = __toESM(require_jsx_runtime());
 function ExternalEmbedInput({ value, onChange }) {
   const ref = import_react36.default.useRef(null);
   usePlaceCursorAtEnd(ref, value);
-  return /* @__PURE__ */ (0, import_jsx_runtime77.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime78.jsx)(
     input_default,
     {
       ref,
@@ -58979,9 +59169,9 @@ function ExternalEmbedInput({ value, onChange }) {
 }
 
 // src/react/loom-app/embed-cell-edit/internal-embed-suggest.tsx
-var import_jsx_runtime78 = __toESM(require_jsx_runtime());
+var import_jsx_runtime79 = __toESM(require_jsx_runtime());
 function InternalEmbedSuggest({ onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime78.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(
     SuggestList,
     {
       showInput: true,
@@ -58995,7 +59185,7 @@ function InternalEmbedSuggest({ onChange }) {
 }
 
 // src/react/loom-app/embed-cell-edit/index.tsx
-var import_jsx_runtime79 = __toESM(require_jsx_runtime());
+var import_jsx_runtime80 = __toESM(require_jsx_runtime());
 function EmbedCellEdit({
   closeRequest,
   isExternalLink: isExternalLink2,
@@ -59020,10 +59210,10 @@ function EmbedCellEdit({
     onChange(value2);
     onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime79.jsxs)("div", { className: "dataloom-embed-cell-edit", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(Padding, { width: "100%", p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime79.jsxs)(Stack, { spacing: "sm", width: "100%", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime79.jsx)("label", { htmlFor: "external-switch", children: "External Link" }),
-      /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime80.jsxs)("div", { className: "dataloom-embed-cell-edit", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(Padding, { width: "100%", p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime80.jsxs)(Stack, { spacing: "sm", width: "100%", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime80.jsx)("label", { htmlFor: "external-switch", children: "External Link" }),
+      /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(
         Switch,
         {
           id: "external-switch",
@@ -59032,35 +59222,35 @@ function EmbedCellEdit({
         }
       )
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(Divider, {}),
-    isExternalLink2 && /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(Padding, { width: "100%", p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(Divider, {}),
+    isExternalLink2 && /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(Padding, { width: "100%", p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(
       ExternalEmbedInput,
       {
         value: externalLink,
         onChange: setExternalLink
       }
     ) }),
-    !isExternalLink2 && /* @__PURE__ */ (0, import_jsx_runtime79.jsx)(InternalEmbedSuggest, { onChange: handleSuggestChange })
+    !isExternalLink2 && /* @__PURE__ */ (0, import_jsx_runtime80.jsx)(InternalEmbedSuggest, { onChange: handleSuggestChange })
   ] });
 }
 
 // src/react/loom-app/last-edited-time-cell/index.tsx
-var import_jsx_runtime80 = __toESM(require_jsx_runtime());
+var import_jsx_runtime81 = __toESM(require_jsx_runtime());
 function LastEditedTimeCell3({ value }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime80.jsx)("div", { className: "dataloom-last-edited-time-cell", children: value });
+  return /* @__PURE__ */ (0, import_jsx_runtime81.jsx)("div", { className: "dataloom-last-edited-time-cell", children: value });
 }
 
 // src/react/loom-app/creation-time-cell/index.tsx
-var import_jsx_runtime81 = __toESM(require_jsx_runtime());
+var import_jsx_runtime82 = __toESM(require_jsx_runtime());
 function CreationTimeCell3({ value }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime81.jsx)("div", { className: "dataloom-creation-time-cell", children: value });
+  return /* @__PURE__ */ (0, import_jsx_runtime82.jsx)("div", { className: "dataloom-creation-time-cell", children: value });
 }
 
 // src/react/loom-app/source-file-cell/index.tsx
-var import_jsx_runtime82 = __toESM(require_jsx_runtime());
+var import_jsx_runtime83 = __toESM(require_jsx_runtime());
 function SourceFileCell6({ content }) {
   const { containerRef, renderRef } = useRenderMarkdown(content);
-  return /* @__PURE__ */ (0, import_jsx_runtime82.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime83.jsx)(
     "div",
     {
       className: "dataloom-source-file-cell",
@@ -59076,7 +59266,7 @@ function SourceFileCell6({ content }) {
 }
 
 // src/react/shared/bubble/index.tsx
-var import_jsx_runtime83 = __toESM(require_jsx_runtime());
+var import_jsx_runtime84 = __toESM(require_jsx_runtime());
 function Bubble({
   variant = "default",
   canRemove,
@@ -59088,17 +59278,17 @@ function Bubble({
   if (variant === "no-fill") {
     className += " dataloom-bubble--no-fill";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime83.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime83.jsxs)(Stack, { spacing: "lg", isHorizontal: true, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime83.jsxs)(Stack, { spacing: "sm", isHorizontal: true, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime84.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime84.jsxs)(Stack, { spacing: "lg", isHorizontal: true, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime84.jsxs)(Stack, { spacing: "sm", isHorizontal: true, children: [
       icon,
-      /* @__PURE__ */ (0, import_jsx_runtime83.jsx)("span", { children: value })
+      /* @__PURE__ */ (0, import_jsx_runtime84.jsx)("span", { children: value })
     ] }),
-    canRemove && /* @__PURE__ */ (0, import_jsx_runtime83.jsx)(
+    canRemove && /* @__PURE__ */ (0, import_jsx_runtime84.jsx)(
       Button,
       {
         size: "sm",
         invertFocusColor: true,
-        icon: /* @__PURE__ */ (0, import_jsx_runtime83.jsx)(Icon, { lucideId: "x", color: "var(--text-on-accent)" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime84.jsx)(Icon, { lucideId: "x", color: "var(--text-on-accent)" }),
         ariaLabel: "Remove sort",
         onClick: onRemoveClick
       }
@@ -59107,17 +59297,17 @@ function Bubble({
 }
 
 // src/react/loom-app/source-cell/index.tsx
-var import_jsx_runtime84 = __toESM(require_jsx_runtime());
+var import_jsx_runtime85 = __toESM(require_jsx_runtime());
 function SourceCell3({
   content,
   sourceType,
   propertyType
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime84.jsx)("div", { className: "dataloom-source-cell", children: /* @__PURE__ */ (0, import_jsx_runtime84.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime85.jsx)("div", { className: "dataloom-source-cell", children: /* @__PURE__ */ (0, import_jsx_runtime85.jsx)(
     Bubble,
     {
       variant: "no-fill",
-      icon: /* @__PURE__ */ (0, import_jsx_runtime84.jsx)(
+      icon: /* @__PURE__ */ (0, import_jsx_runtime85.jsx)(
         Icon,
         {
           lucideId: getIconIdForSourceType(sourceType, {
@@ -59174,7 +59364,7 @@ var getDateCellContent = (dateTime, format, separator, includeTime, hour12) => {
 };
 
 // src/react/loom-app/disabled-cell/index.tsx
-var import_jsx_runtime85 = __toESM(require_jsx_runtime());
+var import_jsx_runtime86 = __toESM(require_jsx_runtime());
 function DisabledCell({
   hasValidFrontmatter,
   doesColumnHaveFrontmatterKey
@@ -59185,11 +59375,11 @@ function DisabledCell({
   } else if (!hasValidFrontmatter) {
     ariaLabel = "This cell has an invalid property value. Please correct it in the source file.";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime85.jsx)("div", { className: "dataloom-disabled-cell", "aria-label": ariaLabel, children: /* @__PURE__ */ (0, import_jsx_runtime85.jsx)(Text, { value: hasValidFrontmatter ? "" : "Invalid property value" }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime86.jsx)("div", { className: "dataloom-disabled-cell", "aria-label": ariaLabel, children: /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(Text, { value: hasValidFrontmatter ? "" : "Invalid property value" }) });
 }
 
 // src/react/loom-app/body-cell-container/index.tsx
-var import_jsx_runtime86 = __toESM(require_jsx_runtime());
+var import_jsx_runtime87 = __toESM(require_jsx_runtime());
 function BodyCellContainer(props) {
   const {
     id: id2,
@@ -59300,14 +59490,14 @@ function BodyCellContainer(props) {
     shouldRunTrigger = false;
   }
   if (isDisabled) {
-    return /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
       "div",
       {
         className: className + " dataloom-cell--body__container--no-padding",
         style: {
           width
         },
-        children: /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
           DisabledCell,
           {
             hasValidFrontmatter: hasValidFrontmatter != null ? hasValidFrontmatter : true,
@@ -59332,8 +59522,8 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(TextCell6, { value: content });
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(TextCell6, { value: content });
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         TextCellEdit,
         {
           cellId: id2,
@@ -59360,8 +59550,8 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(NumberCell7, { content });
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(NumberCell7, { content });
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         NumberCellEdit,
         {
           closeRequest: menu.closeRequest,
@@ -59408,8 +59598,9 @@ function BodyCellContainer(props) {
           }
         };
       } else {
-        const { tagIds } = props;
+        const { tagIds, multiTagSortDir } = props;
         cellTags = columnTags.filter((tag) => tagIds.includes(tag.id));
+        cellTags.sort((a2, b2) => sortByText(a2.content, b2.content, multiTagSortDir, false));
         handleMenuTriggerBackspaceDown = () => {
           onTagCellMultipleRemove(id2, tagIds);
         };
@@ -59420,7 +59611,7 @@ function BodyCellContainer(props) {
       };
       if (type === "tag" /* TAG */) {
         if (cellTags.length > 0) {
-          contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+          contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
             TagCell6,
             {
               content: cellTags[0].content,
@@ -59429,9 +59620,9 @@ function BodyCellContainer(props) {
           );
         }
       } else {
-        contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(MultiTagCell6, { cellTags });
+        contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(MultiTagCell6, { cellTags });
       }
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         TagCellEdit,
         {
           isMulti: type === "multi-tag" /* MULTI_TAG */,
@@ -59491,8 +59682,8 @@ function BodyCellContainer(props) {
           { shouldSortRows: true }
         );
       }
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(DateCell6, { content });
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(DateCell6, { content });
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         DateCellEdit,
         {
           cellId: id2,
@@ -59539,7 +59730,7 @@ function BodyCellContainer(props) {
           handleCheckboxChange2(true);
         }
       });
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(CheckboxCell6, { value });
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(CheckboxCell6, { value });
       break;
     }
     case "creation-time" /* CREATION_TIME */: {
@@ -59552,7 +59743,7 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(CreationTimeCell3, { value: content });
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(CreationTimeCell3, { value: content });
       break;
     }
     case "last-edited-time" /* LAST_EDITED_TIME */: {
@@ -59565,7 +59756,7 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(LastEditedTimeCell3, { value: content });
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(LastEditedTimeCell3, { value: content });
       break;
     }
     case "source" /* SOURCE */: {
@@ -59577,7 +59768,7 @@ function BodyCellContainer(props) {
       if ((source == null ? void 0 : source.type) === "frontmatter" /* FRONTMATTER */) {
         propertyType = source == null ? void 0 : source.propertyType;
       }
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         SourceCell3,
         {
           sourceType: source == null ? void 0 : source.type,
@@ -59593,7 +59784,7 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(SourceFileCell6, { content });
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(SourceFileCell6, { content });
       break;
     }
     case "embed" /* EMBED */: {
@@ -59608,7 +59799,7 @@ function BodyCellContainer(props) {
       handleMenuTriggerBackspaceDown = () => {
         onCellChange(id2, { pathOrUrl: "", alias: null });
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         EmbedCell6,
         {
           isExternal,
@@ -59618,7 +59809,7 @@ function BodyCellContainer(props) {
           aspectRatio
         }
       );
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         EmbedCellEdit,
         {
           isExternalLink: isExternal,
@@ -59640,8 +59831,8 @@ function BodyCellContainer(props) {
       handleCellContextClick = () => {
         copyTextToClipboard(content);
       };
-      contentNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(FileCell6, { content });
-      menuNode = /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+      contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(FileCell6, { content });
+      menuNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
         FileCellEdit,
         {
           onChange: handleFileChange,
@@ -59653,8 +59844,8 @@ function BodyCellContainer(props) {
     default:
       throw new Error("Unhandled cell type");
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime86.jsxs)(import_jsx_runtime86.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime87.jsxs)(import_jsx_runtime87.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
       menu_trigger_default,
       {
         ref: menu.triggerRef,
@@ -59669,7 +59860,7 @@ function BodyCellContainer(props) {
         onOpen: () => menu.onOpen(1 /* ONE */, {
           shouldRequestOnClose
         }),
-        children: /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
           "div",
           {
             onContextMenu: handleCellContextClick,
@@ -59682,7 +59873,7 @@ function BodyCellContainer(props) {
         )
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime86.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
       Menu,
       {
         id: menu.id,
@@ -59771,7 +59962,7 @@ var FrontmatterCache = class _FrontmatterCache {
 };
 
 // src/react/loom-app/table/index.tsx
-var import_jsx_runtime87 = __toESM(require_jsx_runtime());
+var import_jsx_runtime88 = __toESM(require_jsx_runtime());
 var Table2 = import_react39.default.forwardRef(function Table3({
   sources,
   rows,
@@ -59806,7 +59997,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
       (_a2 = ref.current) == null ? void 0 : _a2.scrollToIndex(rows.length - 1);
   }, [ref, previousRowLength, rows.length]);
   const visibleColumns = columns.filter((column) => column.isVisible);
-  return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
     TableVirtuoso,
     {
       ref,
@@ -59818,7 +60009,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
       totalCount: rows.length,
       components: {
         ...Components,
-        TableRow: ({ style, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+        TableRow: ({ style, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
           BodyRow,
           {
             ...props,
@@ -59829,15 +60020,15 @@ var Table2 = import_react39.default.forwardRef(function Table3({
       },
       fixedHeaderContent: () => {
         const tableColumns = [null, ...visibleColumns, null];
-        return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)("div", { className: "dataloom-row", children: tableColumns.map((column, i2) => {
+        return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-row", children: tableColumns.map((column, i2) => {
           let content;
           let key;
           if (column === null) {
             key = `filler-${i2}`;
             if (i2 === 0) {
-              content = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(import_jsx_runtime87.Fragment, {});
+              content = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(import_jsx_runtime88.Fragment, {});
             } else {
-              content = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+              content = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                 NewColumnButton,
                 {
                   onClick: onColumnAddClick
@@ -59873,7 +60064,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               })
             );
             key = id2;
-            content = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+            content = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
               HeaderCellContainer,
               {
                 index: i2,
@@ -59891,7 +60082,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               id2
             );
           }
-          return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+          return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
             HeaderCell,
             {
               index: i2,
@@ -59909,12 +60100,12 @@ var Table2 = import_react39.default.forwardRef(function Table3({
         if (!showCalculationRow)
           return void 0;
         const columns2 = [null, ...visibleColumns, null];
-        return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)("div", { className: "dataloom-row", children: columns2.map((column, i2) => {
+        return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-row", children: columns2.map((column, i2) => {
           let content;
           let key;
           if (column === null) {
             key = `filler-${i2}`;
-            content = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(import_jsx_runtime87.Fragment, {});
+            content = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(import_jsx_runtime88.Fragment, {});
           } else {
             const {
               id: columnId,
@@ -59940,7 +60131,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               return cell;
             });
             key = columnId;
-            content = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+            content = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
               FooterCellContainer,
               {
                 sources,
@@ -59959,7 +60150,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
             );
           }
-          return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+          return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
             FooterCell,
             {
               index: i2,
@@ -59988,7 +60179,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
           if (column === null) {
             key = `filler-${i2}`;
             if (i2 === 0) {
-              contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+              contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                 RowOptions2,
                 {
                   source,
@@ -60000,7 +60191,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
                 }
               );
             } else {
-              contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(import_jsx_runtime87.Fragment, {});
+              contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(import_jsx_runtime88.Fragment, {});
             }
           } else {
             const {
@@ -60021,7 +60212,8 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               verticalPadding,
               horizontalPadding,
               aspectRatio,
-              frontmatterKey
+              frontmatterKey,
+              multiTagSortDir
             } = column;
             const cell = row.cells.find(
               (cell2) => cell2.columnId === columnId
@@ -60064,7 +60256,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
             switch (type) {
               case "text" /* TEXT */: {
                 const { content } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60077,7 +60269,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "number" /* NUMBER */: {
                 const { value } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60090,7 +60282,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "tag" /* TAG */: {
                 const { tagId } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60109,12 +60301,13 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "multi-tag" /* MULTI_TAG */: {
                 const { tagIds } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
                     type,
                     tagIds,
+                    multiTagSortDir,
                     onCellChange,
                     onTagAdd,
                     onTagCellAdd,
@@ -60129,7 +60322,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "file" /* FILE */: {
                 const { path, alias } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60143,7 +60336,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "embed" /* EMBED */: {
                 const { pathOrUrl, alias, isExternal } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60158,7 +60351,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "checkbox" /* CHECKBOX */: {
                 const { value } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60171,7 +60364,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "date" /* DATE */: {
                 const { dateTime } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60184,7 +60377,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
                 break;
               }
               case "creation-time" /* CREATION_TIME */: {
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60195,7 +60388,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
                 break;
               }
               case "last-edited-time" /* LAST_EDITED_TIME */: {
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60206,7 +60399,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
                 break;
               }
               case "source" /* SOURCE */: {
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60218,7 +60411,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
               }
               case "source-file" /* SOURCE_FILE */: {
                 const { path } = cell;
-                contentNode = /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+                contentNode = /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
                   BodyCellContainer,
                   {
                     ...commonProps,
@@ -60235,7 +60428,7 @@ var Table2 = import_react39.default.forwardRef(function Table3({
                 );
             }
           }
-          return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+          return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
             BodyCell,
             {
               rowId,
@@ -60252,12 +60445,12 @@ var Table2 = import_react39.default.forwardRef(function Table3({
 });
 var Components = {
   Table: ({ ...props }) => {
-    return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)("div", { className: "dataloom-table", ...props });
+    return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-table", ...props });
   },
   //Don't apply styles because we want to apply sticky positioning
   //to the cells, not the header container
   TableHead: import_react39.default.forwardRef(({ ...props }, ref) => {
-    return /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
       "div",
       {
         className: "dataloom-header",
@@ -60271,8 +60464,8 @@ var Components = {
       }
     );
   }),
-  TableBody: import_react39.default.forwardRef(({ style, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime87.jsx)("div", { className: "dataloom-body", ...props, style, ref })),
-  TableFoot: import_react39.default.forwardRef(({ ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime87.jsx)(
+  TableBody: import_react39.default.forwardRef(({ style, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-body", ...props, style, ref })),
+  TableFoot: import_react39.default.forwardRef(({ ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
     "div",
     {
       className: "dataloom-footer",
@@ -60285,7 +60478,7 @@ var Components = {
       ref
     }
   )),
-  FillerRow: ({ height }) => /* @__PURE__ */ (0, import_jsx_runtime87.jsx)("div", { className: "dataloom-row", style: { height } })
+  FillerRow: ({ height }) => /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-row", style: { height } })
 };
 var areEqual = (prevProps, nextProps) => {
   return import_lodash8.default.isEqual(prevProps, nextProps);
@@ -60293,11 +60486,11 @@ var areEqual = (prevProps, nextProps) => {
 var table_default = import_react39.default.memo(Table2, areEqual);
 
 // src/react/loom-app/option-bar/search-bar/index.tsx
-var import_jsx_runtime88 = __toESM(require_jsx_runtime());
+var import_jsx_runtime89 = __toESM(require_jsx_runtime());
 function SearchBar() {
   const { searchText, setSearchText, isSearchBarVisible, toggleSearchBar } = useLoomState();
-  return /* @__PURE__ */ (0, import_jsx_runtime88.jsx)("div", { className: "dataloom-search-bar", children: /* @__PURE__ */ (0, import_jsx_runtime88.jsxs)(Stack, { spacing: "lg", isHorizontal: true, children: [
-    isSearchBarVisible && /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime89.jsx)("div", { className: "dataloom-search-bar", children: /* @__PURE__ */ (0, import_jsx_runtime89.jsxs)(Stack, { spacing: "lg", isHorizontal: true, children: [
+    isSearchBarVisible && /* @__PURE__ */ (0, import_jsx_runtime89.jsx)(
       input_default,
       {
         placeholder: "Type to search...",
@@ -60305,10 +60498,10 @@ function SearchBar() {
         onChange: (value) => setSearchText(value)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime89.jsx)(
       Button,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime88.jsx)(Icon, { lucideId: "search" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime89.jsx)(Icon, { lucideId: "search" }),
         ariaLabel: "Search",
         onClick: () => toggleSearchBar()
       }
@@ -60317,12 +60510,12 @@ function SearchBar() {
 }
 
 // src/react/loom-app/option-bar/active-filter-bubble/index.tsx
-var import_jsx_runtime89 = __toESM(require_jsx_runtime());
+var import_jsx_runtime90 = __toESM(require_jsx_runtime());
 function ActiveFilterBubble({ numActive }) {
   if (numActive === 0)
-    return /* @__PURE__ */ (0, import_jsx_runtime89.jsx)(import_jsx_runtime89.Fragment, {});
+    return /* @__PURE__ */ (0, import_jsx_runtime90.jsx)(import_jsx_runtime90.Fragment, {});
   const value = `${numActive} active filter${numActive > 1 ? "s" : ""}`;
-  return /* @__PURE__ */ (0, import_jsx_runtime89.jsx)("div", { className: "dataloom-active-filter-bubble", children: /* @__PURE__ */ (0, import_jsx_runtime89.jsx)(Bubble, { value }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime90.jsx)("div", { className: "dataloom-active-filter-bubble", children: /* @__PURE__ */ (0, import_jsx_runtime90.jsx)(Bubble, { value }) });
 }
 
 // src/react/loom-app/option-bar/more-menu/index.tsx
@@ -60344,26 +60537,26 @@ var ExportType = /* @__PURE__ */ ((ExportType2) => {
 })(ExportType || {});
 
 // src/react/export-app/export-type-select.tsx
-var import_jsx_runtime90 = __toESM(require_jsx_runtime());
+var import_jsx_runtime91 = __toESM(require_jsx_runtime());
 function ExportTypeSelect({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime90.jsxs)(Stack, { spacing: "xl", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime90.jsx)("label", { htmlFor: "type-select", children: "File Type" }),
-    /* @__PURE__ */ (0, import_jsx_runtime90.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime91.jsxs)(Stack, { spacing: "xl", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime91.jsx)("label", { htmlFor: "type-select", children: "File Type" }),
+    /* @__PURE__ */ (0, import_jsx_runtime91.jsx)(
       "select",
       {
         id: "type-select",
         value,
         onChange: (e) => onChange(e.target.value),
-        children: Object.values(ExportType).map((type) => /* @__PURE__ */ (0, import_jsx_runtime90.jsx)("option", { value: type, children: type }, type))
+        children: Object.values(ExportType).map((type) => /* @__PURE__ */ (0, import_jsx_runtime91.jsx)("option", { value: type, children: type }, type))
       }
     )
   ] });
 }
 
 // src/react/export-app/content-textarea.tsx
-var import_jsx_runtime91 = __toESM(require_jsx_runtime());
+var import_jsx_runtime92 = __toESM(require_jsx_runtime());
 function ContentTextArea({ value }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime91.jsx)("textarea", { readOnly: true, value });
+  return /* @__PURE__ */ (0, import_jsx_runtime92.jsx)("textarea", { readOnly: true, value });
 }
 
 // node_modules/markdown-table/index.js
@@ -63259,7 +63452,7 @@ var exportToCSV = (app, loomState, shouldRemoveMarkdown) => {
 };
 
 // src/react/export-app/index.tsx
-var import_jsx_runtime92 = __toESM(require_jsx_runtime());
+var import_jsx_runtime93 = __toESM(require_jsx_runtime());
 function ExportApp({ app, loomState, loomFilePath }) {
   const [exportType, setExportType] = import_react40.default.useState(
     "Select an option" /* UNSELECTED */
@@ -63285,12 +63478,12 @@ function ExportApp({ app, loomState, loomFilePath }) {
   } else if (exportType === "CSV" /* CSV */) {
     content = exportToCSV(app, loomState, shouldRemoveMarkdown);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime92.jsx)("div", { className: "dataloom-export-app", children: /* @__PURE__ */ (0, import_jsx_runtime92.jsxs)(Stack, { spacing: "xl", width: "100%", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime92.jsx)(ExportTypeSelect, { value: exportType, onChange: setExportType }),
-    exportType !== "Select an option" /* UNSELECTED */ && /* @__PURE__ */ (0, import_jsx_runtime92.jsxs)(import_jsx_runtime92.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime92.jsxs)(Stack, { spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime92.jsx)("label", { htmlFor: "remove-markdown", children: "Remove markdown" }),
-        /* @__PURE__ */ (0, import_jsx_runtime92.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime93.jsx)("div", { className: "dataloom-export-app", children: /* @__PURE__ */ (0, import_jsx_runtime93.jsxs)(Stack, { spacing: "xl", width: "100%", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(ExportTypeSelect, { value: exportType, onChange: setExportType }),
+    exportType !== "Select an option" /* UNSELECTED */ && /* @__PURE__ */ (0, import_jsx_runtime93.jsxs)(import_jsx_runtime93.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime93.jsxs)(Stack, { spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime93.jsx)("label", { htmlFor: "remove-markdown", children: "Remove markdown" }),
+        /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(
           Switch,
           {
             id: "remove-markdown",
@@ -63299,9 +63492,9 @@ function ExportApp({ app, loomState, loomFilePath }) {
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime92.jsx)(ContentTextArea, { value: content }),
-      /* @__PURE__ */ (0, import_jsx_runtime92.jsxs)(Stack, { isHorizontal: true, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime92.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(ContentTextArea, { value: content }),
+      /* @__PURE__ */ (0, import_jsx_runtime93.jsxs)(Stack, { isHorizontal: true, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(
           "button",
           {
             className: "mod-cta",
@@ -63309,7 +63502,7 @@ function ExportApp({ app, loomState, loomFilePath }) {
             children: "Download"
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime92.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(
           "button",
           {
             className: "dataloom-copy-button",
@@ -63323,7 +63516,7 @@ function ExportApp({ app, loomState, loomFilePath }) {
 }
 
 // src/obsidian/modal/export-modal.tsx
-var import_jsx_runtime93 = __toESM(require_jsx_runtime());
+var import_jsx_runtime94 = __toESM(require_jsx_runtime());
 var ExportModal = class extends import_obsidian16.Modal {
   constructor(app, loomFile, loomState) {
     super(app);
@@ -63342,7 +63535,7 @@ var ExportModal = class extends import_obsidian16.Modal {
   async renderApp(contentEl) {
     this.root = (0, import_client2.createRoot)(contentEl);
     this.root.render(
-      /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(Provider_default, { store, children: /* @__PURE__ */ (0, import_jsx_runtime93.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime94.jsx)(Provider_default, { store, children: /* @__PURE__ */ (0, import_jsx_runtime94.jsx)(
         ExportApp,
         {
           app: this.app,
@@ -63381,14 +63574,14 @@ var DataSource = /* @__PURE__ */ ((DataSource2) => {
 })(DataSource || {});
 
 // src/react/import-app/data-type-select.tsx
-var import_jsx_runtime94 = __toESM(require_jsx_runtime());
+var import_jsx_runtime95 = __toESM(require_jsx_runtime());
 function DataTypeSelect({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime94.jsx)("div", { className: "dataloom-data-type-select", children: /* @__PURE__ */ (0, import_jsx_runtime94.jsx)(Stack, { children: /* @__PURE__ */ (0, import_jsx_runtime94.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime95.jsx)("div", { className: "dataloom-data-type-select", children: /* @__PURE__ */ (0, import_jsx_runtime95.jsx)(Stack, { children: /* @__PURE__ */ (0, import_jsx_runtime95.jsx)(
     "select",
     {
       value,
       onChange: (e) => onChange(e.target.value),
-      children: Object.values(DataType).map((type) => /* @__PURE__ */ (0, import_jsx_runtime94.jsx)("option", { value: type, children: type }, type))
+      children: Object.values(DataType).map((type) => /* @__PURE__ */ (0, import_jsx_runtime95.jsx)("option", { value: type, children: type }, type))
     }
   ) }) });
 }
@@ -63397,23 +63590,23 @@ function DataTypeSelect({ value, onChange }) {
 var import_react41 = __toESM(require_react());
 
 // src/react/shared/stepper/step-spacer.tsx
-var import_jsx_runtime95 = __toESM(require_jsx_runtime());
+var import_jsx_runtime96 = __toESM(require_jsx_runtime());
 function StepSpacer() {
-  return /* @__PURE__ */ (0, import_jsx_runtime95.jsx)("div", { className: "dataloom-step__spacer" });
+  return /* @__PURE__ */ (0, import_jsx_runtime96.jsx)("div", { className: "dataloom-step__spacer" });
 }
 
 // src/react/shared/stepper/step-content.tsx
-var import_jsx_runtime96 = __toESM(require_jsx_runtime());
+var import_jsx_runtime97 = __toESM(require_jsx_runtime());
 function StepContent({ content, addTopMargin }) {
   let className = "dataloom-step__content";
   if (addTopMargin) {
     className += " dataloom-step__content--margin-top";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime96.jsx)("div", { className, children: content });
+  return /* @__PURE__ */ (0, import_jsx_runtime97.jsx)("div", { className, children: content });
 }
 
 // src/react/shared/stepper/step-buttons.tsx
-var import_jsx_runtime97 = __toESM(require_jsx_runtime());
+var import_jsx_runtime98 = __toESM(require_jsx_runtime());
 function StepButtons({
   isFirstStep,
   isLastStep,
@@ -63422,8 +63615,8 @@ function StepButtons({
   onNextClick,
   onBackClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime97.jsx)("div", { className: "dataloom-step__buttons", children: /* @__PURE__ */ (0, import_jsx_runtime97.jsxs)(Stack, { isHorizontal: true, spacing: "md", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime97.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime98.jsx)("div", { className: "dataloom-step__buttons", children: /* @__PURE__ */ (0, import_jsx_runtime98.jsxs)(Stack, { isHorizontal: true, spacing: "md", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime98.jsx)(
       Button,
       {
         isDisabled: isNextDisabled,
@@ -63432,12 +63625,12 @@ function StepButtons({
         children: isLastStep ? finishButtonLabel : "Next"
       }
     ),
-    !isFirstStep && /* @__PURE__ */ (0, import_jsx_runtime97.jsx)(Button, { onClick: onBackClick, children: "Back" })
+    !isFirstStep && /* @__PURE__ */ (0, import_jsx_runtime98.jsx)(Button, { onClick: onBackClick, children: "Back" })
   ] }) });
 }
 
 // src/react/shared/stepper/step-indicator.tsx
-var import_jsx_runtime98 = __toESM(require_jsx_runtime());
+var import_jsx_runtime99 = __toESM(require_jsx_runtime());
 function StepIndicator({ index, isComplete, onClick }) {
   function handleClick() {
     if (!isComplete)
@@ -63448,11 +63641,11 @@ function StepIndicator({ index, isComplete, onClick }) {
   if (isComplete) {
     className += " dataloom-step__indicator--complete";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime98.jsx)("div", { className, onClick: handleClick, children: /* @__PURE__ */ (0, import_jsx_runtime98.jsx)(Flex, { justify: "center", align: "center", height: "100%", children: isComplete ? /* @__PURE__ */ (0, import_jsx_runtime98.jsx)(Icon, { lucideId: "checkmark", size: "lg" }) : /* @__PURE__ */ (0, import_jsx_runtime98.jsx)(Text, { value: index + 1, variant: "semibold", size: "lg" }) }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime99.jsx)("div", { className, onClick: handleClick, children: /* @__PURE__ */ (0, import_jsx_runtime99.jsx)(Flex, { justify: "center", align: "center", height: "100%", children: isComplete ? /* @__PURE__ */ (0, import_jsx_runtime99.jsx)(Icon, { lucideId: "checkmark", size: "lg" }) : /* @__PURE__ */ (0, import_jsx_runtime99.jsx)(Text, { value: index + 1, variant: "semibold", size: "lg" }) }) });
 }
 
 // src/react/shared/stepper/step-text.tsx
-var import_jsx_runtime99 = __toESM(require_jsx_runtime());
+var import_jsx_runtime100 = __toESM(require_jsx_runtime());
 function StepText({
   title,
   description,
@@ -63468,14 +63661,14 @@ function StepText({
   if (isComplete) {
     className += " dataloom-step__text--complete";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime99.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime99.jsxs)(Stack, { spacing: "sm", onClick: handleClick, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime99.jsx)(Text, { variant: "semibold", size: "lg", value: title }),
-    description && /* @__PURE__ */ (0, import_jsx_runtime99.jsx)(Text, { size: "md", value: description })
+  return /* @__PURE__ */ (0, import_jsx_runtime100.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime100.jsxs)(Stack, { spacing: "sm", onClick: handleClick, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime100.jsx)(Text, { variant: "semibold", size: "lg", value: title }),
+    description && /* @__PURE__ */ (0, import_jsx_runtime100.jsx)(Text, { size: "md", value: description })
   ] }) });
 }
 
 // src/react/shared/stepper/step-header.tsx
-var import_jsx_runtime100 = __toESM(require_jsx_runtime());
+var import_jsx_runtime101 = __toESM(require_jsx_runtime());
 function StepHeader({
   title,
   description,
@@ -63488,8 +63681,8 @@ function StepHeader({
     className += " dataloom-step__header--margin-bottom";
   }
   const isComplete = activeIndex > index;
-  return /* @__PURE__ */ (0, import_jsx_runtime100.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime100.jsxs)(Stack, { isHorizontal: true, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime100.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime101.jsx)("div", { className, children: /* @__PURE__ */ (0, import_jsx_runtime101.jsxs)(Stack, { isHorizontal: true, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime101.jsx)(
       StepIndicator,
       {
         index,
@@ -63497,7 +63690,7 @@ function StepHeader({
         onClick: () => onClick(index)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime100.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime101.jsx)(
       StepText,
       {
         title,
@@ -63510,17 +63703,17 @@ function StepHeader({
 }
 
 // src/react/shared/stepper/step-separator.tsx
-var import_jsx_runtime101 = __toESM(require_jsx_runtime());
+var import_jsx_runtime102 = __toESM(require_jsx_runtime());
 function StepSeparator({ hideBorder }) {
   let className = "dataloom-step__separator";
   if (hideBorder) {
     className += " dataloom-step__separator--no-border";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime101.jsx)("div", { className });
+  return /* @__PURE__ */ (0, import_jsx_runtime102.jsx)("div", { className });
 }
 
 // src/react/shared/stepper/index.tsx
-var import_jsx_runtime102 = __toESM(require_jsx_runtime());
+var import_jsx_runtime103 = __toESM(require_jsx_runtime());
 function Stepper({
   steps,
   finishButtonLabel = "Finish",
@@ -63555,15 +63748,15 @@ function Stepper({
   }
   const isFirstStep = activeIndex === 0;
   const isLastStep = activeIndex === steps.length - 1;
-  return /* @__PURE__ */ (0, import_jsx_runtime102.jsx)("div", { className: "dataloom-stepper", children: steps.map((step, i2) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime103.jsx)("div", { className: "dataloom-stepper", children: steps.map((step, i2) => {
     const {
       title,
       description,
       content,
       canContinue = true
     } = step;
-    return /* @__PURE__ */ (0, import_jsx_runtime102.jsxs)("div", { className: "dataloom-step", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime102.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime103.jsxs)("div", { className: "dataloom-step", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(
         StepHeader,
         {
           title,
@@ -63573,17 +63766,17 @@ function Stepper({
           onClick: handleStepHeaderClick
         }
       ),
-      i2 === activeIndex && /* @__PURE__ */ (0, import_jsx_runtime102.jsxs)(Stack, { isHorizontal: true, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime102.jsx)(StepSeparator, { hideBorder: isLastStep }),
-        /* @__PURE__ */ (0, import_jsx_runtime102.jsxs)(Stack, { spacing: "lg", width: "100%", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime102.jsx)(
+      i2 === activeIndex && /* @__PURE__ */ (0, import_jsx_runtime103.jsxs)(Stack, { isHorizontal: true, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(StepSeparator, { hideBorder: isLastStep }),
+        /* @__PURE__ */ (0, import_jsx_runtime103.jsxs)(Stack, { spacing: "lg", width: "100%", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(
             StepContent,
             {
               content,
               addTopMargin: description !== void 0
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime102.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(
             StepButtons,
             {
               isNextDisabled: canContinue instanceof Function ? !canContinue() : !canContinue,
@@ -63596,20 +63789,20 @@ function Stepper({
           )
         ] })
       ] }),
-      i2 < steps.length - 1 && /* @__PURE__ */ (0, import_jsx_runtime102.jsx)(StepSpacer, {})
+      i2 < steps.length - 1 && /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(StepSpacer, {})
     ] }, i2);
   }) });
 }
 
 // src/react/import-app/data-source-select.tsx
-var import_jsx_runtime103 = __toESM(require_jsx_runtime());
+var import_jsx_runtime104 = __toESM(require_jsx_runtime());
 function DataSourceSelect({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime103.jsx)("div", { className: "dataloom-data-source-select", children: /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(Stack, { children: /* @__PURE__ */ (0, import_jsx_runtime103.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime104.jsx)("div", { className: "dataloom-data-source-select", children: /* @__PURE__ */ (0, import_jsx_runtime104.jsx)(Stack, { children: /* @__PURE__ */ (0, import_jsx_runtime104.jsx)(
     "select",
     {
       value,
       onChange: (e) => onChange(e.target.value),
-      children: Object.values(DataSource).map((type) => /* @__PURE__ */ (0, import_jsx_runtime103.jsx)("option", { value: type, children: type }, type))
+      children: Object.values(DataSource).map((type) => /* @__PURE__ */ (0, import_jsx_runtime104.jsx)("option", { value: type, children: type }, type))
     }
   ) }) });
 }
@@ -63627,7 +63820,7 @@ var getAcceptForDataType = (value) => {
 };
 
 // src/react/import-app/upload-data/file-input/index.tsx
-var import_jsx_runtime104 = __toESM(require_jsx_runtime());
+var import_jsx_runtime105 = __toESM(require_jsx_runtime());
 function FileInput({
   hasHeadersRow,
   fileName,
@@ -63649,10 +63842,10 @@ function FileInput({
     reader.readAsText(file);
   }
   const accept = getAcceptForDataType(dataType);
-  return /* @__PURE__ */ (0, import_jsx_runtime104.jsx)("div", { className: "dataloom-file-input", children: /* @__PURE__ */ (0, import_jsx_runtime104.jsxs)(Stack, { spacing: "2xl", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime104.jsxs)(Stack, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime104.jsx)(Text, { value: fileName != null ? fileName : "No file chosen" }),
-      /* @__PURE__ */ (0, import_jsx_runtime104.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime105.jsx)("div", { className: "dataloom-file-input", children: /* @__PURE__ */ (0, import_jsx_runtime105.jsxs)(Stack, { spacing: "2xl", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime105.jsxs)(Stack, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime105.jsx)(Text, { value: fileName != null ? fileName : "No file chosen" }),
+      /* @__PURE__ */ (0, import_jsx_runtime105.jsx)(
         "input",
         {
           type: "file",
@@ -63661,9 +63854,9 @@ function FileInput({
         }
       )
     ] }),
-    accept === ".csv" && /* @__PURE__ */ (0, import_jsx_runtime104.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime104.jsx)("label", { htmlFor: "has-headers", children: "First row contains headers" }),
-      /* @__PURE__ */ (0, import_jsx_runtime104.jsx)(
+    accept === ".csv" && /* @__PURE__ */ (0, import_jsx_runtime105.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime105.jsx)("label", { htmlFor: "has-headers", children: "First row contains headers" }),
+      /* @__PURE__ */ (0, import_jsx_runtime105.jsx)(
         Switch,
         {
           id: "has-headers",
@@ -63676,13 +63869,13 @@ function FileInput({
 }
 
 // src/react/import-app/upload-data/upload-textarea.tsx
-var import_jsx_runtime105 = __toESM(require_jsx_runtime());
+var import_jsx_runtime106 = __toESM(require_jsx_runtime());
 function UploadTextarea({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime105.jsx)("textarea", { value, onChange: (e) => onChange(e.target.value) });
+  return /* @__PURE__ */ (0, import_jsx_runtime106.jsx)("textarea", { value, onChange: (e) => onChange(e.target.value) });
 }
 
 // src/react/import-app/upload-data/index.tsx
-var import_jsx_runtime106 = __toESM(require_jsx_runtime());
+var import_jsx_runtime107 = __toESM(require_jsx_runtime());
 function UploadData({
   source,
   fileName,
@@ -63693,9 +63886,9 @@ function UploadData({
   onRawDataChange,
   onHeadersRowToggle
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime106.jsxs)("div", { className: "dataloom-upload-data", children: [
-    source === "Paste from clipboard" /* PASTE */ && /* @__PURE__ */ (0, import_jsx_runtime106.jsx)(UploadTextarea, { value: rawData, onChange: onRawDataChange }),
-    source === "File" /* FILE */ && /* @__PURE__ */ (0, import_jsx_runtime106.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime107.jsxs)("div", { className: "dataloom-upload-data", children: [
+    source === "Paste from clipboard" /* PASTE */ && /* @__PURE__ */ (0, import_jsx_runtime107.jsx)(UploadTextarea, { value: rawData, onChange: onRawDataChange }),
+    source === "File" /* FILE */ && /* @__PURE__ */ (0, import_jsx_runtime107.jsx)(
       FileInput,
       {
         fileName,
@@ -63705,7 +63898,7 @@ function UploadData({
         onDataChange: onRawDataChange
       }
     ),
-    errorText !== null && /* @__PURE__ */ (0, import_jsx_runtime106.jsx)(Text, { variant: "error", value: errorText, size: "sm" })
+    errorText !== null && /* @__PURE__ */ (0, import_jsx_runtime107.jsx)(Text, { variant: "error", value: errorText, size: "sm" })
   ] });
 }
 
@@ -63713,7 +63906,7 @@ function UploadData({
 var import_react44 = __toESM(require_react());
 
 // src/react/import-app/match-columns/body-cell.tsx
-var import_jsx_runtime107 = __toESM(require_jsx_runtime());
+var import_jsx_runtime108 = __toESM(require_jsx_runtime());
 function BodyCell2({ value, isDisabled }) {
   const overflowClassName = useOverflow(false, {
     ellipsis: true
@@ -63721,7 +63914,7 @@ function BodyCell2({ value, isDisabled }) {
   let className = overflowClassName;
   if (isDisabled)
     className += " dataloom-disabled";
-  return /* @__PURE__ */ (0, import_jsx_runtime107.jsx)("td", { className, children: value });
+  return /* @__PURE__ */ (0, import_jsx_runtime108.jsx)("td", { className, children: value });
 }
 
 // src/react/shared/model-menu/index.tsx
@@ -63729,7 +63922,7 @@ var import_react43 = __toESM(require_react());
 
 // src/react/shared/modal-mount-provider/index.tsx
 var import_react42 = __toESM(require_react());
-var import_jsx_runtime108 = __toESM(require_jsx_runtime());
+var import_jsx_runtime109 = __toESM(require_jsx_runtime());
 var MountContext2 = import_react42.default.createContext(null);
 var useModalMount = () => {
   const value = import_react42.default.useContext(MountContext2);
@@ -63745,11 +63938,11 @@ function ModalMountProvider({
   modalEl,
   children
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime108.jsx)(MountContext2.Provider, { value: { obsidianApp, modalEl }, children });
+  return /* @__PURE__ */ (0, import_jsx_runtime109.jsx)(MountContext2.Provider, { value: { obsidianApp, modalEl }, children });
 }
 
 // src/react/shared/model-menu/index.tsx
-var import_jsx_runtime109 = __toESM(require_jsx_runtime());
+var import_jsx_runtime110 = __toESM(require_jsx_runtime());
 function ModalMenu({
   id: id2,
   isOpen,
@@ -63767,7 +63960,7 @@ function ModalMenu({
   useShiftMenu(true, modalEl, ref, position, isOpen, {
     openDirection
   });
-  return /* @__PURE__ */ (0, import_jsx_runtime109.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(
     base_menu_default,
     {
       ref,
@@ -63788,7 +63981,7 @@ function ModalMenu({
 var NEW_COLUMN_ID = "new-column";
 
 // src/react/import-app/match-columns/match-column-menu.tsx
-var import_jsx_runtime110 = __toESM(require_jsx_runtime());
+var import_jsx_runtime111 = __toESM(require_jsx_runtime());
 function MatchColumnMenu({
   id: id2,
   position,
@@ -63798,7 +63991,7 @@ function MatchColumnMenu({
   selectedColumnId,
   onColumnClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime110.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(
     ModalMenu,
     {
       id: id2,
@@ -63813,7 +64006,7 @@ function MatchColumnMenu({
           const isDisabled = columnMatches.some(
             (match) => match.columnId === id3
           );
-          return /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(
+          return /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
             MenuItem,
             {
               name: content,
@@ -63825,8 +64018,8 @@ function MatchColumnMenu({
             id3
           );
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(Divider, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(Divider, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
           MenuItem,
           {
             name: "Match as new",
@@ -63834,9 +64027,9 @@ function MatchColumnMenu({
             isSelected: selectedColumnId === NEW_COLUMN_ID
           }
         ),
-        selectedColumnId !== null && /* @__PURE__ */ (0, import_jsx_runtime110.jsxs)(import_jsx_runtime110.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(Divider, {}),
-          /* @__PURE__ */ (0, import_jsx_runtime110.jsx)(
+        selectedColumnId !== null && /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(import_jsx_runtime111.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(Divider, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
             MenuItem,
             {
               name: "Unmatch",
@@ -63850,7 +64043,7 @@ function MatchColumnMenu({
 }
 
 // src/react/import-app/match-columns/header-cell.tsx
-var import_jsx_runtime111 = __toESM(require_jsx_runtime());
+var import_jsx_runtime112 = __toESM(require_jsx_runtime());
 function HeaderCell2({
   isDisabled,
   columns,
@@ -63870,8 +64063,8 @@ function HeaderCell2({
     onColumnMatch(index, columnId);
     menu.onClose();
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(import_jsx_runtime111.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime111.jsx)("th", { className: overflowClassName, children: /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime112.jsxs)(import_jsx_runtime112.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime112.jsx)("th", { className: overflowClassName, children: /* @__PURE__ */ (0, import_jsx_runtime112.jsxs)(
       Stack,
       {
         className: isDisabled ? "dataloom-disabled" : void 0,
@@ -63880,9 +64073,9 @@ function HeaderCell2({
         spacing: "xl",
         width: "100%",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(Text, { value: importValue }),
-            /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime112.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(Text, { value: importValue }),
+            /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
               Icon,
               {
                 color: matchId ? "green" : "red",
@@ -63892,8 +64085,8 @@ function HeaderCell2({
               }
             )
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime111.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime112.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
               "input",
               {
                 "aria-label": isDisabled ? "Enable column" : "Disable column",
@@ -63902,7 +64095,7 @@ function HeaderCell2({
                 onChange: () => onColumnEnabledToggle(index)
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
               menu_button_default,
               {
                 ref: menu.triggerRef,
@@ -63910,7 +64103,7 @@ function HeaderCell2({
                 menuId: menu.id,
                 level: 1 /* ONE */,
                 ariaLabel: "Match column",
-                icon: /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(Icon, { lucideId: "columns", size: "lg" }),
+                icon: /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(Icon, { lucideId: "columns", size: "lg" }),
                 onOpen: () => menu.onOpen(1 /* ONE */, {
                   shouldFocusTriggerOnClose: false
                 })
@@ -63920,7 +64113,7 @@ function HeaderCell2({
         ]
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime111.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
       MatchColumnMenu,
       {
         id: menu.id,
@@ -63936,7 +64129,7 @@ function HeaderCell2({
 }
 
 // src/react/import-app/match-columns/bulk-options-menu.tsx
-var import_jsx_runtime112 = __toESM(require_jsx_runtime());
+var import_jsx_runtime113 = __toESM(require_jsx_runtime());
 function BulkOptionsMenu({
   id: id2,
   position,
@@ -63944,7 +64137,7 @@ function BulkOptionsMenu({
   onAllColumnsEnabledToggle,
   onAllColumnsMatch
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime112.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime113.jsxs)(
     ModalMenu,
     {
       id: id2,
@@ -63952,28 +64145,28 @@ function BulkOptionsMenu({
       position,
       openDirection: "bottom",
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
           MenuItem,
           {
             name: "Match all as new",
             onClick: () => onAllColumnsMatch(NEW_COLUMN_ID)
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
           MenuItem,
           {
             name: "Disable all",
             onClick: () => onAllColumnsEnabledToggle(false)
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
           MenuItem,
           {
             name: "Enable all",
             onClick: () => onAllColumnsEnabledToggle(true)
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime112.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
           MenuItem,
           {
             name: "Unmatch all",
@@ -63986,7 +64179,7 @@ function BulkOptionsMenu({
 }
 
 // src/react/import-app/match-columns/index.tsx
-var import_jsx_runtime113 = __toESM(require_jsx_runtime());
+var import_jsx_runtime114 = __toESM(require_jsx_runtime());
 function MatchColumns({
   columns,
   columnMatches,
@@ -64041,9 +64234,9 @@ function MatchColumns({
   } else {
     infoMessage = `There are ${numUnmatched} unmatched columns. Please match them to continue`;
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime113.jsxs)(import_jsx_runtime113.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime113.jsxs)("div", { className: "dataloom-match-columns", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(Padding, { pb: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime113.jsx)("div", { style: { width: "fit-content" }, children: /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime114.jsxs)(import_jsx_runtime114.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime114.jsxs)("div", { className: "dataloom-match-columns", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(Padding, { pb: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime114.jsx)("div", { style: { width: "fit-content" }, children: /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
         menu_button_default,
         {
           menuId: menu.id,
@@ -64057,18 +64250,18 @@ function MatchColumns({
           children: "Bulk operations"
         }
       ) }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
         "div",
         {
           ref: containerRef,
           className: "dataloom-match-columns__container",
-          children: /* @__PURE__ */ (0, import_jsx_runtime113.jsxs)("table", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime113.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime113.jsx)("tr", { children: data[0].map((header, i2) => {
+          children: /* @__PURE__ */ (0, import_jsx_runtime114.jsxs)("table", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime114.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime114.jsx)("tr", { children: data[0].map((header, i2) => {
               var _a2, _b;
               const matchId = (_b = (_a2 = columnMatches.find(
                 (match) => match.importColumnIndex === i2
               )) == null ? void 0 : _a2.columnId) != null ? _b : null;
-              return /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+              return /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
                 HeaderCell2,
                 {
                   isDisabled: !enabledColumnIndices.includes(
@@ -64085,7 +64278,7 @@ function MatchColumns({
                 i2
               );
             }) }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime113.jsx)("tbody", { children: data.slice(1).map((row, i2) => /* @__PURE__ */ (0, import_jsx_runtime113.jsx)("tr", { children: row.map((cell, j2) => /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime114.jsx)("tbody", { children: data.slice(1).map((row, i2) => /* @__PURE__ */ (0, import_jsx_runtime114.jsx)("tr", { children: row.map((cell, j2) => /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
               BodyCell2,
               {
                 value: cell,
@@ -64098,8 +64291,8 @@ function MatchColumns({
           ] })
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(Padding, { pt: "3xl", children: /* @__PURE__ */ (0, import_jsx_runtime113.jsxs)(Stack, { spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(Padding, { pt: "3xl", children: /* @__PURE__ */ (0, import_jsx_runtime114.jsxs)(Stack, { spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
           Text,
           {
             size: "sm",
@@ -64107,10 +64300,10 @@ function MatchColumns({
             value: `Importing ${enabledColumnIndices.length} of ${data[0].length} columns`
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(Text, { size: "sm", variant: "muted", value: infoMessage })
+        /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(Text, { size: "sm", variant: "muted", value: infoMessage })
       ] }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime113.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
       BulkOptionsMenu,
       {
         id: menu.id,
@@ -64228,7 +64421,8 @@ var createColumn = (options) => {
     aspectRatio: "unset" /* UNSET */,
     horizontalPadding: "unset" /* UNSET */,
     verticalPadding: "unset" /* UNSET */,
-    frontmatterKey
+    frontmatterKey,
+    multiTagSortDir: "default" /* NONE */
   };
 };
 var createRow = (index, options) => {
@@ -64354,12 +64548,13 @@ var createTagCell = (columnId, options) => {
   };
 };
 var createMultiTagCell = (columnId, options) => {
-  const { tagIds = [], hasValidFrontmatter = null } = options || {};
+  const { tagIds = [], hasValidFrontmatter = null, multiTagSortDir = "default" /* NONE */ } = options || {};
   return {
     id: generateUuid(),
     columnId,
     tagIds,
-    hasValidFrontmatter
+    hasValidFrontmatter,
+    multiTagSortDir
   };
 };
 var createSourceFileFilter = (columnId, options) => {
@@ -64837,7 +65032,7 @@ var findDateCell = (columnId, content, dateFormat, dateFormatSeparator) => {
 var import_react45 = __toESM(require_react());
 
 // src/react/shared/select/index.tsx
-var import_jsx_runtime114 = __toESM(require_jsx_runtime());
+var import_jsx_runtime115 = __toESM(require_jsx_runtime());
 function Select({
   id: id2,
   isDisabled,
@@ -64855,7 +65050,7 @@ function Select({
   if (hasError) {
     className += " dataloom-select--error";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime114.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
     "select",
     {
       disabled: isDisabled,
@@ -64871,7 +65066,7 @@ function Select({
 }
 
 // src/react/import-app/finalize-import.tsx
-var import_jsx_runtime115 = __toESM(require_jsx_runtime());
+var import_jsx_runtime116 = __toESM(require_jsx_runtime());
 function FinalizeImport({
   hasDateColumnMatch,
   dateFormat,
@@ -64885,7 +65080,7 @@ function FinalizeImport({
   const dateFormatSeparatorId = import_react45.default.useId();
   const includeTimeId = import_react45.default.useId();
   if (!hasDateColumnMatch)
-    return /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(Text, { value: "Everything looks good!" });
+    return /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(Text, { value: "Everything looks good!" });
   let expectedDateFormat = "Unknown";
   if (dateFormat && dateFormatSeparator) {
     const EXAMPLE_DATE_TIME = "2020-12-31T23:00:00";
@@ -64898,9 +65093,9 @@ function FinalizeImport({
       }
     );
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("div", { children: hasDateColumnMatch && /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(import_jsx_runtime115.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "xl", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("div", { children: hasDateColumnMatch && /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(import_jsx_runtime116.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "xl", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
         Text,
         {
           size: "md",
@@ -64908,7 +65103,7 @@ function FinalizeImport({
           value: "Date format"
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(Padding, { pr: "md", children: /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(Padding, { pr: "md", children: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
         Text,
         {
           shouldWrap: true,
@@ -64916,9 +65111,9 @@ function FinalizeImport({
         }
       ) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("label", { htmlFor: dateFormatId, children: "Date format" }),
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("label", { htmlFor: dateFormatId, children: "Date format" }),
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(
         Select,
         {
           id: dateFormatId,
@@ -64927,15 +65122,15 @@ function FinalizeImport({
             value || null
           ),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("option", { value: "", children: "Select an option" }),
-            Object.values(DateFormat2).map((format) => /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("option", { value: format, children: getDisplayNameForDateFormat(format) }, format))
+            /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("option", { value: "", children: "Select an option" }),
+            Object.values(DateFormat2).map((format) => /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("option", { value: format, children: getDisplayNameForDateFormat(format) }, format))
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("label", { htmlFor: dateFormatSeparatorId, children: "Date format separator" }),
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("label", { htmlFor: dateFormatSeparatorId, children: "Date format separator" }),
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(
         Select,
         {
           id: dateFormatSeparatorId,
@@ -64944,17 +65139,17 @@ function FinalizeImport({
             value || null
           ),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("option", { value: "", children: "Select an option" }),
+            /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("option", { value: "", children: "Select an option" }),
             Object.values(DateFormatSeparator).map(
-              (format) => /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("option", { value: format, children: format }, format)
+              (format) => /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("option", { value: format, children: format }, format)
             )
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("label", { htmlFor: includeTimeId, children: "Includes time" }),
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("label", { htmlFor: includeTimeId, children: "Includes time" }),
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
         Switch,
         {
           id: includeTimeId,
@@ -64963,9 +65158,9 @@ function FinalizeImport({
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)("label", { children: "Expected date format" }),
-      /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("label", { children: "Expected date format" }),
+      /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
         Text,
         {
           variant: "semibold",
@@ -64974,7 +65169,7 @@ function FinalizeImport({
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(Padding, { pr: "md", children: /* @__PURE__ */ (0, import_jsx_runtime115.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(Padding, { pr: "md", children: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
       Text,
       {
         shouldWrap: true,
@@ -64985,7 +65180,7 @@ function FinalizeImport({
 }
 
 // src/react/import-app/index.tsx
-var import_jsx_runtime116 = __toESM(require_jsx_runtime());
+var import_jsx_runtime117 = __toESM(require_jsx_runtime());
 function ImportApp({ state, onStateChange }) {
   const menuOperations = useMenuOperations();
   const [dataSource, setDataSource] = import_react46.default.useState("Select an option" /* UNSELECTED */);
@@ -65078,7 +65273,7 @@ function ImportApp({ state, onStateChange }) {
   const steps = [
     {
       title: "Select data type",
-      content: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
+      content: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
         DataTypeSelect,
         {
           value: dataType,
@@ -65089,7 +65284,7 @@ function ImportApp({ state, onStateChange }) {
     },
     {
       title: "Select data source",
-      content: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
+      content: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
         DataSourceSelect,
         {
           value: dataSource,
@@ -65100,7 +65295,7 @@ function ImportApp({ state, onStateChange }) {
     },
     {
       title: "Upload data",
-      content: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
+      content: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
         UploadData,
         {
           hasHeadersRow,
@@ -65148,7 +65343,7 @@ function ImportApp({ state, onStateChange }) {
     },
     {
       title: "Match columns",
-      content: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
+      content: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
         MatchColumns,
         {
           data,
@@ -65177,7 +65372,7 @@ function ImportApp({ state, onStateChange }) {
     },
     {
       title: "Finalize import",
-      content: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(
+      content: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
         FinalizeImport,
         {
           hasDateColumnMatch,
@@ -65213,11 +65408,11 @@ function ImportApp({ state, onStateChange }) {
     );
     onStateChange(newState);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime116.jsx)("div", { className: "dataloom-import-app", onClick: handleModalClick, children: /* @__PURE__ */ (0, import_jsx_runtime116.jsx)(Stepper, { steps, onFinishClick: handleFinishClick }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime117.jsx)("div", { className: "dataloom-import-app", onClick: handleModalClick, children: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(Stepper, { steps, onFinishClick: handleFinishClick }) });
 }
 
 // src/obsidian/modal/import-modal.tsx
-var import_jsx_runtime117 = __toESM(require_jsx_runtime());
+var import_jsx_runtime118 = __toESM(require_jsx_runtime());
 var ImportModal = class extends import_obsidian17.Modal {
   constructor(app, loomFile, loomState) {
     super(app);
@@ -65251,7 +65446,7 @@ var ImportModal = class extends import_obsidian17.Modal {
       throw new Error("Modal element not found.");
     this.root = (0, import_client3.createRoot)(contentEl);
     this.root.render(
-      /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(Provider_default, { store, children: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(ModalMountProvider, { obsidianApp: this.app, modalEl, children: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(MenuProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime117.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(Provider_default, { store, children: /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(ModalMountProvider, { obsidianApp: this.app, modalEl, children: /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(MenuProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
         ImportApp,
         {
           state: this.loomState,
@@ -65267,7 +65462,7 @@ var ImportModal = class extends import_obsidian17.Modal {
 };
 
 // src/react/loom-app/option-bar/more-menu/base-content.tsx
-var import_jsx_runtime118 = __toESM(require_jsx_runtime());
+var import_jsx_runtime119 = __toESM(require_jsx_runtime());
 function BaseContent({
   onToggleColumnClick,
   onFilterClick,
@@ -65278,8 +65473,8 @@ function BaseContent({
   const { app, loomFile } = useAppMount();
   const { loomState } = useLoomState();
   const isSmallScreen = isSmallScreenSize();
-  return /* @__PURE__ */ (0, import_jsx_runtime118.jsxs)(Padding, { p: "sm", children: [
-    isSmallScreen && /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime119.jsxs)(Padding, { p: "sm", children: [
+    isSmallScreen && /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "filter",
@@ -65287,7 +65482,7 @@ function BaseContent({
         onClick: onSourcesClick
       }
     ),
-    isSmallScreen && /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+    isSmallScreen && /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "filter",
@@ -65295,7 +65490,7 @@ function BaseContent({
         onClick: onFilterClick
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "eye-off",
@@ -65303,7 +65498,7 @@ function BaseContent({
         onClick: onToggleColumnClick
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "import",
@@ -65314,7 +65509,7 @@ function BaseContent({
         }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "download",
@@ -65325,7 +65520,7 @@ function BaseContent({
         }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime118.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
       MenuItem,
       {
         lucideId: "wrench",
@@ -65337,15 +65532,15 @@ function BaseContent({
 }
 
 // src/react/loom-app/option-bar/more-menu/settings-submenu.tsx
-var import_jsx_runtime119 = __toESM(require_jsx_runtime());
+var import_jsx_runtime120 = __toESM(require_jsx_runtime());
 function SettingsSubmenu({
   showCalculationRow,
   onCalculationRowToggle,
   onBackClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(Submenu, { title: "Settings", onBackClick, children: /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(Padding, { px: "lg", py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime119.jsxs)(Stack, { isHorizontal: true, spacing: "lg", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(Text, { value: "Calculation row" }),
-    /* @__PURE__ */ (0, import_jsx_runtime119.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Submenu, { title: "Settings", onBackClick, children: /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Padding, { px: "lg", py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime120.jsxs)(Stack, { isHorizontal: true, spacing: "lg", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Text, { value: "Calculation row" }),
+    /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(
       Switch,
       {
         value: showCalculationRow,
@@ -65356,22 +65551,22 @@ function SettingsSubmenu({
 }
 
 // src/react/loom-app/option-bar/more-menu/toggle-column-submenu.tsx
-var import_jsx_runtime120 = __toESM(require_jsx_runtime());
+var import_jsx_runtime121 = __toESM(require_jsx_runtime());
 function ToggleColumnSubmenu({
   columns,
   onColumnToggle,
   onBackClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Submenu, { title: "Toggle", onBackClick, children: /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Padding, { py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Stack, { spacing: "md", children: columns.map((column) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(Submenu, { title: "Toggle", onBackClick, children: /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(Padding, { py: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(Stack, { spacing: "md", children: columns.map((column) => {
     const { id: id2, content, isVisible } = column;
-    return /* @__PURE__ */ (0, import_jsx_runtime120.jsxs)(
+    return /* @__PURE__ */ (0, import_jsx_runtime121.jsxs)(
       Wrap,
       {
         justify: "space-between",
         spacingX: "4xl",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(Text, { value: content, maxWidth: "250px" }),
-          /* @__PURE__ */ (0, import_jsx_runtime120.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(Text, { value: content, maxWidth: "250px" }),
+          /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(
             Switch,
             {
               value: isVisible,
@@ -65386,7 +65581,7 @@ function ToggleColumnSubmenu({
 }
 
 // src/react/loom-app/option-bar/more-menu/index.tsx
-var import_jsx_runtime121 = __toESM(require_jsx_runtime());
+var import_jsx_runtime122 = __toESM(require_jsx_runtime());
 function MoreMenu({
   id: id2,
   isOpen,
@@ -65404,7 +65599,7 @@ function MoreMenu({
     if (!isOpen)
       setSubmenu(null);
   }, [isOpen]);
-  return /* @__PURE__ */ (0, import_jsx_runtime121.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime122.jsxs)(
     Menu,
     {
       id: id2,
@@ -65412,7 +65607,7 @@ function MoreMenu({
       isOpen,
       position,
       children: [
-        submenu === null && /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(
+        submenu === null && /* @__PURE__ */ (0, import_jsx_runtime122.jsx)(
           BaseContent,
           {
             onToggleColumnClick: () => setSubmenu(1 /* TOGGLE_COLUMNS */),
@@ -65422,7 +65617,7 @@ function MoreMenu({
             onSettingsClick: () => setSubmenu(0 /* SETTINGS */)
           }
         ),
-        submenu === 0 /* SETTINGS */ && /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(
+        submenu === 0 /* SETTINGS */ && /* @__PURE__ */ (0, import_jsx_runtime122.jsx)(
           SettingsSubmenu,
           {
             showCalculationRow,
@@ -65430,7 +65625,7 @@ function MoreMenu({
             onCalculationRowToggle
           }
         ),
-        submenu === 1 /* TOGGLE_COLUMNS */ && /* @__PURE__ */ (0, import_jsx_runtime121.jsx)(
+        submenu === 1 /* TOGGLE_COLUMNS */ && /* @__PURE__ */ (0, import_jsx_runtime122.jsx)(
           ToggleColumnSubmenu,
           {
             columns,
@@ -65444,7 +65639,7 @@ function MoreMenu({
 }
 
 // src/react/loom-app/option-bar/filter-menu/filter-column-select/index.tsx
-var import_jsx_runtime122 = __toESM(require_jsx_runtime());
+var import_jsx_runtime123 = __toESM(require_jsx_runtime());
 function FilterColumnSelect({
   id: id2,
   columns,
@@ -65456,7 +65651,7 @@ function FilterColumnSelect({
       e.stopPropagation();
     }
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime122.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime123.jsx)(
     Select,
     {
       className: "dataloom-filter-column-select",
@@ -65465,14 +65660,14 @@ function FilterColumnSelect({
       onChange: (newValue) => onChange(id2, newValue),
       children: columns.filter((column) => column.type !== "source" /* SOURCE */).map((column) => {
         const { id: id3, content } = column;
-        return /* @__PURE__ */ (0, import_jsx_runtime122.jsx)("option", { value: id3, children: content }, id3);
+        return /* @__PURE__ */ (0, import_jsx_runtime123.jsx)("option", { value: id3, children: content }, id3);
       })
     }
   );
 }
 
 // src/react/loom-app/option-bar/filter-menu/filter-condition-select.tsx
-var import_jsx_runtime123 = __toESM(require_jsx_runtime());
+var import_jsx_runtime124 = __toESM(require_jsx_runtime());
 function FilterConditionSelect({
   id: id2,
   value,
@@ -65484,36 +65679,36 @@ function FilterConditionSelect({
       e.stopPropagation();
     }
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime123.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime124.jsx)(
     Select,
     {
       value,
       onKeyDown: handleKeyDown,
       onChange: (newValue) => onChange(id2, newValue),
-      children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime123.jsx)("option", { value: option, children: getDisplayNameForFilterCondition(option) }, option))
+      children: options.map((option) => /* @__PURE__ */ (0, import_jsx_runtime124.jsx)("option", { value: option, children: getDisplayNameForFilterCondition(option) }, option))
     }
   );
 }
 
 // src/react/loom-app/option-bar/filter-menu/filter-operator/index.tsx
-var import_jsx_runtime124 = __toESM(require_jsx_runtime());
+var import_jsx_runtime125 = __toESM(require_jsx_runtime());
 function FilterOperator({ id: id2, value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime124.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime125.jsxs)(
     Select,
     {
       className: "dataloom-filter-operator",
       value,
       onChange: (newValue) => onChange(id2, newValue),
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime124.jsx)("option", { value: "or", children: "Or" }),
-        /* @__PURE__ */ (0, import_jsx_runtime124.jsx)("option", { value: "and", children: "And" })
+        /* @__PURE__ */ (0, import_jsx_runtime125.jsx)("option", { value: "or", children: "Or" }),
+        /* @__PURE__ */ (0, import_jsx_runtime125.jsx)("option", { value: "and", children: "And" })
       ]
     }
   );
 }
 
 // src/react/loom-app/option-bar/filter-menu/filter-row/index.tsx
-var import_jsx_runtime125 = __toESM(require_jsx_runtime());
+var import_jsx_runtime126 = __toESM(require_jsx_runtime());
 function FilterRow({
   index,
   id: id2,
@@ -65531,8 +65726,8 @@ function FilterRow({
   onConditionChange,
   onDeleteClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime125.jsx)("div", { className: "dataloom-filter-row", children: /* @__PURE__ */ (0, import_jsx_runtime125.jsxs)(Wrap, { children: [
-    index !== 0 && /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime126.jsx)("div", { className: "dataloom-filter-row", children: /* @__PURE__ */ (0, import_jsx_runtime126.jsxs)(Wrap, { children: [
+    index !== 0 && /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
       FilterOperator,
       {
         id: id2,
@@ -65540,8 +65735,8 @@ function FilterRow({
         onChange: onOperatorChange
       }
     ),
-    useSpacer && /* @__PURE__ */ (0, import_jsx_runtime125.jsx)("div", { className: "dataloom-filter-row__spacer" }),
-    /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(
+    useSpacer && /* @__PURE__ */ (0, import_jsx_runtime126.jsx)("div", { className: "dataloom-filter-row__spacer" }),
+    /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
       FilterColumnSelect,
       {
         id: id2,
@@ -65550,7 +65745,7 @@ function FilterRow({
         onChange: onColumnChange
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
       FilterConditionSelect,
       {
         id: id2,
@@ -65559,8 +65754,8 @@ function FilterRow({
         onChange: onConditionChange
       }
     ),
-    selectedCondition !== "is-empty" /* IS_EMPTY */ && selectedCondition !== "is-not-empty" /* IS_NOT_EMPTY */ && /* @__PURE__ */ (0, import_jsx_runtime125.jsx)("div", { className: "dataloom-filter-row__input", children: inputNode }),
-    /* @__PURE__ */ (0, import_jsx_runtime125.jsxs)(
+    selectedCondition !== "is-empty" /* IS_EMPTY */ && selectedCondition !== "is-not-empty" /* IS_NOT_EMPTY */ && /* @__PURE__ */ (0, import_jsx_runtime126.jsx)("div", { className: "dataloom-filter-row__input", children: inputNode }),
+    /* @__PURE__ */ (0, import_jsx_runtime126.jsxs)(
       Stack,
       {
         grow: true,
@@ -65569,15 +65764,15 @@ function FilterRow({
         spacing: "lg",
         isHorizontal: true,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
             Button,
             {
-              icon: /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(Icon, { lucideId: "trash-2" }),
+              icon: /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(Icon, { lucideId: "trash-2" }),
               ariaLabel: "Delete filter",
               onClick: () => onDeleteClick(id2)
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime125.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
             Switch,
             {
               value: isEnabled,
@@ -65592,7 +65787,7 @@ function FilterRow({
 }
 
 // src/react/shared/multi-select/multi-select-option.tsx
-var import_jsx_runtime126 = __toESM(require_jsx_runtime());
+var import_jsx_runtime127 = __toESM(require_jsx_runtime());
 function MultiSelectOption({
   id: id2,
   isChecked,
@@ -65605,15 +65800,15 @@ function MultiSelectOption({
       handleOptionClick(id2);
     }
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(
     "div",
     {
       className: "dataloom-multi-select__option dataloom-focusable dataloom-selectable",
       tabIndex: 0,
       onKeyDown: handleKeyDown,
       onClick: () => handleOptionClick(id2),
-      children: /* @__PURE__ */ (0, import_jsx_runtime126.jsxs)(Stack, { isHorizontal: true, width: "100%", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime126.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime127.jsxs)(Stack, { isHorizontal: true, width: "100%", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(
           "input",
           {
             className: "task-list-item-checkbox",
@@ -65631,7 +65826,7 @@ function MultiSelectOption({
 
 // src/react/shared/multi-select/multi-select-menu.tsx
 var import_react48 = __toESM(require_react());
-var import_jsx_runtime127 = __toESM(require_jsx_runtime());
+var import_jsx_runtime128 = __toESM(require_jsx_runtime());
 function MultiSelectMenu({
   id: id2,
   isOpen,
@@ -65660,8 +65855,8 @@ function MultiSelectMenu({
   const filteredOptions = options.filter(
     (option) => option.name.toLowerCase().includes(inputValue.toLocaleLowerCase())
   );
-  return /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(Menu, { id: id2, isOpen, position, topOffset: 35, children: /* @__PURE__ */ (0, import_jsx_runtime127.jsx)("div", { className: "dataloom-multi-select-menu", children: /* @__PURE__ */ (0, import_jsx_runtime127.jsxs)(Stack, { spacing: "md", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(Padding, { px: "md", pt: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Menu, { id: id2, isOpen, position, topOffset: 35, children: /* @__PURE__ */ (0, import_jsx_runtime128.jsx)("div", { className: "dataloom-multi-select-menu", children: /* @__PURE__ */ (0, import_jsx_runtime128.jsxs)(Stack, { spacing: "md", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Padding, { px: "md", pt: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(
       input_default,
       {
         value: inputValue,
@@ -65669,11 +65864,11 @@ function MultiSelectMenu({
         onChange: setInputValue
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime127.jsxs)("div", { className: "dataloom-multi-select__options", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime128.jsxs)("div", { className: "dataloom-multi-select__options", children: [
       filteredOptions.map((option) => {
         const { id: id3, component } = option;
         const isChecked = selectedOptionIds.includes(id3);
-        return /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(
+        return /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(
           MultiSelectOption,
           {
             id: id3,
@@ -65684,13 +65879,13 @@ function MultiSelectMenu({
           id3
         );
       }),
-      options.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(Padding, { px: "md", pb: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime127.jsx)(Text, { value: "No options to select" }) })
+      options.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Padding, { px: "md", pb: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Text, { value: "No options to select" }) })
     ] })
   ] }) }) });
 }
 
 // src/react/shared/multi-select/index.tsx
-var import_jsx_runtime128 = __toESM(require_jsx_runtime());
+var import_jsx_runtime129 = __toESM(require_jsx_runtime());
 function MultiSelect({
   id: id2,
   title,
@@ -65703,8 +65898,8 @@ function MultiSelect({
   function openMenu() {
     menu.onOpen(2 /* TWO */);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime128.jsxs)(import_jsx_runtime128.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime129.jsxs)(import_jsx_runtime129.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime129.jsx)(
       menu_trigger_default,
       {
         ref: menu.triggerRef,
@@ -65713,7 +65908,7 @@ function MultiSelect({
         level: 2 /* TWO */,
         isFocused: menu.isTriggerFocused,
         onOpen: () => openMenu(),
-        children: /* @__PURE__ */ (0, import_jsx_runtime128.jsx)("div", { className: "dataloom-multi-select", children: /* @__PURE__ */ (0, import_jsx_runtime128.jsxs)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime129.jsx)("div", { className: "dataloom-multi-select", children: /* @__PURE__ */ (0, import_jsx_runtime129.jsxs)(
           Stack,
           {
             isHorizontal: true,
@@ -65721,14 +65916,14 @@ function MultiSelect({
             align: "center",
             height: "100%",
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Text, { value: `${selectedOptionIds.length} ${title}` }),
-              /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(Icon, { lucideId: "chevron-down" })
+              /* @__PURE__ */ (0, import_jsx_runtime129.jsx)(Text, { value: `${selectedOptionIds.length} ${title}` }),
+              /* @__PURE__ */ (0, import_jsx_runtime129.jsx)(Icon, { lucideId: "chevron-down" })
             ]
           }
         ) })
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime128.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime129.jsx)(
       MultiSelectMenu,
       {
         id: menu.id,
@@ -65743,20 +65938,20 @@ function MultiSelect({
 }
 
 // src/react/shared/date-filter-select/index.tsx
-var import_jsx_runtime129 = __toESM(require_jsx_runtime());
+var import_jsx_runtime130 = __toESM(require_jsx_runtime());
 function DateFilterSelect({ value, onChange }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime129.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime130.jsx)(
     Select,
     {
       value,
       onChange: (value2) => onChange(value2),
-      children: Object.values(DateFilterOption).map((option) => /* @__PURE__ */ (0, import_jsx_runtime129.jsx)("option", { value: option, children: getDisplayNameForDateFilterOption(option) }, option))
+      children: Object.values(DateFilterOption).map((option) => /* @__PURE__ */ (0, import_jsx_runtime130.jsx)("option", { value: option, children: getDisplayNameForDateFilterOption(option) }, option))
     }
   );
 }
 
 // src/react/shared/checkbox-filter-select/index.tsx
-var import_jsx_runtime130 = __toESM(require_jsx_runtime());
+var import_jsx_runtime131 = __toESM(require_jsx_runtime());
 function CheckboxFilterSelect({ value, onChange }) {
   function handleChange(value2) {
     if (value2 === "true") {
@@ -65765,14 +65960,14 @@ function CheckboxFilterSelect({ value, onChange }) {
     }
     onChange(false);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime130.jsxs)(Select, { value: value ? "true" : "false", onChange: handleChange, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime130.jsx)("option", { value: "false", children: "Unchecked" }),
-    /* @__PURE__ */ (0, import_jsx_runtime130.jsx)("option", { value: "true", children: "Checked" })
+  return /* @__PURE__ */ (0, import_jsx_runtime131.jsxs)(Select, { value: value ? "true" : "false", onChange: handleChange, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime131.jsx)("option", { value: "false", children: "Unchecked" }),
+    /* @__PURE__ */ (0, import_jsx_runtime131.jsx)("option", { value: "true", children: "Checked" })
   ] });
 }
 
 // src/react/loom-app/option-bar/filter-menu/index.tsx
-var import_jsx_runtime131 = __toESM(require_jsx_runtime());
+var import_jsx_runtime132 = __toESM(require_jsx_runtime());
 function FilterMenu({
   id: id2,
   isOpen,
@@ -65946,7 +66141,7 @@ function FilterMenu({
       throw new Error("Filter not found");
     onUpdate(id3, { isEnabled: !filter3.isEnabled });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
     Menu,
     {
       id: id2,
@@ -65954,14 +66149,14 @@ function FilterMenu({
       position,
       openDirection: "bottom-left",
       maxHeight: 255,
-      children: /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
         "div",
         {
           className: "dataloom-filter-menu",
           style: {
             width: isSmallScreenSize() ? "calc(100vw - 30px)" : void 0
           },
-          children: /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(Padding, { p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime131.jsxs)(Stack, { spacing: "lg", children: [
+          children: /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(Padding, { p: "md", children: /* @__PURE__ */ (0, import_jsx_runtime132.jsxs)(Stack, { spacing: "lg", children: [
             filters.map((filter3, i2) => {
               const {
                 id: id3,
@@ -65982,7 +66177,7 @@ function FilterMenu({
               switch (type) {
                 case "text" /* TEXT */: {
                   const { text } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     input_default,
                     {
                       value: text,
@@ -66003,7 +66198,7 @@ function FilterMenu({
                 }
                 case "file" /* FILE */: {
                   const { text } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     input_default,
                     {
                       value: text,
@@ -66024,7 +66219,7 @@ function FilterMenu({
                 }
                 case "source-file" /* SOURCE_FILE */: {
                   const { text } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     input_default,
                     {
                       value: text,
@@ -66045,7 +66240,7 @@ function FilterMenu({
                 }
                 case "checkbox" /* CHECKBOX */: {
                   const { value } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     CheckboxFilterSelect,
                     {
                       value,
@@ -66060,14 +66255,14 @@ function FilterMenu({
                 }
                 case "tag" /* TAG */: {
                   const { tagId } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsxs)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsxs)(
                     Select,
                     {
                       value: tagId,
                       onChange: (newValue) => onTagChange(id3, newValue),
                       children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime131.jsx)("option", { value: "", children: "Select an option" }),
-                        tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                        /* @__PURE__ */ (0, import_jsx_runtime132.jsx)("option", { value: "", children: "Select an option" }),
+                        tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                           "option",
                           {
                             value: tag.id,
@@ -66088,7 +66283,7 @@ function FilterMenu({
                 }
                 case "multi-tag" /* MULTI_TAG */: {
                   const { tagIds } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     MultiSelect,
                     {
                       id: id3,
@@ -66096,7 +66291,7 @@ function FilterMenu({
                       options: tags.map((tag) => ({
                         id: tag.id,
                         name: tag.content,
-                        component: /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                        component: /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                           Tag5,
                           {
                             content: tag.content,
@@ -66125,7 +66320,7 @@ function FilterMenu({
                 }
                 case "number" /* NUMBER */: {
                   const { text } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     input_default,
                     {
                       isNumeric: true,
@@ -66147,7 +66342,7 @@ function FilterMenu({
                 }
                 case "date" /* DATE */: {
                   const { option } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     DateFilterSelect,
                     {
                       value: option,
@@ -66168,7 +66363,7 @@ function FilterMenu({
                 }
                 case "creation-time" /* CREATION_TIME */: {
                   const { option } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     DateFilterSelect,
                     {
                       value: option,
@@ -66187,7 +66382,7 @@ function FilterMenu({
                 }
                 case "last-edited-time" /* LAST_EDITED_TIME */: {
                   const { option } = filter3;
-                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+                  inputNode = /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                     DateFilterSelect,
                     {
                       value: option,
@@ -66207,7 +66402,7 @@ function FilterMenu({
                 default:
                   throw new Error("Column type not handled");
               }
-              return /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+              return /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
                 FilterRow,
                 {
                   index: i2,
@@ -66229,10 +66424,10 @@ function FilterMenu({
                 id3
               );
             }),
-            /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
               Button,
               {
-                icon: /* @__PURE__ */ (0, import_jsx_runtime131.jsx)(Icon, { lucideId: "plus" }),
+                icon: /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(Icon, { lucideId: "plus" }),
                 ariaLabel: "Add filter",
                 onClick: () => onAddClick()
               }
@@ -66245,32 +66440,32 @@ function FilterMenu({
 }
 
 // src/react/loom-app/option-bar/sort-bubble/index.tsx
-var import_jsx_runtime132 = __toESM(require_jsx_runtime());
+var import_jsx_runtime133 = __toESM(require_jsx_runtime());
 function SortBubble({
   sortDir,
   content,
   onRemoveClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime132.jsx)("div", { className: "dataloom-sort-bubble", children: /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime133.jsx)("div", { className: "dataloom-sort-bubble", children: /* @__PURE__ */ (0, import_jsx_runtime133.jsx)(
     Bubble,
     {
       canRemove: true,
       value: content,
-      icon: sortDir === "asc" /* ASC */ ? /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(Icon, { lucideId: "arrow-up" }) : /* @__PURE__ */ (0, import_jsx_runtime132.jsx)(Icon, { lucideId: "arrow-down" }),
+      icon: sortDir === "asc" /* ASC */ ? /* @__PURE__ */ (0, import_jsx_runtime133.jsx)(Icon, { lucideId: "arrow-up" }) : /* @__PURE__ */ (0, import_jsx_runtime133.jsx)(Icon, { lucideId: "arrow-down" }),
       onRemoveClick
     }
   ) });
 }
 
 // src/react/loom-app/option-bar/sort-bubble-list.tsx
-var import_jsx_runtime133 = __toESM(require_jsx_runtime());
+var import_jsx_runtime134 = __toESM(require_jsx_runtime());
 function SortBubbleList({
   sortedColumns,
   onRemoveClick
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime133.jsx)(Stack, { spacing: "sm", isHorizontal: true, children: sortedColumns.map((column, i2) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime134.jsx)(Stack, { spacing: "sm", isHorizontal: true, children: sortedColumns.map((column, i2) => {
     const { id: id2, sortDir, content } = column;
-    return /* @__PURE__ */ (0, import_jsx_runtime133.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime134.jsx)(
       SortBubble,
       {
         sortDir,
@@ -66289,7 +66484,7 @@ var import_react50 = __toESM(require_react());
 var import_react49 = __toESM(require_react());
 
 // src/react/loom-app/option-bar/sources-menu/add-source-submenu/folder-source-options.tsx
-var import_jsx_runtime134 = __toESM(require_jsx_runtime());
+var import_jsx_runtime135 = __toESM(require_jsx_runtime());
 function FolderSourceOptions({
   pathInputId,
   includeSubfoldersInputId,
@@ -66299,10 +66494,10 @@ function FolderSourceOptions({
   onIncludeSubfoldersToggle,
   onPathChange
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime134.jsxs)(import_jsx_runtime134.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime134.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime134.jsx)("label", { htmlFor: pathInputId, children: "Path" }),
-      /* @__PURE__ */ (0, import_jsx_runtime134.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(import_jsx_runtime135.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("label", { htmlFor: pathInputId, children: "Path" }),
+      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)(
         input_default,
         {
           id: pathInputId,
@@ -66313,9 +66508,9 @@ function FolderSourceOptions({
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime134.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime134.jsx)("label", { htmlFor: includeSubfoldersInputId, children: "Include subfolders" }),
-      /* @__PURE__ */ (0, import_jsx_runtime134.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("label", { htmlFor: includeSubfoldersInputId, children: "Include subfolders" }),
+      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)(
         Switch,
         {
           value: includeSubfolders,
@@ -66330,7 +66525,7 @@ function FolderSourceOptions({
 var import_obsidian18 = require("obsidian");
 
 // src/react/loom-app/option-bar/sources-menu/add-source-submenu/frontmatter-source-options.tsx
-var import_jsx_runtime135 = __toESM(require_jsx_runtime());
+var import_jsx_runtime136 = __toESM(require_jsx_runtime());
 function FrontmatterSourceOptions({
   propertyTypeSelectId,
   propertyKeySelectId,
@@ -66345,10 +66540,10 @@ function FrontmatterSourceOptions({
       selectedPropertyType
     );
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(import_jsx_runtime135.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("label", { htmlFor: propertyTypeSelectId, children: "Property Type" }),
-      /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(import_jsx_runtime136.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("label", { htmlFor: propertyTypeSelectId, children: "Property Type" }),
+      /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(
         Select,
         {
           value: selectedPropertyType != null ? selectedPropertyType : "",
@@ -66356,26 +66551,26 @@ function FrontmatterSourceOptions({
             value || null
           ),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("option", { value: "", children: "Select an option" }),
+            /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: "", children: "Select an option" }),
             Object.values(ObsidianPropertyType).map((type) => {
-              return /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("option", { value: type, children: type }, type);
+              return /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: type, children: type }, type);
             })
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(Stack, { spacing: "sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("label", { htmlFor: propertyKeySelectId, children: "Property Key" }),
-      /* @__PURE__ */ (0, import_jsx_runtime135.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(Stack, { spacing: "sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("label", { htmlFor: propertyKeySelectId, children: "Property Key" }),
+      /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(
         Select,
         {
           isDisabled: selectedPropertyType === null,
           value: selectedPropertyKey != null ? selectedPropertyKey : "",
           onChange: (value) => onPropertyKeyChange(value || null),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("option", { value: "", children: "Select an option" }),
+            /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: "", children: "Select an option" }),
             Object.values(propertyTypes).map((type) => {
-              return /* @__PURE__ */ (0, import_jsx_runtime135.jsx)("option", { value: type, children: type }, type);
+              return /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: type, children: type }, type);
             })
           ]
         }
@@ -66385,7 +66580,7 @@ function FrontmatterSourceOptions({
 }
 
 // src/react/loom-app/option-bar/sources-menu/add-source-submenu/index.tsx
-var import_jsx_runtime136 = __toESM(require_jsx_runtime());
+var import_jsx_runtime137 = __toESM(require_jsx_runtime());
 function AddSourceSubmenu({
   sources,
   onAddSourceClick,
@@ -66471,16 +66666,16 @@ function AddSourceSubmenu({
     }
     throw new Error("Source type not handled");
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(
     Submenu,
     {
       title: "Add source",
       showBackButton: sources.length > 0,
       onBackClick,
-      children: /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(Padding, { py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(Stack, { spacing: "lg", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(Stack, { spacing: "sm", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("label", { htmlFor: "type", children: "Type" }),
-          /* @__PURE__ */ (0, import_jsx_runtime136.jsxs)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(Padding, { py: "md", children: /* @__PURE__ */ (0, import_jsx_runtime137.jsxs)(Stack, { spacing: "lg", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime137.jsxs)(Stack, { spacing: "sm", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime137.jsx)("label", { htmlFor: "type", children: "Type" }),
+          /* @__PURE__ */ (0, import_jsx_runtime137.jsxs)(
             Select,
             {
               id: "type",
@@ -66488,15 +66683,15 @@ function AddSourceSubmenu({
               hasError: (error == null ? void 0 : error.inputId) === typeSelectId,
               onChange: (value) => setType(value || null),
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: "", children: "Select an option" }),
+                /* @__PURE__ */ (0, import_jsx_runtime137.jsx)("option", { value: "", children: "Select an option" }),
                 Object.values(SourceType).map((type2) => {
-                  return /* @__PURE__ */ (0, import_jsx_runtime136.jsx)("option", { value: type2, children: getDisplayNameForSource(type2) }, type2);
+                  return /* @__PURE__ */ (0, import_jsx_runtime137.jsx)("option", { value: type2, children: getDisplayNameForSource(type2) }, type2);
                 })
               ]
             }
           )
         ] }),
-        type === "folder" /* FOLDER */ && /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(
+        type === "folder" /* FOLDER */ && /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(
           FolderSourceOptions,
           {
             pathInputId,
@@ -66508,7 +66703,7 @@ function AddSourceSubmenu({
             onPathChange: (value) => setPath(value)
           }
         ),
-        type === "frontmatter" /* FRONTMATTER */ && /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(
+        type === "frontmatter" /* FRONTMATTER */ && /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(
           FrontmatterSourceOptions,
           {
             propertyKeySelectId,
@@ -66520,40 +66715,40 @@ function AddSourceSubmenu({
             onPropertyTypeChange: setPropertyType
           }
         ),
-        (error == null ? void 0 : error.message) && /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(Text, { value: error.message, variant: "error" }),
-        /* @__PURE__ */ (0, import_jsx_runtime136.jsx)(Button, { variant: "default", onClick: () => handleAddClick(), children: "Add" })
+        (error == null ? void 0 : error.message) && /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(Text, { value: error.message, variant: "error" }),
+        /* @__PURE__ */ (0, import_jsx_runtime137.jsx)(Button, { variant: "default", onClick: () => handleAddClick(), children: "Add" })
       ] }) })
     }
   );
 }
 
 // src/react/loom-app/option-bar/sources-menu/source-item/index.tsx
-var import_jsx_runtime137 = __toESM(require_jsx_runtime());
+var import_jsx_runtime138 = __toESM(require_jsx_runtime());
 function SourceItem({ children }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime137.jsx)("div", { className: "dataloom-source-item", children });
+  return /* @__PURE__ */ (0, import_jsx_runtime138.jsx)("div", { className: "dataloom-source-item", children });
 }
 
 // src/react/loom-app/option-bar/sources-menu/folder-source-item/index.tsx
-var import_jsx_runtime138 = __toESM(require_jsx_runtime());
+var import_jsx_runtime139 = __toESM(require_jsx_runtime());
 function FolderSourceItem({
   id: id2,
   content,
   type,
   onDelete
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(SourceItem, { children: /* @__PURE__ */ (0, import_jsx_runtime138.jsxs)(Flex, { justify: "space-between", align: "center", height: "100%", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(Stack, { isHorizontal: true, spacing: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(SourceItem, { children: /* @__PURE__ */ (0, import_jsx_runtime139.jsxs)(Flex, { justify: "space-between", align: "center", height: "100%", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(Stack, { isHorizontal: true, spacing: "sm", children: /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
       Bubble,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(Icon, { lucideId: getIconIdForSourceType(type) }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(Icon, { lucideId: getIconIdForSourceType(type) }),
         variant: "no-fill",
         value: content
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
       Button,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime138.jsx)(Icon, { lucideId: "trash" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(Icon, { lucideId: "trash" }),
         ariaLabel: "Delete source",
         onClick: () => onDelete(id2)
       }
@@ -66562,7 +66757,7 @@ function FolderSourceItem({
 }
 
 // src/react/loom-app/option-bar/sources-menu/add-source-submenu/filter-input.tsx
-var import_jsx_runtime139 = __toESM(require_jsx_runtime());
+var import_jsx_runtime140 = __toESM(require_jsx_runtime());
 function FilterInput({
   filterTextId,
   selectedPropertyType,
@@ -66571,8 +66766,8 @@ function FilterInput({
 }) {
   const showListInput = selectedPropertyType === "aliases" /* ALIASES */ || selectedPropertyType === "tags" /* TAGS */ || selectedPropertyType === "multitext" /* MULTITEXT */;
   const showDateInput = selectedPropertyType === "date" /* DATE */ || selectedPropertyType === "datetime" /* DATETIME */;
-  return /* @__PURE__ */ (0, import_jsx_runtime139.jsxs)(import_jsx_runtime139.Fragment, { children: [
-    selectedPropertyType === "text" /* TEXT */ && /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime140.jsxs)(import_jsx_runtime140.Fragment, { children: [
+    selectedPropertyType === "text" /* TEXT */ && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
       input_default,
       {
         id: filterTextId,
@@ -66581,7 +66776,7 @@ function FilterInput({
         onChange: (value) => onFilterTextChange(value)
       }
     ),
-    selectedPropertyType === "number" /* NUMBER */ && /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
+    selectedPropertyType === "number" /* NUMBER */ && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
       input_default,
       {
         id: filterTextId,
@@ -66591,21 +66786,21 @@ function FilterInput({
         onChange: (value) => onFilterTextChange(value)
       }
     ),
-    showDateInput && /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
+    showDateInput && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
       DateFilterSelect,
       {
         value: filterText,
         onChange: (value) => onFilterTextChange(value)
       }
     ),
-    selectedPropertyType === "checkbox" /* CHECKBOX */ && /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
+    selectedPropertyType === "checkbox" /* CHECKBOX */ && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
       CheckboxFilterSelect,
       {
         value: filterText === "true",
         onChange: (value) => onFilterTextChange(value.toString())
       }
     ),
-    showListInput && /* @__PURE__ */ (0, import_jsx_runtime139.jsx)(
+    showListInput && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
       input_default,
       {
         id: filterTextId,
@@ -66618,7 +66813,7 @@ function FilterInput({
 }
 
 // src/react/loom-app/option-bar/sources-menu/frontmatter-source-item/index.tsx
-var import_jsx_runtime140 = __toESM(require_jsx_runtime());
+var import_jsx_runtime141 = __toESM(require_jsx_runtime());
 function FrontmatterSourceItem({
   filterConditions,
   filterText,
@@ -66632,11 +66827,11 @@ function FrontmatterSourceItem({
   onFilterTextChange
 }) {
   const showFilterInput = selectedFilterCondition !== "is-empty" /* IS_EMPTY */ && selectedFilterCondition !== "is-not-empty" /* IS_NOT_EMPTY */ && selectedFilterCondition !== "is-empty" /* IS_EMPTY */ && selectedFilterCondition !== "is-not-empty" /* IS_NOT_EMPTY */ && selectedFilterCondition !== "is-not-empty" /* IS_NOT_EMPTY */ && selectedFilterCondition !== "is-empty" /* IS_EMPTY */;
-  return /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(SourceItem, { children: /* @__PURE__ */ (0, import_jsx_runtime140.jsx)("div", { className: "dataloom-frontmatter-source-item", children: /* @__PURE__ */ (0, import_jsx_runtime140.jsxs)(Wrap, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(SourceItem, { children: /* @__PURE__ */ (0, import_jsx_runtime141.jsx)("div", { className: "dataloom-frontmatter-source-item", children: /* @__PURE__ */ (0, import_jsx_runtime141.jsxs)(Wrap, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
       Bubble,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
+        icon: /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
           Icon,
           {
             lucideId: getIconIdForSourceType(type, {
@@ -66648,7 +66843,7 @@ function FrontmatterSourceItem({
         value: title
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
       Select,
       {
         value: selectedFilterCondition != null ? selectedFilterCondition : "",
@@ -66657,11 +66852,11 @@ function FrontmatterSourceItem({
           value || null
         ),
         children: Object.values(filterConditions).map((type2) => {
-          return /* @__PURE__ */ (0, import_jsx_runtime140.jsx)("option", { value: type2, children: getDisplayNameForFilterCondition(type2) }, type2);
+          return /* @__PURE__ */ (0, import_jsx_runtime141.jsx)("option", { value: type2, children: getDisplayNameForFilterCondition(type2) }, type2);
         })
       }
     ),
-    showFilterInput && /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
+    showFilterInput && /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
       FilterInput,
       {
         selectedPropertyType,
@@ -66669,10 +66864,10 @@ function FrontmatterSourceItem({
         onFilterTextChange: (value) => onFilterTextChange(id2, value)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(Flex, { width: "fit-content", grow: true, justify: "flex-end", children: /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(Flex, { width: "fit-content", grow: true, justify: "flex-end", children: /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
       Button,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime140.jsx)(Icon, { lucideId: "trash" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(Icon, { lucideId: "trash" }),
         ariaLabel: "Delete source",
         onClick: () => onDelete(id2)
       }
@@ -66681,7 +66876,7 @@ function FrontmatterSourceItem({
 }
 
 // src/react/loom-app/option-bar/sources-menu/base-content/index.tsx
-var import_jsx_runtime141 = __toESM(require_jsx_runtime());
+var import_jsx_runtime142 = __toESM(require_jsx_runtime());
 function BaseContent2({
   sources,
   onSourceAdd,
@@ -66689,12 +66884,12 @@ function BaseContent2({
   onSourceFilterConditionChange,
   onSourceFilterTextChange
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime141.jsxs)(Stack, { spacing: "md", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(Stack, { spacing: "md", children: sources.map((source) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime142.jsxs)(Stack, { spacing: "md", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(Stack, { spacing: "md", children: sources.map((source) => {
       const { id: id2, type } = source;
       if (type === "folder" /* FOLDER */) {
         const { path } = source;
-        return /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
+        return /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
           FolderSourceItem,
           {
             id: id2,
@@ -66712,7 +66907,7 @@ function BaseContent2({
           propertyKey
         } = source;
         const filterConditions = getFilterConditionsForPropertyType(propertyType);
-        return /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
+        return /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
           FrontmatterSourceItem,
           {
             id: id2,
@@ -66732,10 +66927,10 @@ function BaseContent2({
         throw new Error("Unhandled source type");
       }
     }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
       Button,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime141.jsx)(Icon, { lucideId: "plus" }),
+        icon: /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(Icon, { lucideId: "plus" }),
         onClick: () => onSourceAdd(),
         ariaLabel: "Add source"
       }
@@ -66744,7 +66939,7 @@ function BaseContent2({
 }
 
 // src/react/loom-app/option-bar/sources-menu/index.tsx
-var import_jsx_runtime142 = __toESM(require_jsx_runtime());
+var import_jsx_runtime143 = __toESM(require_jsx_runtime());
 function SourcesMenu({
   id: id2,
   isOpen,
@@ -66767,15 +66962,15 @@ function SourcesMenu({
     onSourceAdd(source);
     setSubmenu(null);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
     Menu,
     {
       id: id2,
       openDirection: "bottom-left",
       isOpen,
       position,
-      children: /* @__PURE__ */ (0, import_jsx_runtime142.jsxs)(Padding, { px: "lg", py: "md", children: [
-        submenu === null && /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime143.jsxs)(Padding, { px: "lg", py: "md", children: [
+        submenu === null && /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
           BaseContent2,
           {
             sources,
@@ -66785,7 +66980,7 @@ function SourcesMenu({
             onSourceFilterTextChange
           }
         ),
-        submenu === 0 /* ADD */ && /* @__PURE__ */ (0, import_jsx_runtime142.jsx)(
+        submenu === 0 /* ADD */ && /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
           AddSourceSubmenu,
           {
             sources,
@@ -66799,7 +66994,7 @@ function SourcesMenu({
 }
 
 // src/react/loom-app/option-bar/index.tsx
-var import_jsx_runtime143 = __toESM(require_jsx_runtime());
+var import_jsx_runtime144 = __toESM(require_jsx_runtime());
 function OptionBar({
   columns,
   filters,
@@ -66862,15 +67057,15 @@ function OptionBar({
     (column) => column.sortDir !== "default" /* NONE */
   );
   const isSmallScreen = isSmallScreenSize();
-  return /* @__PURE__ */ (0, import_jsx_runtime143.jsxs)(import_jsx_runtime143.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime143.jsx)("div", { className: "dataloom-option-bar", children: /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(Padding, { py: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime143.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime144.jsxs)(import_jsx_runtime144.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime144.jsx)("div", { className: "dataloom-option-bar", children: /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(Padding, { py: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime144.jsxs)(
       Stack,
       {
         isHorizontal: !isSmallScreen,
         spacing: "sm",
         ...!isSmallScreen && { justify: "space-between" },
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime143.jsxs)(
+          /* @__PURE__ */ (0, import_jsx_runtime144.jsxs)(
             Stack,
             {
               isHorizontal: true,
@@ -66881,14 +67076,14 @@ function OptionBar({
                 justify: "flex-end"
               },
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
                   SortBubbleList,
                   {
                     sortedColumns,
                     onRemoveClick: handleRemoveClick
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
                   ActiveFilterBubble,
                   {
                     numActive: activeFilters.length
@@ -66897,7 +67092,7 @@ function OptionBar({
               ]
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime143.jsxs)(
+          /* @__PURE__ */ (0, import_jsx_runtime144.jsxs)(
             Stack,
             {
               isHorizontal: true,
@@ -66908,7 +67103,7 @@ function OptionBar({
                 width: "100%"
               },
               children: [
-                isSmallScreen === false && /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+                isSmallScreen === false && /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
                   menu_button_default,
                   {
                     isFocused: sourcesMenu.isTriggerFocused,
@@ -66919,7 +67114,7 @@ function OptionBar({
                     children: "Sources"
                   }
                 ),
-                isSmallScreen === false && /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+                isSmallScreen === false && /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
                   menu_button_default,
                   {
                     isFocused: filterMenu.isTriggerFocused,
@@ -66930,15 +67125,15 @@ function OptionBar({
                     children: "Filter"
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(SearchBar, {}),
-                /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(SearchBar, {}),
+                /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
                   menu_button_default,
                   {
                     isFocused: moreMenu.isTriggerFocused,
                     menuId: moreMenu.id,
                     ref: moreMenu.triggerRef,
                     level: 1 /* ONE */,
-                    icon: /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(Icon, { lucideId: "more-vertical" }),
+                    icon: /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(Icon, { lucideId: "more-vertical" }),
                     onOpen: handleMoreMenuOpen
                   }
                 )
@@ -66948,7 +67143,7 @@ function OptionBar({
         ]
       }
     ) }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
       SourcesMenu,
       {
         id: sourcesMenu.id,
@@ -66963,7 +67158,7 @@ function OptionBar({
         onClose: sourcesMenu.onClose
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
       MoreMenu,
       {
         id: moreMenu.id,
@@ -66978,7 +67173,7 @@ function OptionBar({
         onSourcesClick: handleSourceMenuOpen
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime143.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
       FilterMenu,
       {
         id: filterMenu.id,
@@ -66999,12 +67194,12 @@ var import_react51 = __toESM(require_react());
 var import_lodash9 = __toESM(require_lodash());
 
 // src/react/loom-app/new-row-button/index.tsx
-var import_jsx_runtime144 = __toESM(require_jsx_runtime());
+var import_jsx_runtime145 = __toESM(require_jsx_runtime());
 function NewRowButton({ onClick }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
     Button,
     {
-      icon: /* @__PURE__ */ (0, import_jsx_runtime144.jsx)(Icon, { lucideId: "plus" }),
+      icon: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Icon, { lucideId: "plus" }),
       ariaLabel: "New row",
       onClick: () => onClick(),
       children: "New"
@@ -67013,7 +67208,7 @@ function NewRowButton({ onClick }) {
 }
 
 // src/react/loom-app/bottom-bar/index.tsx
-var import_jsx_runtime145 = __toESM(require_jsx_runtime());
+var import_jsx_runtime146 = __toESM(require_jsx_runtime());
 function BottomBar({
   onRowAddClick,
   onScrollToTopClick,
@@ -67064,50 +67259,50 @@ function BottomBar({
   if (isMobile) {
     className += " dataloom-bottom-bar--mobile";
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime145.jsx)("div", { ref, className, children: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime146.jsx)("div", { ref, className, children: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
     "div",
     {
       style: {
         top: numToPx(-bottomBarOffset)
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Padding, { pt: "md", width: "100%", children: /* @__PURE__ */ (0, import_jsx_runtime145.jsxs)(Stack, { spacing: "sm", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime145.jsxs)(Flex, { justify: "space-between", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(NewRowButton, { onClick: onRowAddClick }),
-          /* @__PURE__ */ (0, import_jsx_runtime145.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(Padding, { pt: "md", width: "100%", children: /* @__PURE__ */ (0, import_jsx_runtime146.jsxs)(Stack, { spacing: "sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime146.jsxs)(Flex, { justify: "space-between", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(NewRowButton, { onClick: onRowAddClick }),
+          /* @__PURE__ */ (0, import_jsx_runtime146.jsxs)(Stack, { isHorizontal: true, spacing: "sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
               Button,
               {
                 ariaLabel: "Scroll to top",
-                icon: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Icon, { lucideId: "chevron-up" }),
+                icon: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(Icon, { lucideId: "chevron-up" }),
                 onClick: onScrollToTopClick
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
               Button,
               {
                 ariaLabel: "Scroll to bottom",
                 onClick: onScrollToBottomClick,
-                icon: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Icon, { lucideId: "chevron-down" })
+                icon: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(Icon, { lucideId: "chevron-down" })
               }
             )
           ] })
         ] }),
-        isMobile && /* @__PURE__ */ (0, import_jsx_runtime145.jsxs)(Flex, { justify: "space-between", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
+        isMobile && /* @__PURE__ */ (0, import_jsx_runtime146.jsxs)(Flex, { justify: "space-between", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
             Button,
             {
               ariaLabel: "Undo",
               size: "lg",
-              icon: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Icon, { lucideId: "undo" }),
+              icon: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(Icon, { lucideId: "undo" }),
               onClick: onUndoClick
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
             Button,
             {
               ariaLabel: "Redo",
               size: "lg",
-              icon: /* @__PURE__ */ (0, import_jsx_runtime145.jsx)(Icon, { lucideId: "redo" }),
+              icon: /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(Icon, { lucideId: "redo" }),
               onClick: onRedoClick
             }
           )
@@ -69903,7 +70098,8 @@ var deserializeFrontmatterForCell = (app, column, path) => {
       if (typeof frontmatterValue !== "object") {
         return {
           newCell: createMultiTagCell(id2, {
-            hasValidFrontmatter: false
+            hasValidFrontmatter: false,
+            multiTagSortDir: column.multiTagSortDir
           })
         };
       }
@@ -69925,7 +70121,8 @@ var deserializeFrontmatterForCell = (app, column, path) => {
       });
       const newCell = createMultiTagCell(id2, {
         tagIds: cellTagIds,
-        hasValidFrontmatter: true
+        hasValidFrontmatter: true,
+        multiTagSortDir: column.multiTagSortDir
       });
       const nextTags = [...column.tags, ...newTags];
       return {
@@ -70401,7 +70598,7 @@ var useCloseOnObsidianModalOpen = () => {
 
 // src/react/loom-app/app/index.tsx
 var import_js_logger23 = __toESM(require_logger());
-var import_jsx_runtime146 = __toESM(require_jsx_runtime());
+var import_jsx_runtime147 = __toESM(require_jsx_runtime());
 function App10() {
   const { reactAppId, isMarkdownView } = useAppMount();
   const { loomState, resizingColumnId, searchText, onRedo, onUndo } = useLoomState();
@@ -70472,7 +70669,7 @@ function App10() {
   let className = "dataloom-app";
   if (isMarkdownView)
     className += " dataloom-app--markdown-view";
-  return /* @__PURE__ */ (0, import_jsx_runtime146.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime147.jsxs)(
     "div",
     {
       ref: appRef,
@@ -70482,7 +70679,7 @@ function App10() {
       onKeyDown: handleKeyDown,
       onClick,
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime147.jsx)(
           OptionBar,
           {
             columns,
@@ -70499,7 +70696,7 @@ function App10() {
             onSourceUpdate
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime147.jsx)(
           table_default,
           {
             ref: tableRef,
@@ -70528,7 +70725,7 @@ function App10() {
             onRowReorder
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime146.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime147.jsx)(
           BottomBar,
           {
             onRowAddClick,
@@ -70545,7 +70742,7 @@ function App10() {
 
 // src/react/shared/error-boundary/index.tsx
 var import_react64 = __toESM(require_react());
-var import_jsx_runtime147 = __toESM(require_jsx_runtime());
+var import_jsx_runtime148 = __toESM(require_jsx_runtime());
 var ErrorBoundary = class extends import_react64.default.Component {
   constructor(props) {
     super(props);
@@ -70564,7 +70761,7 @@ var ErrorBoundary = class extends import_react64.default.Component {
     if (this.state.hasError) {
       copyErrorMessage = `Error message: ${this.state.errorMessage}
 Error info: ${(_a2 = this.state.errorInfo) == null ? void 0 : _a2.componentStack}`;
-      return /* @__PURE__ */ (0, import_jsx_runtime147.jsx)(
+      return /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(
         ErrorDisplay,
         {
           title: "DataLoom experienced an error",
@@ -70581,7 +70778,7 @@ Error info: ${(_a2 = this.state.errorInfo) == null ? void 0 : _a2.componentStack
 var error_boundary_default = ErrorBoundary;
 
 // src/react/loom-app/index.tsx
-var import_jsx_runtime148 = __toESM(require_jsx_runtime());
+var import_jsx_runtime149 = __toESM(require_jsx_runtime());
 function LoomApp({
   app,
   reactAppId,
@@ -70592,7 +70789,7 @@ function LoomApp({
   loomState,
   onSaveState
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(error_boundary_default, { children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(error_boundary_default, { children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(
     AppMountProvider,
     {
       app,
@@ -70600,12 +70797,12 @@ function LoomApp({
       reactAppId,
       isMarkdownView,
       loomFile,
-      children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(Provider_default, { store: store2, children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(Provider_default, { store: store2, children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(
         LoomStateProvider,
         {
           initialState: loomState,
           onSaveState,
-          children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(DragProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(MenuProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime148.jsx)(App10, {}) }) })
+          children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(DragProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(MenuProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(App10, {}) }) })
         }
       ) })
     }
@@ -70613,7 +70810,7 @@ function LoomApp({
 }
 
 // src/obsidian/embedded/embedded-app-manager.tsx
-var import_jsx_runtime149 = __toESM(require_jsx_runtime());
+var import_jsx_runtime150 = __toESM(require_jsx_runtime());
 var embeddedApps = [];
 var loadPreviewModeApps = (app, markdownLeaves, pluginVersion) => {
   for (let i2 = 0; i2 < markdownLeaves.length; i2++) {
@@ -70679,7 +70876,7 @@ var renderApp = (app, reactAppId, leaf, file, root, state) => {
   const THROTTLE_TIME_MILLIS = 2e3;
   const throttleHandleSave = import_lodash16.default.throttle(handleSave, THROTTLE_TIME_MILLIS);
   root.render(
-    /* @__PURE__ */ (0, import_jsx_runtime149.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime150.jsx)(
       LoomApp,
       {
         app,
@@ -70701,7 +70898,7 @@ var renderApp = (app, reactAppId, leaf, file, root, state) => {
   );
 };
 var renderErrorApp = (root, error) => {
-  root.render(/* @__PURE__ */ (0, import_jsx_runtime149.jsx)(ErrorApp, { error, isEmbeddedApp: true }));
+  root.render(/* @__PURE__ */ (0, import_jsx_runtime150.jsx)(ErrorApp, { error, isEmbeddedApp: true }));
 };
 var handleSave = async (app, file, appId, state, shouldSaveFrontmatter) => {
   LastSavedManager.getInstance().setLastSavedFile(file.path);

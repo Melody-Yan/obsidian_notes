@@ -2540,6 +2540,9 @@ var AppHelper = class {
   getCurrentOffset(editor) {
     return editor.posToOffset(editor.getCursor());
   }
+  getContentUntilCursor(editor) {
+    return editor.getValue().slice(0, this.getCurrentOffset(editor));
+  }
   getCurrentLine(editor) {
     return editor.getLine(editor.getCursor().line);
   }
@@ -2582,6 +2585,11 @@ var AppHelper = class {
       linkText,
       activeFile.path
     )) == null ? void 0 : _a.path) != null ? _b : null;
+  }
+  inMathBlock(editor) {
+    var _a, _b;
+    const numberOfDollarPair = (_b = (_a = this.getContentUntilCursor(editor).match(/\$\$\n/g)) == null ? void 0 : _a.length) != null ? _b : 0;
+    return numberOfDollarPair % 2 !== 0;
   }
   searchPhantomLinks() {
     return Object.entries(this.unsafeApp.metadataCache.unresolvedLinks).flatMap(
@@ -3208,6 +3216,9 @@ var CurrentFileWordProvider = class {
     const currentToken = this.tokenizer.tokenize(
       editor.getLine(editor.getCursor().line).slice(0, editor.getCursor().ch)
     ).last();
+    const excludePatterns = option.excludeWordPatterns.map(
+      (x) => new RegExp(`^${x}$`)
+    );
     const content = await this.app.vault.cachedRead(file);
     const tokens = this.tokenizer.tokenize(content).filter((x) => {
       if (x.length < option.minNumberOfCharacters) {
@@ -3217,7 +3228,7 @@ var CurrentFileWordProvider = class {
         return false;
       }
       return option.onlyEnglish ? allAlphabets(x) : true;
-    }).map((x) => startsSmallLetterOnlyFirst(x) ? x.toLowerCase() : x);
+    }).map((x) => startsSmallLetterOnlyFirst(x) ? x.toLowerCase() : x).filter((x) => !excludePatterns.some((rp) => x.match(rp)));
     this.words = uniq(tokens).filter((x) => x !== currentToken).map((x) => ({
       value: x,
       type: "currentFile",
@@ -3401,12 +3412,15 @@ var CurrentVaultWordProvider = class {
     const markdownFilePaths = this.app.vault.getMarkdownFiles().map((x) => x.path).filter((p) => this.includePrefixPatterns.every((x) => p.startsWith(x))).filter((p) => this.excludePrefixPatterns.every((x) => !p.startsWith(x))).filter(
       (p) => !this.onlyUnderCurrentDirectory || dirname(p) === currentDirname
     );
+    const excludePatterns = option.excludeWordPatterns.map(
+      (x) => new RegExp(`^${x}$`)
+    );
     let wordByValue = {};
     for (const path of markdownFilePaths) {
       const content = await this.app.vault.adapter.read(path);
       const tokens = this.tokenizer.tokenize(content).filter(
         (x) => x.length >= option.minNumberOfCharacters && !this.tokenizer.shouldIgnoreOnCurrent(x)
-      ).map((x) => startsSmallLetterOnlyFirst(x) ? x.toLowerCase() : x);
+      ).map((x) => startsSmallLetterOnlyFirst(x) ? x.toLowerCase() : x).filter((x) => !excludePatterns.some((rp) => x.match(rp)));
       for (const token of tokens) {
         wordByValue[token] = {
           value: token,
@@ -3888,13 +3902,16 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
     this.appHelper = new AppHelper(app2);
     this.statusBar = statusBar;
   }
-  triggerComplete() {
+  triggerComplete(opt) {
     const editor = this.appHelper.getCurrentEditor();
     const activeFile = this.app.workspace.getActiveFile();
     if (!editor || !activeFile) {
       return;
     }
     this.runManually = true;
+    if (opt == null ? void 0 : opt.fallbackLinkify) {
+      this.completionMode = this.completionMode === "prefix" ? "partial" : "new";
+    }
     this.trigger(editor, activeFile, true);
   }
   hideCompletion() {
@@ -3908,11 +3925,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
       this.settings.intelligentSuggestionPrioritization.historyFilePath || DEFAULT_HISTORIES_PATH
     );
     if (await this.appHelper.exists(historyPath)) {
-      this.settings.selectionHistoryTree = {};
       return this.appHelper.loadJson(historyPath);
-    }
-    if (Object.keys(this.settings.selectionHistoryTree).length > 0) {
-      return this.settings.selectionHistoryTree;
     }
     return {};
   }
@@ -3977,6 +3990,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
       ins.refreshCurrentVaultTokens();
       ins.app.metadataCache.offref(cacheResolvedRef);
     });
+    ins.completionMode = ins.matchStrategy.name;
     return ins;
   }
   predictableComplete() {
@@ -4087,10 +4101,24 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
         const start = performance.now();
         this.showDebugLog(() => `[context.query]: ${context.query}`);
         const parsedQuery = JSON.parse(context.query);
-        const words = parsedQuery.queries.filter(
+        const createNewLinkSuggestions = () => parsedQuery.queries.slice().reverse().filter((q) => q.word.length >= this.minNumberTriggered).map((q) => ({
+          value: q.word,
+          createdPath: "FIXME: ",
+          type: "internalLink",
+          phantom: true,
+          offset: q.offset
+        }));
+        if (parsedQuery.completionMode === "new") {
+          cb(createNewLinkSuggestions());
+          return;
+        }
+        const matchStrategy = MatchStrategy.fromName(
+          parsedQuery.completionMode
+        );
+        let words = parsedQuery.queries.filter(
           (x, i, xs) => parsedQuery.currentFrontMatter || this.settings.minNumberOfWordsTriggeredPhrase + i - 1 < xs.length && x.word.length >= this.minNumberTriggered && !x.word.endsWith(" ")
         ).map((q) => {
-          const handler = parsedQuery.currentFrontMatter && this.frontMatterComplementStrategy !== SpecificMatchStrategy.INHERIT ? this.frontMatterComplementStrategy.handler : this.matchStrategy.handler;
+          const handler = parsedQuery.currentFrontMatter && this.frontMatterComplementStrategy !== SpecificMatchStrategy.INHERIT ? this.frontMatterComplementStrategy.handler : matchStrategy.handler;
           return handler(
             this.indexedWords,
             q.word,
@@ -4104,6 +4132,13 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
             }
           ).map((word) => ({ ...word, offset: q.offset }));
         }).flat().sort((a, b) => Number(a.fuzzy) - Number(b.fuzzy));
+        if (this.completionMode != this.matchStrategy.name && this.completionMode === "partial") {
+          words = words.filter((x) => x.type === "internalLink");
+          if (words.length === 0) {
+            cb(createNewLinkSuggestions());
+            return;
+          }
+        }
         cb(
           uniqWith(words, suggestionUniqPredicate).slice(
             0,
@@ -4206,7 +4241,8 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
       onlyEnglish: this.settings.onlyComplementEnglishOnCurrentFileComplement,
       minNumberOfCharacters: this.currentFileMinNumberOfCharacters,
       makeSynonymAboutEmoji: this.settings.matchingWithoutEmoji,
-      makeSynonymAboutAccentsDiacritics: this.settings.treatAccentDiacriticsAsAlphabeticCharacters
+      makeSynonymAboutAccentsDiacritics: this.settings.treatAccentDiacriticsAsAlphabeticCharacters,
+      excludeWordPatterns: this.settings.excludeCurrentFileWordPatterns
     });
     this.statusBar.setCurrentFileIndexed(
       this.currentFileWordProvider.wordCount
@@ -4232,7 +4268,8 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
     await this.currentVaultWordProvider.refreshWords({
       minNumberOfCharacters: this.currentVaultMinNumberOfCharacters,
       makeSynonymAboutEmoji: this.settings.matchingWithoutEmoji,
-      makeSynonymAboutAccentsDiacritics: this.settings.treatAccentDiacriticsAsAlphabeticCharacters
+      makeSynonymAboutAccentsDiacritics: this.settings.treatAccentDiacriticsAsAlphabeticCharacters,
+      excludeWordPatterns: this.settings.excludeCurrentVaultWordPatterns
     });
     this.statusBar.setCurrentVaultIndexed(
       this.currentVaultWordProvider.wordCount
@@ -4382,6 +4419,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
     const onReturnNull = (message) => {
       showDebugLog(message);
       this.runManually = false;
+      this.completionMode = this.matchStrategy.name;
       this.close();
     };
     if (!this.settings.complementAutomatically && !this.isOpen && !this.runManually) {
@@ -4414,6 +4452,12 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
     if (suppressedPattern) {
       onReturnNull(
         `Don't show suggestions because it is the ignored pattern: ${suppressedPattern}`
+      );
+      return null;
+    }
+    if (this.settings.disableSuggestionsInMathBlock && this.appHelper.inMathBlock(editor)) {
+      onReturnNull(
+        `Suggestions are disabled while the cursor is inside a Math block.`
       );
       return null;
     }
@@ -4471,7 +4515,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
     );
     if (suppressedTokens.length === 0) {
       onReturnNull(
-        `Don't show suggestions because all tokens are ignored by token pattern: ${String.raw`^[\u3040-\u309F\u30A0-\u30FF]{1,2}$`}`
+        "Don't show suggestions because all tokens are ignored by token pattern"
       );
       return null;
     }
@@ -4489,6 +4533,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
       end: cursor,
       query: JSON.stringify({
         currentFrontMatter,
+        completionMode: this.completionMode,
         queries: suppressedTokens.map((x) => ({
           ...x,
           offset: x.offset - currentTokens[0].offset
@@ -4571,6 +4616,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
   }
   selectSuggestion(word) {
     var _a, _b;
+    this.completionMode = this.matchStrategy.name;
     let forceWithAlias = false;
     let context = this.context;
     if (!context) {
@@ -4593,7 +4639,7 @@ var AutoCompleteSuggest = class _AutoCompleteSuggest extends import_obsidian5.Ed
         insertedText = `${insertedText}, `;
       }
     } else {
-      if (this.settings.insertAfterCompletion && !(word.type === "customDictionary" && word.ignoreSpaceAfterCompletion)) {
+      if (this.settings.insertSpaceAfterCompletion && !(word.type === "customDictionary" && word.ignoreSpaceAfterCompletion)) {
         insertedText = `${insertedText} `;
       }
     }
@@ -4723,15 +4769,16 @@ var DEFAULT_SETTINGS = {
   complementAutomatically: true,
   delayMilliSeconds: 0,
   disableSuggestionsDuringImeOn: false,
-  insertAfterCompletion: true,
+  disableSuggestionsInMathBlock: false,
+  insertSpaceAfterCompletion: false,
   firstCharactersDisableSuggestions: ":/^",
   patternsToSuppressTrigger: ["^~~~.*", "^```.*"],
   phrasePatternsToSuppressTrigger: [],
   noAutoFocusUntilCycle: false,
   // appearance
-  showMatchStrategy: true,
-  showComplementAutomatically: true,
-  showIndexingStatus: true,
+  showMatchStrategy: false,
+  showComplementAutomatically: false,
+  showIndexingStatus: false,
   descriptionOnSuggestion: "Short",
   // key customization
   hotkeys: {
@@ -4757,12 +4804,14 @@ var DEFAULT_SETTINGS = {
   enableCurrentFileComplement: true,
   currentFileMinNumberOfCharacters: 0,
   onlyComplementEnglishOnCurrentFileComplement: false,
+  excludeCurrentFileWordPatterns: [],
   // current vault complement
   enableCurrentVaultComplement: false,
   currentVaultMinNumberOfCharacters: 0,
   includeCurrentVaultPathPrefixPatterns: "",
   excludeCurrentVaultPathPrefixPatterns: "",
   includeCurrentVaultOnlyFilesUnderCurrentDirectory: false,
+  excludeCurrentVaultWordPatterns: [],
   // custom dictionary complement
   enableCustomDictionaryComplement: false,
   customDictionaryPaths: `https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt`,
@@ -4784,7 +4833,7 @@ var DEFAULT_SETTINGS = {
   },
   frontMatterKeyForExclusionInternalLink: "",
   // front matter complement
-  enableFrontMatterComplement: true,
+  enableFrontMatterComplement: false,
   frontMatterComplementMatchStrategy: "inherit",
   insertCommaAfterFrontMatterCompletion: false,
   intelligentSuggestionPrioritization: {
@@ -4796,10 +4845,7 @@ var DEFAULT_SETTINGS = {
   // mobile
   disableOnMobile: false,
   // debug
-  showLogAboutPerformanceInConsole: false,
-  // others
-  // TODO: Want to remove in the future version
-  selectionHistoryTree: {}
+  showLogAboutPerformanceInConsole: false
 };
 var VariousComplementsSettingTab = class extends import_obsidian7.PluginSettingTab {
   constructor(app2, plugin) {
@@ -4983,10 +5029,18 @@ var VariousComplementsSettingTab = class extends import_obsidian7.PluginSettingT
         await this.plugin.saveSettings();
       });
     });
+    new import_obsidian7.Setting(containerEl).setName("Disable suggestions in the Math block").setDesc("It doesn't support the inline Math block.").addToggle((tc) => {
+      tc.setValue(
+        this.plugin.settings.disableSuggestionsInMathBlock
+      ).onChange(async (value) => {
+        this.plugin.settings.disableSuggestionsInMathBlock = value;
+        await this.plugin.saveSettings();
+      });
+    });
     new import_obsidian7.Setting(containerEl).setName("Insert space after completion").addToggle((tc) => {
-      tc.setValue(this.plugin.settings.insertAfterCompletion).onChange(
+      tc.setValue(this.plugin.settings.insertSpaceAfterCompletion).onChange(
         async (value) => {
-          this.plugin.settings.insertAfterCompletion = value;
+          this.plugin.settings.insertSpaceAfterCompletion = value;
           await this.plugin.saveSettings();
         }
       );
@@ -5156,6 +5210,18 @@ var VariousComplementsSettingTab = class extends import_obsidian7.PluginSettingT
           await this.plugin.saveSettings({ currentFile: true });
         });
       });
+      new import_obsidian7.Setting(containerEl).setName("Exclude word patterns for indexing").setDesc(
+        "Regexp patterns for words to be excluded from the suggestions, separated by line breaks."
+      ).addTextArea((tc) => {
+        const el = tc.setValue(
+          this.plugin.settings.excludeCurrentFileWordPatterns.join("\n")
+        ).onChange(async (value) => {
+          this.plugin.settings.excludeCurrentFileWordPatterns = smartLineBreakSplit(value);
+          await this.plugin.saveSettings();
+        });
+        el.inputEl.className = "various-complements__settings__text-area-path-dense";
+        return el;
+      });
     }
   }
   addCurrentVaultComplementSettings(containerEl) {
@@ -5206,6 +5272,18 @@ var VariousComplementsSettingTab = class extends import_obsidian7.PluginSettingT
           this.plugin.settings.includeCurrentVaultOnlyFilesUnderCurrentDirectory = value;
           await this.plugin.saveSettings();
         });
+      });
+      new import_obsidian7.Setting(containerEl).setName("Exclude word patterns for indexing").setDesc(
+        "Regexp patterns for words to be excluded from the suggestions, separated by line breaks."
+      ).addTextArea((tc) => {
+        const el = tc.setValue(
+          this.plugin.settings.excludeCurrentVaultWordPatterns.join("\n")
+        ).onChange(async (value) => {
+          this.plugin.settings.excludeCurrentVaultWordPatterns = smartLineBreakSplit(value);
+          await this.plugin.saveSettings();
+        });
+        el.inputEl.className = "various-complements__settings__text-area-path-dense";
+        return el;
       });
     }
   }
@@ -7835,6 +7913,13 @@ var VariousComponents = class extends import_obsidian9.Plugin {
       name: "Hide suggestions",
       callback: async () => {
         this.suggester.hideCompletion();
+      }
+    });
+    this.addCommand({
+      id: "fallback-linkify",
+      name: "Fallback linkify",
+      callback: async () => {
+        this.suggester.triggerComplete({ fallbackLinkify: true });
       }
     });
     this.addCommand({

@@ -8,6 +8,7 @@
   "interfaceFontFamily": "",
   "nativeMenus": true,
   "enabledCssSnippets": [
-    "中文侧边注释"
+    "中文侧边注释",
+    "callout"
   ]
 }

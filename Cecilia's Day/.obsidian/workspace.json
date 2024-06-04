@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
+                "file": "快速记录/旅行.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -21,20 +21,32 @@
             }
           },
           {
-            "id": "560540394feb1062",
+            "id": "212b29b2868e19f7",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "file": "读书笔记/生死场：萧红小说精选集/生死场：萧红小说精选集.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "4f421fa4a29e6294",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "MEMO＆DAILY/MEMOS/2024读书计划.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -106,20 +118,12 @@
               "type": "chronology-calendar-view",
               "state": {}
             }
-          },
-          {
-            "id": "6ae01bcd1e602a5e",
-            "type": "leaf",
-            "state": {
-              "type": "timeline",
-              "state": {}
-            }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 263.5
+    "width": 278.5
   },
   "right": {
     "id": "628262475fc8c9f5",
@@ -128,7 +132,7 @@
       {
         "id": "dd3fafea56169283",
         "type": "tabs",
-        "dimension": 31.684110371075167,
+        "dimension": 28.55902777777778,
         "children": [
           {
             "id": "3ae685e095b64f35",
@@ -144,7 +148,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "file": "快速记录/旅行.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -161,7 +165,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "读书笔记/呐喊/呐喊-鲁迅.md",
+                "file": "快速记录/旅行.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -202,13 +206,21 @@
               "type": "copilot-chat-view",
               "state": {}
             }
+          },
+          {
+            "id": "d05ca11f67d00a9a",
+            "type": "leaf",
+            "state": {
+              "type": "timeline",
+              "state": {}
+            }
           }
         ]
       },
       {
         "id": "eb8df96c63e62749",
         "type": "tabs",
-        "dimension": 35.68030447193149,
+        "dimension": 36.28472222222222,
         "children": [
           {
             "id": "63813c46d9773e30",
@@ -216,7 +228,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "读书笔记/呐喊/呐喊-鲁迅.md"
+                "file": "快速记录/旅行.md"
               }
             }
           },
@@ -235,21 +247,13 @@
               "type": "Strange New Worlds",
               "state": {}
             }
-          },
-          {
-            "id": "5e297d7ec2dd9083",
-            "type": "leaf",
-            "state": {
-              "type": "custom-frames-微信读书",
-              "state": {}
-            }
           }
         ]
       },
       {
         "id": "573630520f47dfe6",
         "type": "tabs",
-        "dimension": 32.635585156993336,
+        "dimension": 35.15625,
         "children": [
           {
             "id": "2b58cff4984dfe5a",
@@ -279,14 +283,10 @@
       }
     ],
     "direction": "horizontal",
-    "width": 303.5
+    "width": 325.5
   },
   "left-ribbon": {
     "hiddenItems": {
-      "note-to-mp:复制到公众号": false,
-      "obsidian42-brat:BRAT": false,
-      "obsidian-weread-plugin:同步微信读书笔记": false,
-      "copilot:Copilot Chat": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
@@ -299,22 +299,44 @@
       "workspaces:管理工作区布局": false,
       "publish:发布更改": false,
       "obsidian-read-it-later:ReadItLater: Save clipboard": false,
-      "media-extended:Open media": false,
-      "obsidian-day-planner:Timeline": false,
-      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "markdown-table-editor:Open Markdown Table Editor": false,
       "chronology:Open Chronology": false,
       "obsidian-custom-frames:Open 微信读书": false,
-      "obsidian-projects:Open projects": false,
-      "notion-like-tables:Create loom": false,
       "obsidian-advanced-slides:Show Slide Preview": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "periodic-notes:Open today": false,
-      "obsidian-memos:Memos": false
+      "copilot:Copilot Chat": false,
+      "note-to-mp:复制到公众号": false,
+      "obsidian-day-planner:Timeline": false,
+      "media-extended:Open media": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
+      "obsidian42-brat:BRAT": false,
+      "notion-like-tables:Create loom": false,
+      "obsidian-weread-plugin:同步微信读书笔记": false,
+      "obsidian-projects:Open projects": false,
+      "periodic-notes:Open today": false
     }
   },
-  "active": "560540394feb1062",
+  "active": "f56b0b7b539c0826",
   "lastOpenFiles": [
+    "Read It Later/百宝箱/resource/c8a53abf9b1db6f96c58bfcd6b510d7.jpg",
+    "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
+    "快速记录/旅行.md",
+    "MEMO＆DAILY/MEMOS/2024读书计划.md",
+    "读书笔记/生死场：萧红小说精选集/生死场：萧红小说精选集.md",
+    "MEMO＆DAILY/MEMOS/2024读书计划1.md",
+    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/中国奇谭第四集《乡村巴士带走了王孩儿和神仙》深度解析.md",
+    "MEMO＆DAILY/MEMOS/2023-10-02.md",
+    "MEMO＆DAILY/MEMOS/2024-05-14.md",
+    "MEMO＆DAILY/Daily/2024/0514 病情反复.md",
+    "dictionary.md",
+    "书库/book/克林索尔的最后夏天.md",
+    "epub/冬牧场 (李娟) (Z-Library)/第二章 荒野主人/二十 胡尔马西.md",
+    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-34_1.png",
+    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-5_1.png",
+    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/cover_image.jpg",
+    "读书笔记/呐喊/呐喊-鲁迅.md",
+    "MEMO＆DAILY/Daily/2024",
+    "读书笔记/鲤·与书私奔/鲤·与书私奔.md",
     "读书笔记/孔雀菩提（莫言作序、余华推荐）/孔雀菩提（莫言作序、余华推荐）.md",
     "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）/奥斯卡与玫瑰奶奶（全彩插画本）.md",
     "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）",
@@ -326,7 +348,6 @@
     "读书笔记/米格尔街（2019版）",
     "读书笔记/春桃/春桃.md",
     "读书笔记/春桃",
-    "读书笔记/鲤·与书私奔/鲤·与书私奔.md",
     "读书笔记/鲤·与书私奔",
     "读书笔记/晚春/晚春.md",
     "读书笔记/晚春",
@@ -335,22 +356,7 @@
     "读书笔记/一桩事先张扬的凶杀案/一桩事先张扬的凶杀案.md",
     "读书笔记/一桩事先张扬的凶杀案",
     "读书笔记/游隼/游隼.md",
-    "读书笔记/游隼",
     "读书笔记/月牙儿/月牙儿.md",
-    "读书笔记/豆子芝麻茶（杨本芬新书｜独家首发）/豆子芝麻茶（杨本芬新书｜独家首发）.md",
-    "读书笔记/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)/百年孤独(根据马尔克斯指定版本翻译,未做任何增删)-范晔.md",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
-    "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/乘风破浪的姐姐,强化了｜削弱了性别刻板印.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/向着明亮那方.md",
-    "观影/百炼飞升录/流水不争先.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/想说的话｜评分.md",
-    "观影/向着明亮那方★★★★★★☆☆☆☆/哼将军和哈将军   导演刘高翔.md",
-    "观影/凡人修仙传/用这恶人尸体烧成的火，却也如此美.md",
-    "Day Planners/Day Planner-20230220.md",
-    "AllBooks.md",
-    "dictionary.md",
-    "未命名.md",
     "assets/s33451826.jpg",
     "assets/s1067491.jpg",
     "assets/s4066862.jpg",
@@ -358,9 +364,6 @@
     "assets/s34231017.jpg",
     "assets/s34231018.jpg",
     "assets/s24422775.jpg",
-    "assets/s33899981.jpg",
-    "assets/s33900058.jpg",
-    "assets/s33710398.jpg",
     "攻略/开学准备/开学.canvas",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",
