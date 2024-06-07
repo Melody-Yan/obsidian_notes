@@ -6,7 +6,7 @@
   "showViewHeader": true,
   "baseFontSize": 16,
   "interfaceFontFamily": "",
-  "nativeMenus": true,
+  "nativeMenus": false,
   "enabledCssSnippets": [
     "中文侧边注释",
     "callout"
