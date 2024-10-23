@@ -4,33 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "0d55443f08d730f7",
+        "id": "d103236fb9adfff3",
         "type": "tabs",
         "children": [
           {
-            "id": "212b29b2868e19f7",
+            "id": "3a221f6785b82aef",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "快速记录/旅行.md",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
-              }
-            }
-          },
-          {
-            "id": "4f421fa4a29e6294",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "MEMO＆DAILY/MEMOS/2024读书计划.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
+              },
+              "icon": "lucide-file",
+              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖"
             }
           }
         ]
@@ -54,7 +43,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "custom"
-              }
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
             }
           },
           {
@@ -63,13 +54,15 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "骑手",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
                 "extraContext": true,
-                "sortOrder": "alphabetical"
-              }
+                "sortOrder": "byModifiedTime"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
             }
           },
           {
@@ -80,7 +73,9 @@
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true
-              }
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
             }
           },
           {
@@ -88,7 +83,9 @@
             "type": "leaf",
             "state": {
               "type": "bookmarks",
-              "state": {}
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
             }
           }
         ]
@@ -103,7 +100,9 @@
             "type": "leaf",
             "state": {
               "type": "chronology-calendar-view",
-              "state": {}
+              "state": {},
+              "icon": "clock",
+              "title": "Chronology"
             }
           }
         ]
@@ -126,7 +125,9 @@
             "type": "leaf",
             "state": {
               "type": "calendar",
-              "state": {}
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
             }
           },
           {
@@ -135,7 +136,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "快速记录/旅行.md",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +144,9 @@
                 "searchQuery": "",
                 "backlinkCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-coming-in",
+              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖 的反向链接列表"
             }
           },
           {
@@ -152,10 +155,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "快速记录/旅行.md",
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-going-out",
+              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖 的出链列表"
             }
           },
           {
@@ -163,7 +168,9 @@
             "type": "leaf",
             "state": {
               "type": "advanced-tables-toolbar",
-              "state": {}
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
             }
           },
           {
@@ -171,7 +178,9 @@
             "type": "leaf",
             "state": {
               "type": "gptModelSettings",
-              "state": {}
+              "state": {},
+              "icon": "check-small",
+              "title": "GPT Model Settings"
             }
           },
           {
@@ -183,7 +192,9 @@
                 "sortOrder": "frequency",
                 "showSearch": false,
                 "searchQuery": ""
-              }
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
             }
           },
           {
@@ -191,7 +202,9 @@
             "type": "leaf",
             "state": {
               "type": "copilot-chat-view",
-              "state": {}
+              "state": {},
+              "icon": "message-square",
+              "title": "Copilot"
             }
           },
           {
@@ -199,7 +212,9 @@
             "type": "leaf",
             "state": {
               "type": "timeline",
-              "state": {}
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Day Planner Timeline"
             }
           },
           {
@@ -207,7 +222,9 @@
             "type": "leaf",
             "state": {
               "type": "custom-frames-微信读书",
-              "state": {}
+              "state": {},
+              "icon": "documents",
+              "title": "微信读书"
             }
           }
         ]
@@ -223,8 +240,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "快速记录/旅行.md"
-              }
+                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md"
+              },
+              "icon": "lucide-list",
+              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖 的大纲"
             }
           },
           {
@@ -232,7 +251,9 @@
             "type": "leaf",
             "state": {
               "type": "QUICKSHARE_SIDE_VIEW",
-              "state": {}
+              "state": {},
+              "icon": "cloud",
+              "title": "QuickShare"
             }
           },
           {
@@ -240,10 +261,13 @@
             "type": "leaf",
             "state": {
               "type": "Strange New Worlds",
-              "state": {}
+              "state": {},
+              "icon": "file-digit",
+              "title": "Strange New Worlds"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "573630520f47dfe6",
@@ -255,7 +279,9 @@
             "type": "leaf",
             "state": {
               "type": "todo",
-              "state": {}
+              "state": {},
+              "icon": "checkmark",
+              "title": "Todo List"
             }
           },
           {
@@ -263,7 +289,9 @@
             "type": "leaf",
             "state": {
               "type": "online.larslockefeer.obsidian-plugin-todo",
-              "state": {}
+              "state": {},
+              "icon": "checkmark",
+              "title": "Todo"
             }
           },
           {
@@ -271,7 +299,9 @@
             "type": "leaf",
             "state": {
               "type": "reminder-list",
-              "state": {}
+              "state": {},
+              "icon": "clock",
+              "title": "Reminders"
             }
           }
         ]
@@ -311,54 +341,53 @@
       "periodic-notes:Open today": false
     }
   },
-  "active": "212b29b2868e19f7",
+  "active": "3a221f6785b82aef",
   "lastOpenFiles": [
-    "快速记录/主页.md",
-    "快速记录/旅行.md",
-    "学习/英语竞赛预备/写作/价值观.md",
-    "学习/英语竞赛预备/未命名 1.md",
-    "学习/英语竞赛预备/写作",
-    "快速记录/测试专用/TUCHUANG.md",
-    "快速记录/测试专用/测试 1.md",
-    "快速记录/测试专用/测试.md",
-    "快速记录/测试专用/1111.md",
-    "快速记录/测试专用/12.md",
-    "快速记录/测试专用/1.md",
-    "读书笔记/生死场：萧红小说精选集/生死场：萧红小说精选集.md",
-    "观影/恋与制作人★★★★★★★☆☆☆/恋与制作人 中配.md",
-    "MEMO＆DAILY/MEMOS/2024读书计划.md",
-    "观影/凡人修仙传/用这恶人尸体烧成的火，却也如此美.md",
-    "MEMO＆DAILY/MEMOS/观影/英剧推荐.md",
-    "MEMO＆DAILY/MEMOS/观影/一念永恒.md",
-    "MEMO＆DAILY/MEMOS/观影/民调局异闻录.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是,不是谎言.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md",
+    "Read It Later/百宝箱/resource/第十一届新国辩：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖：“真爱”是_不是谎言PT1M40.08S.webp",
+    "My manuscript/世界观架构/五界/人界/地形/海洋.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/2020/外卖骑手被困在系统平台里,主要责任在不在平台方.md",
+    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届",
+    "个人书库/胖月亮.md",
+    "快速记录/未命名.md",
+    "My manuscript/世界观架构/五界/人界/势力/渡鸦领域/成员/渡鸦.md",
+    "My manuscript/世界观架构/五界/人界/时间线/总体.md",
+    "My manuscript/世界观架构/五界/人界/势力/超世纪管理学院/未命名.md",
+    "My manuscript/世界观架构/五界/人界/势力/渡鸦领域/渡鸦领域.md",
+    "My manuscript/世界观架构/五界/人界/待整理人物/时间观测者.md",
+    "My manuscript/世界观架构/五界/人界/独立人物/未命名.md",
+    "My manuscript/世界观架构/五界/人界/待整理人物/观影者.md",
+    "My manuscript/世界观架构/五界/人界/势力/超世纪管理学院",
+    "My manuscript/世界观架构/五界/人界/待整理人物",
+    "My manuscript/世界观架构/五界/人界/地形/岛屿.md",
+    "My manuscript/世界观架构/五界/人界/地形/海洋02.md",
+    "My manuscript/世界观架构/五界/人界/地形",
+    "My manuscript/世界观架构/时间线",
+    "My manuscript/世界观架构/五界/shijianxian",
+    "My manuscript/世界观架构/五界/人界/时间线",
+    "My manuscript/世界观架构/五界/人界/价值观/渡鸦悖论.md",
+    "My manuscript/世界观架构/五界/人界/势力/扑克会/扑克会.md",
+    "My manuscript/世界观架构/五界/人界/势力/渡鸦领域/成员",
+    "My manuscript/世界观架构/五界/人界/势力/扑克会",
+    "My manuscript/世界观架构/五界/人界/独立人物/渡鸦.md",
+    "My manuscript/世界观架构/五界/人界/势力/渡鸦领域",
+    "My manuscript/世界观架构/五界/人界/人物.md",
+    "My manuscript/世界观架构/五界/人界/地形/世界地图.md",
+    "My manuscript/世界观架构/五界/人界/星球星座.md",
+    "My manuscript/世界观架构/五界/上神界/上界划分.md",
+    "My manuscript/世界观架构/五界/五界.md",
+    "epub/冬牧场 (李娟) (Z-Library)/第三章 宁静/二十八 最大的宁静.md",
+    "epub/冬牧场 (李娟) (Z-Library)/第三章 宁静/第三章 宁静.md",
+    "assets/s1067491.jpg",
     "Read It Later/百宝箱/resource/c8a53abf9b1db6f96c58bfcd6b510d7.jpg",
-    "观影/明星大侦探★★★★★★★★★☆/10第十季/总览.md",
-    "MEMO＆DAILY/MEMOS/2024读书计划1.md",
-    "观影/中国奇谭★★★★★★★☆☆☆/第四集 乡村巴士带走了王孩儿和神仙/中国奇谭第四集《乡村巴士带走了王孩儿和神仙》深度解析.md",
-    "MEMO＆DAILY/MEMOS/2023-10-02.md",
-    "MEMO＆DAILY/MEMOS/2024-05-14.md",
-    "MEMO＆DAILY/Daily/2024/0514 病情反复.md",
-    "dictionary.md",
-    "书库/book/克林索尔的最后夏天.md",
-    "epub/冬牧场 (李娟) (Z-Library)/第二章 荒野主人/二十 胡尔马西.md",
     "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-34_1.png",
     "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-5_1.png",
     "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/cover_image.jpg",
-    "MEMO＆DAILY/Daily/2024",
-    "读书笔记/奥斯卡与玫瑰奶奶（全彩插画本）",
-    "读书笔记/半小时漫画世界名著",
-    "读书笔记/读者·原创版（2021年第1期）",
-    "读书笔记/米格尔街（2019版）",
-    "读书笔记/春桃",
-    "读书笔记/鲤·与书私奔",
-    "读书笔记/晚春",
-    "读书笔记/伊豆的舞女",
     "assets/s33451826.jpg",
-    "assets/s1067491.jpg",
     "assets/s4066862.jpg",
     "assets/s1237549.jpg",
     "assets/s34231017.jpg",
-    "assets/s34231018.jpg",
     "攻略/开学准备/开学.canvas",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",

@@ -41,7 +41,7 @@
       "value": "2"
     }
   ],
-  "noteLocation": "读书笔记",
+  "noteLocation": "个人书库/读书笔记",
   "dailyNotesLocation": "读书笔记",
   "insertAfter": "<!-- start of weread -->",
   "insertBefore": "<!-- end of weread -->",
@@ -56,5 +56,7 @@
   "fileNameType": "BOOK_NAME-AUTHOR",
   "dailyNotesToggle": true,
   "notesBlacklist": "",
-  "showEmptyChapterTitleToggle": false
+  "showEmptyChapterTitleToggle": true,
+  "convertTags": false,
+  "saveArticleToggle": true
 }
