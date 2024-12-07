@@ -21,8 +21,24 @@
               "icon": "lucide-file",
               "title": "汉译英"
             }
+          },
+          {
+            "id": "f6608bc63f98a403",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "My manuscript/信件/来自我/1127.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1127"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -226,6 +242,57 @@
               "icon": "documents",
               "title": "微信读书"
             }
+          },
+          {
+            "id": "a3a0716d8ddbf480",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "书库/book/日日杂记.md",
+                "mode": "preview",
+                "backlinks": false,
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "日日杂记"
+            }
+          },
+          {
+            "id": "2d89129c4d8504b0",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "书库/book/日日杂记.md",
+                "mode": "preview",
+                "backlinks": false,
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "日日杂记"
+            }
+          },
+          {
+            "id": "458d63b326b63ca0",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "书库/book/日日杂记.md",
+                "mode": "preview",
+                "backlinks": false,
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "日日杂记"
+            }
           }
         ]
       },
@@ -308,8 +375,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 325.5,
-    "collapsed": true
+    "width": 325.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -338,12 +404,21 @@
       "obsidian42-brat:BRAT": false,
       "notion-like-tables:Create loom": false,
       "obsidian-weread-plugin:同步微信读书笔记": false,
-      "obsidian-projects:Open projects": false,
-      "periodic-notes:Open today": false
+      "obsidian-projects:Open projects": false
     }
   },
-  "active": "22d6d91aa3974f76",
+  "active": "f6608bc63f98a403",
   "lastOpenFiles": [
+    "书库/book/日日杂记.md",
+    "My manuscript/信件/来自我/1127.md",
+    "个人书库/读书笔记/孔雀菩提（莫言作序、余华推荐）/孔雀菩提（莫言作序、余华推荐）.md",
+    "书库/书库.md",
+    "书库/book/《催眠师手记》（第二季）.md",
+    "书库/book/夜莺与玫瑰.md",
+    "书库/book/平面国.md",
+    "书库/book/呐喊.md",
+    "书库/book/夏天、烟火和我的尸体.md",
+    "书库/book/克林索尔的最后夏天.md",
     "学习/翻译大赛/英译汉.md",
     "学习/翻译大赛/附件2：2024年全国大学生英语翻译大赛-译文题目.pdf",
     "学习/翻译大赛/汉译英.md",
@@ -361,16 +436,6 @@
     "MEMO＆DAILY/Daily/2023/昨日受伤.md",
     "MEMO＆DAILY/Daily/2023/又撑又饿.md",
     "MEMO＆DAILY/Daily/2023/一个人的团圆.md",
-    "MEMO＆DAILY/Daily/2023/血氧73.md",
-    "MEMO＆DAILY/Daily/2023/新手机20230110.md",
-    "MEMO＆DAILY/Daily/2023/心动瞬间.md",
-    "MEMO＆DAILY/Daily/2022/20230107半夜买书.md",
-    "MEMO＆DAILY/给李泽言/2022/20221222.md",
-    "MEMO＆DAILY/给李泽言/2022/20221218.md",
-    "MEMO＆DAILY/Daily/2021/可它至死都没能见我一面.md",
-    "MEMO＆DAILY/Daily/2023/我的狗狗.md",
-    "MEMO＆DAILY/Daily/2023/活得热烈.md",
-    "MEMO＆DAILY/Daily/2023/和王靖宇的聊天.md",
     "Read It Later/百宝箱/resource/附件2：2024年全国大学生英语翻译大赛-译文题目 1.pdf",
     "Read It Later/百宝箱/resource/附件2：2024年全国大学生英语翻译大赛-译文题目.pdf",
     "学习/翻译大赛",
