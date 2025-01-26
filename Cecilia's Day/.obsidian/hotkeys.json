@@ -118,5 +118,14 @@
       "key": "R"
     }
   ],
-  "language-translator:language-translator-editor-command": []
+  "language-translator:language-translator-editor-command": [],
+  "templater-obsidian:create-插入批注.md": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "P"
+    }
+  ]
 }

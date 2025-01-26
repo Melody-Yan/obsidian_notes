@@ -3,6 +3,12 @@ body {
   --snw-icon-opacity: 0.4;
 }
 
+
+div:has(> .snw-reference),
+.snw-link-preview {
+  display: inline;
+}
+
 .snw-reference {
   display: inline;
   font-size: var(--font-ui-smaller);
@@ -19,6 +25,25 @@ body {
 
 .is-mobile .snw-reference {
   font-size: var(--font-ui-smaller);
+}
+
+/* Properties */
+/* Have to remove the underline since text-decoration-line isn't inheritted, but then re-add ito the link */
+.metadata-container .internal-link:has(.snw-frontmatter-wrapper) {
+  text-decoration-line: none !important;
+  color: unset;
+  cursor: unset;
+
+  .multi-select-pill-content {
+    text-decoration-line: underline !important;
+    color: var(--link-color);
+    cursor: var(--cursor-link);
+  }
+}
+
+/* custom properties display */
+.snw-custom-property-name {
+  font-style: italic;
 }
 
 /* CM Live Preview */
@@ -75,7 +100,7 @@ body {
   color: var(--text-normal);
 }
 
-.snw-sidepane-container > div > .snw-ref-area {
+.snw-sidepane-container>div>.snw-ref-area {
   max-height: 100% !important;
   margin-bottom: 10px;
 }
@@ -94,6 +119,7 @@ body {
   border-bottom: var(--border-width) solid var(--modal-border-color);
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .snw-ref-title-popover-open-sidepane-icon {
@@ -115,6 +141,7 @@ body {
   border-radius: var(--radius-s);
   background-color: var(--titlebar-background-focused);
   border: var(--border-width) solid var(--modal-border-color);
+  align-items: center;
 }
 
 .snw-ref-item-container {
@@ -126,13 +153,17 @@ body {
   flex-direction: row;
 }
 
+.snw-ref-item-file.tree-item-self {
+  align-items: flex-start !important;
+}
+
 .snw-ref-item-collection-items {
   margin-left: 1px;
   margin-right: 1px;
   margin-bottom: 1px !important;
 }
 
-[uic='uic'] > * {
+[uic='uic']>* {
   margin-top: 0px !important;
   margin-bottom: 0px !important;
   max-height: 230px !important;
@@ -163,6 +194,20 @@ body {
   opacity: var(--snw-counter-opacity);
   padding: 3px;
   z-index: 1000;
+}
+
+/* Modification for when Edting Toolbar plugin is used */
+.view-content:has(.top.cMenuToolbarDefaultAesthetic),
+.view-content:has(.top.cMenuToolbarTinyAesthetic) {
+  .snw-header-count-wrapper {
+    top: 80px;
+  }
+}
+
+.view-content:has(.top.cMenuToolbarGlassAesthetic) {
+  .snw-header-count-wrapper {
+    top: 70px;
+  }
 }
 
 .snw-header-count {
@@ -223,7 +268,7 @@ body {
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.snw-breadcrumbs > span {
+.snw-breadcrumbs>span {
   margin-right: 1ch;
   border: 1px solid var(--background-modifier-border);
   border-radius: var(--radius-s);
@@ -245,4 +290,61 @@ body {
   width: 0px;
   height: 0px;
   color: transparent;
+}
+
+/* Dropdown options */
+.snw-sort-dropdown-wrapper {
+  position: relative;
+}
+
+.snw-sort-dropdown-button {
+  border: none !important;
+  box-shadow: none !important;
+  width: 35px;
+  background-color: unset !important;
+  opacity: var(--snw-icon-opacity);
+
+  >svg {
+    width: 25px;
+    color: var(--tab-text-color-focused) !important;
+  }
+}
+
+.snw-sort-dropdown-list {
+  position: absolute;
+  right: 0;
+  top: 15px;
+  width: 90px;
+  padding: 5px;
+  z-index: 1;
+  border: 3px solid var(--divider-color);
+  border-radius: 2px;
+  background-color: var(--background-primary);
+  overflow-y: auto;
+  list-style: none;
+  color: var(--nav-item-color);
+  font-size: var(--nav-item-size);
+  font-weight: var(--nav-item-weight);
+}
+
+.snw-sort-dropdown-list-item {
+  padding-left: 5px;
+}
+
+.snw-sort-dropdown-list-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.snw-sort-dropdown-list-item-label {
+  padding-left: 5px;
+  position: relative;
+  bottom: 5px;
+}
+
+
+/* prevent printing of reference numbers */
+@media print {
+  .snw-reference {
+    display: none;
+  }
 }

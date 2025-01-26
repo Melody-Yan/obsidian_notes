@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2025-01-26T12:14
+---
 [[ReadItLater]] [[Article]]
 
 # [开启Obsidian的"悬浮"模式，大大提升Ob使用体验](https://zhuanlan.zhihu.com/p/484177302)

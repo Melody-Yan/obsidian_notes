@@ -1,0 +1,30 @@
+/* === 预览和编辑模式下的卡片样式，可配合oz插件 === */
+.markdown-preview-view .markdown-embed, .markdown-preview-view .file-embed {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 0px 24px;
+  margin-top: 8px;
+  display: block;
+  /*box-shadow: 0 0 20px 0 #ecedee;*/
+}
+
+.markdown-preview-view blockquote {
+    border-radius: 0;
+    border: 0px solid var(--text-accent);
+    border-left-width: 5px;
+}
+.oz-transclusion-widget {
+    padding: 3px 3px 3px 19px;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 8px;
+    /*box-shadow: 0 0 20px 0 #ecedee;*/
+    margin-top: 6px;
+}
+/* === 嵌入元素去掉标题栏，这个是借鉴别人的但是我找不到出处了orz === */
+
+.markdown-embed-title, .file-embed-title {
+    font-size: 0;
+}
+.markdown-embed-title {
+    height: 0;
+}

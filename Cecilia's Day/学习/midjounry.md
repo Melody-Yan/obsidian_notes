@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 输入关键词的模版
 内容细节描述+画风描述+画面构成描述
 例如：a cute girl popmart blind box，yellow color scheme，Pixartrending，3 dart，

@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 [[ReadItLater]] [[Article]]
 
 # [ai动漫人物真人化教程 - AI绘画每日一帖](https://zhuanlan.zhihu.com/p/592706285?utm_id=0)

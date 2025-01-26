@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 /*
 Design your palette at http://paletton.com/
 Once you are happy with your colors, click Tables/Export in the bottom right of the screen:

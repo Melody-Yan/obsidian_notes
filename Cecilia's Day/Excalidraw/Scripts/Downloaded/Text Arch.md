@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 /*
 ![](https://raw.githubusercontent.com/zsviczian/obsidian-excalidraw-plugin/master/images/text-arch.jpg)
 

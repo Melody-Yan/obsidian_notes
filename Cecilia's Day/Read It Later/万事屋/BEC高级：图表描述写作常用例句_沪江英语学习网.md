@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 [[ReadItLater]] [[Article]]
 
 # [BEC高级：图表描述写作常用例句_沪江英语学习网](https://www.hjenglish.com/new/p190883/)

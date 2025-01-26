@@ -1,3 +1,7 @@
+---
+created: 2023-03-25T16:04
+updated: 2025-01-26T12:14
+---
 /*
 
 ![](https://github.com/xllowl/obsidian-excalidraw-plugin/blob/master/images/mindmap%20connector.png)

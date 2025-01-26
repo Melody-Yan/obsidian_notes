@@ -1,44 +1,28 @@
 {
   "main": {
-    "id": "f0e54e5dcb0a475c",
+    "id": "5324373015726ba8",
     "type": "split",
     "children": [
       {
-        "id": "2168a1835ec1ecb5",
+        "id": "4509724f8bf84da7",
         "type": "tabs",
         "children": [
           {
-            "id": "22d6d91aa3974f76",
+            "id": "9392d453e40b6832",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "学习/翻译大赛/汉译英.md",
+                "file": "homepage.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "汉译英"
-            }
-          },
-          {
-            "id": "f6608bc63f98a403",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "My manuscript/信件/来自我/1127.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "1127"
+              "title": "homepage"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -70,7 +54,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "骑手",
+                "query": "音乐",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -152,7 +136,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md",
+                "file": "个人书库/读书笔记/孔雀菩提（莫言作序、余华推荐）/孔雀菩提（莫言作序、余华推荐）.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -162,7 +146,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖 的反向链接列表"
+              "title": "孔雀菩提（莫言作序、余华推荐） 的反向链接列表"
             }
           },
           {
@@ -224,74 +208,23 @@
             }
           },
           {
-            "id": "d05ca11f67d00a9a",
+            "id": "6f222d5e9ea5f3b8",
             "type": "leaf",
             "state": {
-              "type": "timeline",
+              "type": "chronology-calendar-view",
               "state": {},
-              "icon": "calendar-with-checkmark",
-              "title": "Day Planner Timeline"
+              "icon": "clock",
+              "title": "Chronology"
             }
           },
           {
-            "id": "84b63c67b8f9f4a5",
+            "id": "e410c84b27596c8e",
             "type": "leaf",
             "state": {
-              "type": "custom-frames-微信读书",
+              "type": "reminder-list",
               "state": {},
-              "icon": "documents",
-              "title": "微信读书"
-            }
-          },
-          {
-            "id": "a3a0716d8ddbf480",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "书库/book/日日杂记.md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": false
-              },
-              "pinned": true,
-              "icon": "lucide-file",
-              "title": "日日杂记"
-            }
-          },
-          {
-            "id": "2d89129c4d8504b0",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "书库/book/日日杂记.md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": false
-              },
-              "pinned": true,
-              "icon": "lucide-file",
-              "title": "日日杂记"
-            }
-          },
-          {
-            "id": "458d63b326b63ca0",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "书库/book/日日杂记.md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": false
-              },
-              "pinned": true,
-              "icon": "lucide-file",
-              "title": "日日杂记"
+              "icon": "clock",
+              "title": "Reminders"
             }
           }
         ]
@@ -307,10 +240,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届/“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖.md"
+                "file": "homepage.md"
               },
               "icon": "lucide-list",
-              "title": "“真爱”是_不是谎言：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖 的大纲"
+              "title": "homepage 的大纲"
             }
           },
           {
@@ -334,7 +267,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       },
       {
         "id": "573630520f47dfe6",
@@ -342,7 +275,7 @@
         "dimension": 35.15625,
         "children": [
           {
-            "id": "2b58cff4984dfe5a",
+            "id": "4d033fa363e9d2cd",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -362,16 +295,17 @@
             }
           },
           {
-            "id": "718d1d9865399415",
+            "id": "52c038d1dc096fd5",
             "type": "leaf",
             "state": {
-              "type": "reminder-list",
+              "type": "planner-timeline",
               "state": {},
-              "icon": "clock",
-              "title": "Reminders"
+              "icon": "calendar-with-checkmark",
+              "title": "Timeline"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "horizontal",
@@ -379,6 +313,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "quickadd:QuickAdd": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
@@ -396,65 +331,73 @@
       "obsidian-custom-frames:Open 微信读书": false,
       "obsidian-advanced-slides:Show Slide Preview": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "copilot:Copilot Chat": false,
       "note-to-mp:复制到公众号": false,
-      "obsidian-day-planner:Timeline": false,
       "media-extended:Open media": false,
-      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "obsidian42-brat:BRAT": false,
       "notion-like-tables:Create loom": false,
       "obsidian-weread-plugin:同步微信读书笔记": false,
-      "obsidian-projects:Open projects": false
+      "obsidian-projects:Open projects": false,
+      "templater-obsidian:Templater": false,
+      "omnisearch:Omnisearch": false,
+      "wucai-highlights-official:Start WuCai syncing": false,
+      "obsidian-kanban:创建新看板": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false,
+      "obsidian-day-planner:Open Timeline": false,
+      "obsidian-day-planner:Open Multi-Day View": false,
+      "copilot:Open Copilot Chat": false,
+      "homepage:Open homepage": false,
+      "periodic-notes:Open today": false
     }
   },
-  "active": "f6608bc63f98a403",
+  "active": "ef01d5ec1b589285",
   "lastOpenFiles": [
-    "书库/book/日日杂记.md",
-    "My manuscript/信件/来自我/1127.md",
-    "个人书库/读书笔记/孔雀菩提（莫言作序、余华推荐）/孔雀菩提（莫言作序、余华推荐）.md",
+    "Read It Later/百宝箱/双向链接/作文.md",
+    "Read It Later/百宝箱/双向链接/语录.md",
+    "Read It Later/百宝箱/双向链接/英剧.md",
+    "Read It Later/百宝箱/双向链接/小说.md",
+    "未命名.md",
+    "My manuscript/世界观架构/五界/人界/独立人物/未命名.md",
+    "学习/英语竞赛预备/未命名 1.md",
+    "Read It Later/百宝箱/双向链接/未定事件簿.md",
+    "Read It Later/百宝箱/双向链接/推文.md",
+    "Read It Later/百宝箱/双向链接/书信.md",
     "书库/书库.md",
-    "书库/book/《催眠师手记》（第二季）.md",
-    "书库/book/夜莺与玫瑰.md",
-    "书库/book/平面国.md",
-    "书库/book/呐喊.md",
-    "书库/book/夏天、烟火和我的尸体.md",
-    "书库/book/克林索尔的最后夏天.md",
-    "学习/翻译大赛/英译汉.md",
-    "学习/翻译大赛/附件2：2024年全国大学生英语翻译大赛-译文题目.pdf",
-    "学习/翻译大赛/汉译英.md",
-    "汉译英对比.md",
-    "Read It Later/百宝箱/双向链接/Read it later/ReadItLater.md",
+    "Read It Later/百宝箱/双向链接/书籍.md",
+    "My manuscript/世界观架构/五界/人界/待整理人物/时间观测者.md",
+    "My manuscript/世界观架构/五界/人界/势力/扑克会/扑克会.md",
+    "Read It Later/百宝箱/双向链接/配音演员.md",
+    "Read It Later/百宝箱/双向链接/漫画.md",
+    "Read It Later/百宝箱/双向链接/恋与制作人.md",
+    "Read It Later/百宝箱/双向链接/练笔.md",
+    "Read It Later/百宝箱/双向链接/句子素材.md",
+    "Read It Later/百宝箱/双向链接/花亦山心之月.md",
     "Read It Later/百宝箱/双向链接/光与夜之恋.md",
+    "Read It Later/百宝箱/双向链接/观影.md",
     "Read It Later/百宝箱/双向链接/古言.md",
-    "Read It Later/百宝箱/双向链接/范文.md",
-    "Read It Later/万事屋/已归档/【AI绘画实操教程】动漫角色如何真人化？ stable diffusion we - 哔哩哔哩.md",
-    "Read It Later/百宝箱/双向链接/Read it later/Article.md",
-    "My manuscript/信件/来自虞城/相似性格.md",
-    "My manuscript/信件/来自虞城/大学生活.md",
-    "My manuscript/信件/来自Chris氵甚/时空穿越.md",
-    "My manuscript/信件/来自Chris氵甚/爱，生活，生命 和 自由.md",
-    "MEMO＆DAILY/Daily/2023/昨日受伤.md",
-    "MEMO＆DAILY/Daily/2023/又撑又饿.md",
-    "MEMO＆DAILY/Daily/2023/一个人的团圆.md",
     "Read It Later/百宝箱/resource/附件2：2024年全国大学生英语翻译大赛-译文题目 1.pdf",
-    "Read It Later/百宝箱/resource/附件2：2024年全国大学生英语翻译大赛-译文题目.pdf",
-    "学习/翻译大赛",
-    "学习/新建文件夹",
+    "Read It Later/百宝箱/双向链接/范文.md",
+    "epub/我在北京送快递 (胡安焉) (Z-Library)/第一章我在物流公司上夜班的一年.md",
     "Read It Later/百宝箱/resource/第十一届新国辩：哲理辩论2V2丨梁秋阳 马薇薇vs詹青云 庞颖：“真爱”是_不是谎言PT1M40.08S.webp",
-    "观影/国际华语辩论邀请赛★★★★★★★★☆☆/第十一届",
-    "My manuscript/世界观架构/五界/人界/势力/超世纪管理学院",
-    "My manuscript/世界观架构/五界/人界/待整理人物",
-    "My manuscript/世界观架构/五界/人界/地形",
-    "My manuscript/世界观架构/时间线",
-    "assets/s1067491.jpg",
-    "Read It Later/百宝箱/resource/c8a53abf9b1db6f96c58bfcd6b510d7.jpg",
-    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-34_1.png",
-    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/index-5_1.png",
-    "epub/[埃尔诺作品] 年轻男人 (安妮·埃尔诺；栾颖新 译) (Z-Library)/images/cover_image.jpg",
-    "assets/s33451826.jpg",
-    "assets/s4066862.jpg",
-    "assets/s1237549.jpg",
-    "assets/s34231017.jpg",
+    "Read It Later/百宝箱/resource/v2-f54c12e6012ae070039c9945bf10b049_b.jpg",
+    "Read It Later/百宝箱/resource/v2-e1547d6397d2bfb409b1aa5ef6047e2d_b.jpg",
+    "Read It Later/百宝箱/resource/v2-e80e6d7bada1f38ed4fa757ff29b2fe3_r.jpg",
+    "Read It Later/百宝箱/resource/v2-e74daf273578ebe8f4ae9816882cf7c2_b.jpg",
+    "Read It Later/百宝箱/resource/v2-e8e8bd381ac5947616b7bf0375c8a873_r.jpg",
+    "Read It Later/百宝箱/resource/v2-d22ca65432a91819d4402f45fe2e15e9_r.jpg",
+    "Read It Later/百宝箱/resource/v2-c65ab5916b333cb479fe5a7f20414e0b_b.png",
+    "Read It Later/百宝箱/resource/v2-c0afe10b5009d124fd9668e11549fa21_r.jpg",
+    "Read It Later/百宝箱/resource/v2-bce570eb4c6a63865dfce849ad5aa31d_b.jpg",
+    "Read It Later/百宝箱/双向链接/Read it later/ReadItLater.md",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/脚本/tasksCalendar",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/脚本/QuickAdd",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/附件/banners",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/react组件/使用实例",
+    "Rainbell.20240328/__MACOSX/Rainbell/20 - 工作学习/工作/素菜馆推进",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/脚本",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/音乐",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/附件",
+    "Rainbell.20240328/__MACOSX/Rainbell/40 - Obsidian/模板",
+    "1207测试/未命名.canvas",
     "攻略/开学准备/开学.canvas",
     "My manuscript/长篇+成稿/未命名.canvas",
     "快速记录/测试专用/测试canvas.canvas",

@@ -1,6 +1,6 @@
 ---
 created: 2023-03-20T02:31
-updated: 2024-05-14T19:54
+updated: 2024-12-07T19:32
 ---
 https://resource-17v.pages.dev/|resource|tu
 https://obsidian-notes-7w6.pages.dev|obsidian|note

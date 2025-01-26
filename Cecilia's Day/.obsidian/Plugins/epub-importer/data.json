@@ -6,13 +6,17 @@
   "byDrag": true,
   "savePath": "epub",
   "assetsPath": "{{savePath}}/{{bookName}}/images",
+  "backupPath": "",
   "granularity": 4,
   "mocName": "{{bookName}}",
+  "noteTemplate": "{{content}}",
   "mocPropertysTemplate": "title: {{bookName}}\nauthor: {{author}}\npublisher: {{publisher}}\nstatus: false",
-  "notePropertysTemplate": "",
   "imageFormat": "![](imagePath)",
+  "reformatting": false,
   "autoOpenRightPanel": true,
-  "allbooks": true,
   "removeDuplicateFolders": false,
-  "moreLog": false
+  "moreLog": false,
+  "leafID": "0746ea6ce2a7f1f9",
+  "notePropertysTemplate": "",
+  "allbooks": true
 }

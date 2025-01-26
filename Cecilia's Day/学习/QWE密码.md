@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 [QWE密码](https://blog.csdn.net/weixin_47024013/article/details/119044166)
 加密对象: 字母
 原理:

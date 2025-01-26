@@ -9,6 +9,10 @@
   "nativeMenus": false,
   "enabledCssSnippets": [
     "中文侧边注释",
-    "callout"
+    "callout",
+    "sidenotes",
+    "dataview 大小",
+    "callout 外观",
+    "homepage.setting"
   ]
 }

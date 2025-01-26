@@ -1,14 +1,55 @@
 {
-  "cookies": [],
+  "cookies": [
+    {
+      "name": "wr_gid",
+      "value": "216460212"
+    },
+    {
+      "name": "wr_pf",
+      "value": "2"
+    },
+    {
+      "name": "wr_localvid",
+      "value": "2f7324407dd500982f7060c"
+    },
+    {
+      "name": "wr_gender",
+      "value": "2"
+    },
+    {
+      "name": "wr_fp",
+      "value": "1453075714"
+    },
+    {
+      "name": "wr_name",
+      "value": "Cecilia."
+    },
+    {
+      "name": "wr_avatar",
+      "value": "https://thirdwx.qlogo.cn/mmopen/vi_32/gJsLqv7XF09riccMOILj9DsANUTiayria8dGp9DsCyG6leElHwyuicSpV0jz8D8sW0Fle2PVrs26aENKKUr5GHaq1iav4xo8jicpTPC2kcuibnfg0c/132"
+    },
+    {
+      "name": "wr_skey",
+      "value": "mG0zMxDT"
+    },
+    {
+      "name": "wr_vid",
+      "value": "232063128"
+    },
+    {
+      "name": "wr_rt",
+      "value": "web@43teNDTE7zq4ws~niDd_AL"
+    }
+  ],
   "noteLocation": "个人书库/读书笔记",
   "dailyNotesLocation": "读书笔记",
   "insertAfter": "<!-- start of weread -->",
   "insertBefore": "<!-- end of weread -->",
   "dailyNotesFormat": "YYYY-MM-DD",
-  "lastCookieTime": 1732714148728,
-  "isCookieValid": false,
-  "user": "",
-  "userVid": "",
+  "lastCookieTime": 1737859629889,
+  "isCookieValid": true,
+  "user": "Cecilia.",
+  "userVid": "232063128",
   "template": "---\nisbn: {{metaData.isbn}}\ncategory: {{metaData.category}}\nlastReadDate: {{metaData.lastReadDate}}\n---\n# 关于这本书\n> [!abstract] {{metaData.title}}\n> - ![ {{metaData.title}}|200]({{metaData.cover}})\n> - 书名： {{metaData.title}}\n> - 作者： {{metaData.author}}\n> - 简介： {{metaData.intro}}\n> - 出版时间 {{metaData.publishTime}}\n> - ISBN： {{metaData.isbn}}\n> - 分类： {{metaData.category}}\n> - 出版社： {{metaData.publisher}}\n\n# 高亮划线\n{% for chapter in chapterHighlights %}\n## {{chapter.chapterTitle}}\n{% for highlight in chapter.highlights %}\n{% if highlight.reviewContent %}{% else %}\n- 📌 {{ highlight.markText |trim }} ^{{highlight.bookmarkId}}\n    - ⏱ {{highlight.createTime}}{% endif %} {% endfor %}{% endfor %}\n# 读书笔记\n{% for chapter in bookReview.chapterReviews %}{% if chapter.reviews or chapter.chapterReview %}\n## {{chapter.chapterTitle}}\n{% if  chapter.chapterReviews %}{% for chapterReview in chapter.chapterReviews %}\n### 章节评论 No.{{loop.index}}\n- {{chapterReview.content}} ^{{chapterReview.reviewId}}\n    - ⏱ {{chapterReview.createTime}} {% endfor%}{%endif %}{% if chapter.reviews %}{%for review in chapter.reviews %}\n### 划线评论\n- 📌 {{review.abstract |trim }}  ^{{review.reviewId}}\n    - 💭 {{review.content}}\n    - ⏱ {{review.createTime}}\n{% endfor %} {%endif %} {% endif %} {% endfor %}\n# 本书评论\n{% if bookReview.bookReviews %}{% for bookReview in bookReview.bookReviews %}\n## 书评 No.{{loop.index}} \n{{bookReview.mdContent}} ^{{bookReview.reviewId}}\n⏱ {{bookReview.createTime}}\n{% endfor%}{% endif %}",
   "noteCountLimit": -1,
   "subFolderType": "title",
@@ -17,5 +58,6 @@
   "notesBlacklist": "",
   "showEmptyChapterTitleToggle": true,
   "convertTags": true,
-  "saveArticleToggle": true
+  "saveArticleToggle": true,
+  "saveReadingInfoToggle": true
 }

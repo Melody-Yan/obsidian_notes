@@ -1,3 +1,7 @@
+---
+created: 2024-12-07T19:32
+updated: 2024-12-07T19:32
+---
 [[ReadItLater]] [[Article]] #文章 
 
 [关于“FESTINA LENTE”（“慢慢地赶”）的文学描述整理](https://www.douban.com/note/759400085/?_i=9585077eEnIjs-)
